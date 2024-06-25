@@ -835,6 +835,7 @@ void World::draw ( math::matrix_4x4 const& model_view
                  , bool draw_hidden_models
                  , bool draw_sky
                  , bool draw_skybox
+                 , bool draw_shadows
                  , std::map<int, misc::random_color>& area_id_colors
                  , bool draw_fog
                  , eTerrainType ground_editing_brush
@@ -1102,6 +1103,8 @@ void World::draw ( math::matrix_4x4 const& model_view
     mcnk_shader.uniform ("show_selection_data", terrainMode == editing_mode::chunk_mover ? 1 : 0);
 
     mcnk_shader.uniform ("draw_wireframe", (int)draw_wireframe);
+
+    mcnk_shader.uniform("draw_shadows", (int)draw_shadows);
 
     mcnk_shader.uniform ("draw_fog", (int)draw_fog);
     mcnk_shader.uniform ("fog_color", math::vector_4d(skies->color_set[FOG_COLOR], 1));

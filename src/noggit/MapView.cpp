@@ -729,6 +729,7 @@ void MapView::createGUI()
   ADD_TOGGLE_NS (view_menu, "Draw hidden models", _draw_hidden_models);
   ADD_TOGGLE_NS (view_menu, "Draw Sky", _draw_sky);
   ADD_TOGGLE_NS (view_menu, "Draw Skybox", _draw_skybox);
+  ADD_TOGGLE_NS (view_menu, "Draw Shadows", _draw_shadows);
 
 
   view_menu->addSeparator();
@@ -2852,6 +2853,7 @@ void MapView::draw_map()
                , _draw_hidden_models.get()
                , _draw_sky.get()
                , _draw_skybox.get()
+               , _draw_shadows.get()
                , _area_id_colors
                , _draw_fog.get()
                , terrainTool->_edit_type

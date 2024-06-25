@@ -39,6 +39,8 @@ uniform bool draw_terrain_height_contour;
 uniform bool draw_lines;
 uniform bool draw_hole_lines;
 
+uniform bool draw_shadows;
+
 uniform bool draw_wireframe;
 uniform int wireframe_type;
 uniform float wireframe_radius;
@@ -283,7 +285,7 @@ void main()
     out_color.rgb = mix(vec3(1.0), out_color.rgb, 0.5);
   }
 
-  if(ubo_data[chunk_id].has_shadow)
+  if(ubo_data[chunk_id].has_shadow && draw_shadows)
   {
     out_color = vec4 (out_color.rgb * (1.0 - texture(alphamap, vec3(vary_texcoord / 8.0, chunk_id + 0.1)).a * 0.333) , 1.0);
   }  
