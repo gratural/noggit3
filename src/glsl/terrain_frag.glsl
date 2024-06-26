@@ -40,6 +40,7 @@ uniform bool draw_lines;
 uniform bool draw_hole_lines;
 
 uniform bool draw_shadows;
+uniform bool draw_vertex_colors;
 
 uniform bool draw_wireframe;
 uniform int wireframe_type;
@@ -265,7 +266,11 @@ void main()
   vec3 fw = fwidth(vary_position.xyz);
 
   out_color = texture_blend();
-  out_color.rgb *= vary_mccv;
+
+  if(draw_vertex_colors)
+  {
+    out_color.rgb *= vary_mccv;
+  }
 
   // diffuse + ambient lighting
   out_color.rgb *= vec3(clamp (diffuse_color * max(dot(vary_normal, light_dir), 0.0), 0.0, 1.0)) + ambient_color;
@@ -296,8 +301,7 @@ void main()
   }
 
   if(show_selection_data)
-  {
-    
+  { 
     if(ubo_data[chunk_id].is_copied && ubo_data[chunk_id].is_in_paste_zone)
     {
       out_color.rgb = mix(out_color.rgb, vec3(0.8, 0.3, 0.8), 0.5);

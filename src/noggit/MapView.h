@@ -115,6 +115,8 @@ private:
   noggit::bool_toggle_property _draw_sky = {true};
   noggit::bool_toggle_property _draw_skybox = {true};
   noggit::bool_toggle_property _draw_shadows = {true};
+  noggit::bool_toggle_property _draw_vertex_colors = {true};
+
 public:
   noggit::bool_toggle_property _draw_hidden_models = {false};
 private:

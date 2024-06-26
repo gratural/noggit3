@@ -730,6 +730,7 @@ void MapView::createGUI()
   ADD_TOGGLE_NS (view_menu, "Draw Sky", _draw_sky);
   ADD_TOGGLE_NS (view_menu, "Draw Skybox", _draw_skybox);
   ADD_TOGGLE_NS (view_menu, "Draw Shadows", _draw_shadows);
+  ADD_TOGGLE_NS (view_menu, "Draw Vertex Colors", _draw_vertex_colors);
 
 
   view_menu->addSeparator();
@@ -2854,6 +2855,7 @@ void MapView::draw_map()
                , _draw_sky.get()
                , _draw_skybox.get()
                , _draw_shadows.get()
+               , _draw_vertex_colors.get()
                , _area_id_colors
                , _draw_fog.get()
                , terrainTool->_edit_type
