@@ -141,6 +141,7 @@ public:
             , bool draw_skybox
             , bool draw_shadows
             , bool draw_vertex_colors
+            , bool use_dbc_lighting_data
             , std::map<int, misc::random_color>& area_id_colors
             , bool draw_fog
             , eTerrainType ground_editing_brush

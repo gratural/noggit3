@@ -731,6 +731,7 @@ void MapView::createGUI()
   ADD_TOGGLE_NS (view_menu, "Draw Skybox", _draw_skybox);
   ADD_TOGGLE_NS (view_menu, "Draw Shadows", _draw_shadows);
   ADD_TOGGLE_NS (view_menu, "Draw Vertex Colors", _draw_vertex_colors);
+  ADD_TOGGLE_NS (view_menu, "Use DBC lighting color data", _use_dbc_lighting_data);
 
 
   view_menu->addSeparator();
@@ -2856,6 +2857,7 @@ void MapView::draw_map()
                , _draw_skybox.get()
                , _draw_shadows.get()
                , _draw_vertex_colors.get()
+               , _use_dbc_lighting_data.get()
                , _area_id_colors
                , _draw_fog.get()
                , terrainTool->_edit_type
