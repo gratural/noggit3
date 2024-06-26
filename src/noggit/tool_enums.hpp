@@ -84,7 +84,7 @@ enum class editing_mode
   chunk_mover,
 };
 
-enum water_opacity
+enum class water_opacity : int
 {
   auto_opacity,
   river_opacity,

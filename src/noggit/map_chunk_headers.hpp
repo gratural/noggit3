@@ -128,6 +128,10 @@ namespace noggit
     bool clear_models;
     bool fix_gaps;
   };
+
+  // values found by experimenting
+  static constexpr float river_opacity = 0.0337f;
+  static constexpr float ocean_opacity = 0.007f;
 }
 
 using chunk_indice = uint16_t;

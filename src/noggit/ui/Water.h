@@ -4,6 +4,7 @@
 
 #include <noggit/bool_toggle_property.hpp>
 #include <noggit/tile_index.hpp>
+#include <noggit/tool_enums.hpp>
 #include <noggit/ui/checkbox.hpp>
 #include <noggit/unsigned_int_property.hpp>
 
@@ -78,7 +79,7 @@ namespace noggit
       bool_toggle_property _override_liquid_id;
       bool_toggle_property _override_height;
 
-      int _opacity_mode;
+      water_opacity _opacity_mode = water_opacity::auto_opacity;
       float _custom_opacity_factor;
 
       math::vector_3d _lock_pos;

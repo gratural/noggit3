@@ -38,7 +38,6 @@ namespace noggit
       , _cursor_intersect_liquids(true)
       , _override_liquid_id(true)
       , _override_height(true)
-      , _opacity_mode(auto_opacity)
       , _custom_opacity_factor(0.0337f)
       , _lock_pos(math::vector_3d(0.0f, 0.0f, 0.0f))
       , tile(0, 0)
@@ -166,13 +165,13 @@ namespace noggit
       auto custom_button (new QRadioButton ("Custom factor:", this));
 
       QButtonGroup *transparency_toggle = new QButtonGroup (this);
-      transparency_toggle->addButton (auto_button, auto_opacity);
-      transparency_toggle->addButton (river_button, river_opacity);
-      transparency_toggle->addButton (ocean_button, ocean_opacity);
-      transparency_toggle->addButton (custom_button, custom_opacity);
+      transparency_toggle->addButton (auto_button, static_cast<int>(water_opacity::auto_opacity));
+      transparency_toggle->addButton (river_button, static_cast<int>(water_opacity::river_opacity));
+      transparency_toggle->addButton (ocean_button, static_cast<int>(water_opacity::ocean_opacity));
+      transparency_toggle->addButton (custom_button, static_cast<int>(water_opacity::custom_opacity));
 
       connect ( transparency_toggle, qOverload<int> (&QButtonGroup::buttonClicked)
-              , [&] (int id) { _opacity_mode = id; }
+              , [&] (int id) { _opacity_mode = static_cast<water_opacity>(id); }
               );
 
       opacity_layout->addRow (auto_button);
@@ -180,7 +179,7 @@ namespace noggit
       opacity_layout->addRow (ocean_button);
       opacity_layout->addRow (custom_button);
 
-      transparency_toggle->button (_opacity_mode)->setChecked (true);
+      transparency_toggle->button (static_cast<int>(_opacity_mode))->setChecked (true);
 
       QDoubleSpinBox *opacity_spin = new QDoubleSpinBox (this);
       opacity_spin->setRange (0.f, 1.f);
@@ -350,22 +349,18 @@ namespace noggit
 
     float water::get_opacity_factor() const
     {
-      // values found by experimenting
-      static const float river_opacity_value = 0.0337f;
-      static const float ocean_opacity_value = 0.007f;
-
       switch (_opacity_mode)
       {
       default:
-      case river_opacity:  return river_opacity_value;
-      case ocean_opacity:  return ocean_opacity_value;
-      case custom_opacity: return _custom_opacity_factor;
-      case auto_opacity:
+      case water_opacity::river_opacity:  return river_opacity;
+      case water_opacity::ocean_opacity:  return ocean_opacity;
+      case water_opacity::custom_opacity: return _custom_opacity_factor;
+      case water_opacity::auto_opacity:
       {
         switch (_liquid_type)
         {
-        case 0: return river_opacity_value;
-        case 1: return ocean_opacity_value;
+        case 0: return river_opacity;
+        case 1: return ocean_opacity;
         default:return 1.f; // lava and slime, opacity isn't used
         }
       }
