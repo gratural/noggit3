@@ -285,6 +285,8 @@ private:
   QLabel* _status_fps;
   QLabel* _status_model_instances;
 
+  noggit::bool_toggle_property _auto_update_water_opacity = {true};
+
   noggit::bool_toggle_property _locked_cursor_mode = {false};
   noggit::bool_toggle_property _move_model_to_cursor_position = {true};
   noggit::bool_toggle_property _snap_multi_selection_to_ground = {false};

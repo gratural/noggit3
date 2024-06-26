@@ -4,6 +4,7 @@
 
 #include <noggit/tool_enums.hpp>
 #include <noggit/World.h>
+#include <noggit/ui/checkbox.hpp>
 #include <noggit/ui/slider_spinbox.hpp>
 #include <util/qt/overload.hpp>
 
@@ -17,7 +18,7 @@ namespace noggit
 {
   namespace ui
   {
-    terrain_tool::terrain_tool(QWidget* parent)
+    terrain_tool::terrain_tool(bool_toggle_property* auto_update_water_opacity, QWidget* parent)
       : QWidget(parent)
       , _edit_type (eTerrainType_Linear)
       , _radius(15.0f)
@@ -25,6 +26,7 @@ namespace noggit
       , _inner_radius(0.0f)
       , _vertex_angle (0.0f)
       , _vertex_orientation (0.0f)
+      , _auto_update_water_opacity(auto_update_water_opacity)
       , _cursor_pos(nullptr)
       , _vertex_mode(eVertexMode_Center)
     {
@@ -132,16 +134,18 @@ namespace noggit
       layout->addWidget (_vertex_type_group);
       _vertex_type_group->hide();
 
-      QGroupBox* model_follow_group = new QGroupBox("Models", this);
-      QFormLayout* model_layout(new QFormLayout(model_follow_group));
+      QGroupBox* options_group = new QGroupBox("Options", this);
+      QFormLayout* options_layout(new QFormLayout(options_group));
 
-      _models_follow_ground = new QCheckBox("Follow Ground", this);
-      model_layout->addWidget(_models_follow_ground);
+      _models_follow_ground = new QCheckBox("Models Follow Ground", this);
+      options_layout->addWidget(_models_follow_ground);
 
-      _models_follow_ground_normals = new QCheckBox("Follow Ground Normals", this);
-      model_layout->addWidget(_models_follow_ground_normals);
+      _models_follow_ground_normals = new QCheckBox("Models Follow Ground Normals", this);
+      options_layout->addWidget(_models_follow_ground_normals);
 
-      layout->addWidget(model_follow_group);
+      options_layout->addRow(new checkbox("Auto update water opacity", auto_update_water_opacity, this));
+
+      layout->addWidget(options_group);
 
       connect ( _type_button_group, qOverload<int> (&QButtonGroup::buttonClicked)
               , [&] (int id)
@@ -196,6 +200,11 @@ namespace noggit
         if (_models_follow_ground->isChecked())
         {
           world->raise_models_terrain_brush(pos, dt * _speed.get(), _radius.get(), _edit_type, _inner_radius.get(), _models_follow_ground_normals->isChecked());
+        }
+
+        if (_auto_update_water_opacity->get())
+        {
+          world->update_water_opacity(pos, _radius.get());
         }
       }
       else

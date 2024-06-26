@@ -211,7 +211,7 @@ void MapView::createGUI()
 #endif
 
   _terrain_tool_dock = new QDockWidget("Raise / Lower", this);
-  terrainTool = new noggit::ui::terrain_tool(_terrain_tool_dock);
+  terrainTool = new noggit::ui::terrain_tool(&_auto_update_water_opacity, _terrain_tool_dock);
   _terrain_tool_dock->setWidget(terrainTool);
   _tool_properties_docks.insert(_terrain_tool_dock);
 

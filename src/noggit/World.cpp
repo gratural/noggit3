@@ -2631,6 +2631,14 @@ void World::autoGenWaterTrans(const tile_index& pos, float factor)
   for_tile_at(pos, [&](MapTile* tile) { tile->Water.autoGen(factor); });
 }
 
+void World::update_water_opacity(math::vector_3d const& pos, float radius)
+{
+  for_all_chunks_in_range(pos, radius, [&](MapChunk* chunk)
+  {
+    chunk->liquid_chunk()->auto_update_water_opacity(chunk);
+    return true;
+  });
+}
 
 void World::fixAllGaps()
 {

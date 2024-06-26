@@ -352,7 +352,7 @@ public:
   void setWaterType(const tile_index& pos, int type, int layer);
   int getWaterType(const tile_index& tile, int layer);
   void autoGenWaterTrans(const tile_index&, float factor);
-
+  void update_water_opacity(math::vector_3d const& pos, float radius);
 
   void fixAllGaps();
 

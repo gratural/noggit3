@@ -279,6 +279,24 @@ void liquid_chunk::autoGen(MapChunk *chunk, float factor)
   }
   update_layers();
 }
+
+void liquid_chunk::auto_update_water_opacity(MapChunk* chunk)
+{
+  for (liquid_layer& layer : _layers)
+  {
+    if (layer.liquid_type() == 0)
+    {
+      layer.update_opacity(chunk, noggit::river_opacity);
+    }
+    else if (layer.liquid_type() == 1)
+    {
+      layer.update_opacity(chunk, noggit::ocean_opacity);
+    }
+  }
+
+  update_layers();
+}
+
 void liquid_chunk::update_underground_vertices_depth(MapChunk *chunk)
 {
   for (liquid_layer& layer : _layers)

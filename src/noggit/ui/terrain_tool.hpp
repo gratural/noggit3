@@ -4,6 +4,7 @@
 
 #include <math/trig.hpp>
 #include <math/vector_3d.hpp>
+#include <noggit/bool_toggle_property.hpp>
 #include <noggit/float_property.hpp>
 #include <noggit/tool_enums.hpp>
 
@@ -26,7 +27,7 @@ namespace noggit
       Q_OBJECT
 
     public:
-      terrain_tool(QWidget* parent = nullptr);
+      terrain_tool(bool_toggle_property* auto_update_water_opacity, QWidget* parent = nullptr);
 
       void changeTerrain (World*, math::vector_3d const& pos, float dt);
 
@@ -70,6 +71,8 @@ namespace noggit
       float_property _inner_radius;
       math::degrees _vertex_angle;
       math::degrees _vertex_orientation;
+
+      bool_toggle_property* _auto_update_water_opacity;
 
       math::vector_3d* _cursor_pos;
 

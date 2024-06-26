@@ -57,6 +57,7 @@ public:
   void intersect(math::ray const& ray, selection_result* results);
 
   void autoGen(MapChunk* chunk, float factor);
+  void auto_update_water_opacity(MapChunk* chunk);
   void update_underground_vertices_depth(MapChunk* chunk);
   void CropWater(MapChunk* chunkTerrain);
 
