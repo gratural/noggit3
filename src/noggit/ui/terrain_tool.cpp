@@ -70,13 +70,13 @@ namespace noggit
       QGroupBox* settings_group = new QGroupBox("Edit Mode", this);
       QFormLayout* settings_layout(new QFormLayout(settings_group));
 
-      _only_affect_ground_below_cursor = new QCheckBox("Below cursor", this);
-      _only_affect_ground_below_cursor->setToolTip("Only affect the ground under the cursor height (or over when lowering the ground)");
-      settings_layout->addWidget(_only_affect_ground_below_cursor);
+      auto only_affect_ground_below_cursor_cb = new checkbox("Below cursor", &_only_affect_ground_below_cursor, this);
+      only_affect_ground_below_cursor_cb->setToolTip("Only affect the ground under the cursor height (or over when lowering the ground)");
+      settings_layout->addWidget(only_affect_ground_below_cursor_cb);
 
-      _only_affect_ground_above_cursor = new QCheckBox("Above cursor", this);
-      _only_affect_ground_above_cursor->setToolTip("Only affect the ground above the cursor height (or under when lowering the ground)");
-      settings_layout->addWidget(_only_affect_ground_above_cursor);
+      auto only_affect_ground_above_cursor_cb = new checkbox("Above cursor", &_only_affect_ground_above_cursor, this);
+      only_affect_ground_above_cursor_cb->setToolTip("Only affect the ground above the cursor height (or under when lowering the ground)");
+      settings_layout->addWidget(only_affect_ground_above_cursor_cb);
 
       layout->addWidget(settings_group);
 
@@ -137,12 +137,9 @@ namespace noggit
       QGroupBox* options_group = new QGroupBox("Options", this);
       QFormLayout* options_layout(new QFormLayout(options_group));
 
-      _models_follow_ground = new QCheckBox("Models Follow Ground", this);
-      options_layout->addWidget(_models_follow_ground);
 
-      _models_follow_ground_normals = new QCheckBox("Models Follow Ground Normals", this);
-      options_layout->addWidget(_models_follow_ground_normals);
-
+      options_layout->addRow(new checkbox("Models follow ground", &_models_follow_ground, this));
+      options_layout->addRow(new checkbox("Models follow ground normals", &_models_follow_ground_normals, this));
       options_layout->addRow(new checkbox("Auto update water opacity", auto_update_water_opacity, this));
 
       layout->addWidget(options_group);
@@ -186,20 +183,20 @@ namespace noggit
       {
         terrain_edit_mode edit_mode = terrain_edit_mode::normal;
 
-        if (_only_affect_ground_below_cursor->isChecked())
+        if (_only_affect_ground_below_cursor.get())
         {
           edit_mode = terrain_edit_mode::only_below_cursor;
         }
-        else if(_only_affect_ground_above_cursor->isChecked())
+        else if(_only_affect_ground_above_cursor.get())
         {
           edit_mode = terrain_edit_mode::only_above_cursor;
         }
 
         world->changeTerrain(pos, dt * _speed.get(), _radius.get(), _edit_type, _inner_radius.get(), edit_mode);
 
-        if (_models_follow_ground->isChecked())
+        if (_models_follow_ground.get())
         {
-          world->raise_models_terrain_brush(pos, dt * _speed.get(), _radius.get(), _edit_type, _inner_radius.get(), _models_follow_ground_normals->isChecked());
+          world->raise_models_terrain_brush(pos, dt * _speed.get(), _radius.get(), _edit_type, _inner_radius.get(), _models_follow_ground_normals.get());
         }
 
         if (_auto_update_water_opacity->get())

@@ -9,7 +9,6 @@
 #include <noggit/tool_enums.hpp>
 
 #include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QDial>
 #include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QGroupBox>
@@ -72,6 +71,12 @@ namespace noggit
       math::degrees _vertex_angle;
       math::degrees _vertex_orientation;
 
+      bool_toggle_property _only_affect_ground_below_cursor = { false };
+      bool_toggle_property _only_affect_ground_above_cursor = { false };
+
+      bool_toggle_property _models_follow_ground = { false };
+      bool_toggle_property _models_follow_ground_normals = { false };
+
       bool_toggle_property* _auto_update_water_opacity;
 
       math::vector_3d* _cursor_pos;
@@ -79,20 +84,13 @@ namespace noggit
       int _vertex_mode;
 
       // UI stuff:
-
       QButtonGroup* _type_button_group;
       QButtonGroup* _vertex_button_group;
       QGroupBox* _speed_box;
       QGroupBox* _vertex_type_group;
 
-      QCheckBox* _only_affect_ground_below_cursor;
-      QCheckBox* _only_affect_ground_above_cursor;
-
       QSlider* _angle_slider;
       QDial* _orientation_dial;
-
-      QCheckBox* _models_follow_ground;
-      QCheckBox* _models_follow_ground_normals;
     };
   }
 }
