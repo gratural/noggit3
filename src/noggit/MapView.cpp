@@ -119,6 +119,7 @@ void MapView::setToolPropertyWidgetVisibility(editing_mode mode)
     break;
   case editing_mode::flatten_blur:
     _flatten_blur_dock->setVisible(!ui_hidden);
+    _current_tool = flattenTool;
     break;
   case editing_mode::paint:
     _texturing_dock->setVisible(!ui_hidden);
@@ -2129,19 +2130,6 @@ void MapView::tick (float dt)
             }
           }
           break;
-        case editing_mode::flatten_blur:
-          if (_display_mode == display_mode::in_3D && !underMap)
-          {
-            if (_mod_shift_down)
-            {
-              flattenTool->flatten(_world.get(), _cursor_pos, dt);
-            }
-            else if (_mod_ctrl_down)
-            {
-              flattenTool->blur(_world.get(), _cursor_pos, dt);
-            }
-          }
-          break;
         case editing_mode::paint:
           if (_mod_shift_down && _mod_ctrl_down && _mod_alt_down)
           {
@@ -3181,9 +3169,6 @@ void MapView::mouseMoveEvent (QMouseEvent* event)
     case editing_mode::ground:
       terrainTool->change_radius(relative_movement.dx() / XSENS);
       break;
-    case editing_mode::flatten_blur:
-      flattenTool->change_radius(relative_movement.dx() / XSENS);
-      break;
     case editing_mode::paint:
       texturingTool->change_radius(relative_movement.dx() / XSENS);
       break;
@@ -3202,9 +3187,6 @@ void MapView::mouseMoveEvent (QMouseEvent* event)
     {
     case editing_mode::ground:
       terrainTool->change_speed(relative_movement.dx() / 30.0f);
-      break;
-    case editing_mode::flatten_blur:
-      flattenTool->change_speed(relative_movement.dx() / 30.0f);
       break;
     case editing_mode::paint:
       texturingTool->change_pressure(relative_movement.dx() / 300.0f);
@@ -3357,22 +3339,6 @@ void MapView::wheelEvent (QWheelEvent* event)
     else if (_mod_shift_down)
     {
       texturingTool->change_spray_pressure (delta_for_range (10.f));
-    }
-  }
-  else if (terrainMode == editing_mode::flatten_blur)
-  {
-    if (_mod_alt_down)
-    {
-      flattenTool->changeOrientation (delta_for_range (360.f));
-    }
-    else if (_mod_shift_down)
-    {
-      flattenTool->changeAngle (delta_for_range (89.f));
-    }
-    else if (_mod_space_down)
-    {
-      //! \note not actual range
-      flattenTool->changeHeight (delta_for_range (40.f));
     }
   }
   else if (terrainMode == editing_mode::water)

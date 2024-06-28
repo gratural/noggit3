@@ -16,7 +16,7 @@ namespace noggit
   namespace ui
   {
     flatten_blur_tool::flatten_blur_tool(QWidget* parent)
-      : QWidget(parent)
+      : noggit_tool(parent)
       , _radius(10.0f)
       , _speed(2.0f)
       , _angle(45.0f)
@@ -169,6 +169,57 @@ namespace noggit
                     _lock_pos.z = v;
                   }
               );
+    }
+
+    void flatten_blur_tool::tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world)
+    {
+      if (cursor_under_map)
+      {
+        return;
+      }
+
+      if (_left_mouse_button)
+      {
+        if (_mod_shift_down)
+        {
+          flatten(world, cursor_pos, dt);
+        }
+        else if (_mod_ctrl_down)
+        {
+          blur(world, cursor_pos, dt);
+        }
+      }
+    }
+
+    void flatten_blur_tool::mouse_move_event(QLineF const& relative_movement)
+    {
+      if (_left_mouse_button)
+      {
+        if (_mod_alt_down)
+        {
+          change_radius(relative_movement.dx() / mouse_sensibility);
+        }
+        if (_mod_space_down)
+        {
+          change_speed(relative_movement.dx() / (mouse_sensibility * 2.f));
+        }
+      }
+    }
+
+    void flatten_blur_tool::wheel_event(QWheelEvent* event)
+    {
+      if (_mod_alt_down)
+      {
+        changeOrientation(scroll_wheel_delta_for_range(event, 360.f));
+      }
+      else if (_mod_shift_down)
+      {
+        changeAngle(scroll_wheel_delta_for_range(event, 89.f));
+      }
+      else if (_mod_space_down)
+      {
+        changeHeight(scroll_wheel_delta_for_range(event, 40.f));
+      }
     }
 
     void flatten_blur_tool::flatten (World* world, math::vector_3d const& cursor_pos, float dt)

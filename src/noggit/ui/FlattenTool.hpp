@@ -4,6 +4,7 @@
 
 #include <noggit/float_property.hpp>
 #include <noggit/tool_enums.hpp>
+#include <noggit/ui/noggit_tool.hpp>
 #include <math/vector_3d.hpp>
 
 #include <QtWidgets/QButtonGroup>
@@ -19,10 +20,14 @@ namespace noggit
 {
   namespace ui
   {
-    class flatten_blur_tool : public QWidget
+    class flatten_blur_tool : public noggit_tool
     {
     public:
       flatten_blur_tool(QWidget* parent = nullptr);
+
+      virtual void tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world) override;
+      virtual void mouse_move_event(QLineF const& relative_movement) override;
+      virtual void wheel_event(QWheelEvent* event) override;
 
       void flatten (World* world, math::vector_3d const& cursor_pos, float dt);
       void blur (World* world, math::vector_3d const& cursor_pos, float dt);
