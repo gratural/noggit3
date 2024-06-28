@@ -24,7 +24,7 @@ namespace noggit
   namespace ui
   {
     clearing_tool::clearing_tool(QWidget* parent)
-      : QWidget(parent)
+      : noggit_tool(parent)
       , _radius(15.0f)
       , _texture_threshold(1.0f)
       , _clear_height(false)
@@ -40,7 +40,6 @@ namespace noggit
       , _clear_impassible_flag(false)
       , _clear_holes(false)
     {
-
       auto layout (new QFormLayout(this));
 
       auto clearing_option_group(new QGroupBox("Clear", this));
@@ -94,47 +93,64 @@ namespace noggit
       setMinimumWidth(sizeHint().width());
     }
 
-    void clearing_tool::clear(World* world, math::vector_3d const& pos)
+    void clearing_tool::tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world)
     {
-      // Chunk
-      if (_mode == 0)
+      if (cursor_under_map)
       {
-        world->clear_on_chunks(pos, _radius.get()
-          , _clear_height.get()
-          , _clear_textures.get()
-          , _clear_duplicate_textures.get()
-          , _clear_textures_under_threshold.get()
-          , _texture_threshold.get()
-          , _clear_texture_flags.get()
-          , _clear_liquids.get()
-          , _clear_m2s.get()
-          , _clear_wmos.get()
-          , _clear_shadows.get()
-          , _clear_mccv.get()
-          , _clear_impassible_flag.get()
-          , _clear_holes.get()
-          );
+        return;
       }
-      // Adt
-      else if (_mode == 1)
+
+      if (_left_mouse_button && _mod_shift_down)
       {
-        world->clear_on_tiles(pos, _radius.get()
-          , _clear_height.get()
-          , _clear_textures.get()
-          , _clear_duplicate_textures.get()
-          , _clear_textures_under_threshold.get()
-          , _texture_threshold.get()
-          , _clear_texture_flags.get()
-          , _clear_liquids.get()
-          , _clear_m2s.get()
-          , _clear_wmos.get()
-          , _clear_shadows.get()
-          , _clear_mccv.get()
-          , _clear_impassible_flag.get()
-          , _clear_holes.get()
-          );
+        // Chunk
+        if (_mode == 0)
+        {
+          world->clear_on_chunks( cursor_pos, _radius.get()
+                                , _clear_height.get()
+                                , _clear_textures.get()
+                                , _clear_duplicate_textures.get()
+                                , _clear_textures_under_threshold.get()
+                                , _texture_threshold.get()
+                                , _clear_texture_flags.get()
+                                , _clear_liquids.get()
+                                , _clear_m2s.get()
+                                , _clear_wmos.get()
+                                , _clear_shadows.get()
+                                , _clear_mccv.get()
+                                , _clear_impassible_flag.get()
+                                , _clear_holes.get()
+                                );
+        }
+        // Adt
+        else if (_mode == 1)
+        {
+          world->clear_on_tiles( cursor_pos, _radius.get()
+                               , _clear_height.get()
+                               , _clear_textures.get()
+                               , _clear_duplicate_textures.get()
+                               , _clear_textures_under_threshold.get()
+                               , _texture_threshold.get()
+                               , _clear_texture_flags.get()
+                               , _clear_liquids.get()
+                               , _clear_m2s.get()
+                               , _clear_wmos.get()
+                               , _clear_shadows.get()
+                               , _clear_mccv.get()
+                               , _clear_impassible_flag.get()
+                               , _clear_holes.get()
+                               );
+        }
       }
     }
+
+    void clearing_tool::mouse_move_event(QLineF const& relative_movement)
+    {
+      if (_left_mouse_button && _mod_alt_down)
+      {
+        change_radius(relative_movement.dx() / mouse_sensibility);
+      }
+    }
+
 
     QSize clearing_tool::sizeHint() const
     {

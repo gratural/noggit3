@@ -4,22 +4,20 @@
 
 #include <noggit/bool_toggle_property.hpp>
 #include <noggit/float_property.hpp>
+#include <noggit/ui/noggit_tool.hpp>
 #include <math/vector_3d.hpp>
-
-#include <QtWidgets/QWidget>
-
-class World;
 
 namespace noggit
 {
   namespace ui
   {
-    class clearing_tool : public QWidget
+    class clearing_tool : public noggit_tool
     {
     public:
       clearing_tool(QWidget* parent = nullptr);
 
-      void clear(World* world, math::vector_3d const& pos);
+      virtual void tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world) override;
+      virtual void mouse_move_event(QLineF const& relative_movement) override;
 
       void change_radius(float change) { _radius.change(change); }
       float radius() const { return _radius.get(); }

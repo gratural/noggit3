@@ -142,6 +142,7 @@ void MapView::setToolPropertyWidgetVisibility(editing_mode mode)
 #endif
   case editing_mode::clearing:
     _clearing_tool_dock->setVisible(!ui_hidden);
+    _current_tool = _clearing_tool;
     break;
   case editing_mode::chunk_mover:
     _chunk_mover_dock->setVisible(!ui_hidden);
@@ -2260,12 +2261,6 @@ void MapView::tick (float dt)
             }
           }
           break;
-        case editing_mode::clearing:
-          if (!underMap && _mod_shift_down)
-          {
-            _clearing_tool->clear(_world.get(), _cursor_pos);
-          }
-          break;
         }
       }
     }
@@ -3224,9 +3219,6 @@ void MapView::mouseMoveEvent (QMouseEvent* event)
       break;
     case editing_mode::mccv:
       shaderTool->change_radius(relative_movement.dx() / XSENS);
-      break;
-    case editing_mode::clearing:
-      _clearing_tool->change_radius(relative_movement.dx() / XSENS);
       break;
     case editing_mode::chunk_mover:
       _chunk_mover_ui->change_radius(relative_movement.dx() / XSENS);
