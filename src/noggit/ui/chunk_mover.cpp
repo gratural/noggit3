@@ -6,6 +6,7 @@
 #include <noggit/ui/slider_spinbox.hpp>
 
 #include <noggit/map_chunk_headers.hpp>
+#include <noggit/World.h>
 
 #include <QFormLayout>
 #include <QGroupBox>
@@ -13,7 +14,7 @@
 namespace noggit::ui
 {
   chunk_mover_ui::chunk_mover_ui(noggit::chunk_mover* chunk_mover, QWidget* parent)
-    : QWidget(parent)
+    : noggit_tool(parent)
     , _chunk_mover(chunk_mover)
     , _override_height(true)
     , _override_textures(true)
@@ -61,6 +62,46 @@ namespace noggit::ui
     param_layout->addRow(new checkbox("Clear Models", &_clear_models, param_group));
 
     layout->addRow(param_group);
+  }
+
+  void chunk_mover_ui::tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world)
+  {
+    if (_left_mouse_button)
+    {
+      bool square_brush = use_square_brush();
+
+      if (_mod_shift_down)
+      {
+        world->select_chunks_in_range(cursor_pos, radius(), square_brush, false, *_chunk_mover);
+      }
+      if (_mod_ctrl_down)
+      {
+        world->select_chunks_in_range(cursor_pos, radius(), square_brush, true, *_chunk_mover);
+      }
+    }
+
+    // disable preview when selecting/deselecting chunks
+    if (_mod_shift_down || _mod_ctrl_down)
+    {
+      _chunk_mover->disable_preview();
+    }
+    else
+    {
+      _chunk_mover->enable_preview();
+    }
+  }
+
+  void chunk_mover_ui::mouse_move_event(QLineF const& relative_movement)
+  {
+    if (_left_mouse_button && _mod_alt_down)
+    {
+      change_radius(relative_movement.dx() / mouse_sensibility);
+    }
+  }
+
+  void chunk_mover_ui::wheel_event(QWheelEvent* event)
+  {
+    change_height_offset(scroll_wheel_delta_for_range(event, 10.f));
   }
 
   void chunk_mover_ui::change_height_offset(float change)

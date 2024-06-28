@@ -146,6 +146,7 @@ void MapView::setToolPropertyWidgetVisibility(editing_mode mode)
     break;
   case editing_mode::chunk_mover:
     _chunk_mover_dock->setVisible(!ui_hidden);
+    _current_tool = _chunk_mover_ui;
     break;
   }
 }
@@ -1906,19 +1907,6 @@ void MapView::tick (float dt)
   }
 
 
-  if (terrainMode == editing_mode::chunk_mover)
-  {
-    // disable preview when selecting/deselecting chunks
-    if (_mod_shift_down || _mod_ctrl_down)
-    {
-      _chunk_mover.disable_preview();
-    }
-    else
-    {
-      _chunk_mover.enable_preview();
-    }
-  }
-
     math::degrees yaw (-_camera.yaw()._);
 
     math::vector_3d dir(1.0f, 0.0f, 0.0f);
@@ -2099,21 +2087,6 @@ void MapView::tick (float dt)
         _rotation_editor_need_update = true;
       }
     }
-
-    if (terrainMode == editing_mode::chunk_mover && leftMouse)
-    {
-      bool square_brush = _chunk_mover_ui->use_square_brush();
-
-      if (_mod_shift_down)
-      {
-        _world->select_chunks_in_range(_cursor_pos, _chunk_mover_ui->radius(), square_brush, false, _chunk_mover);
-      }
-      if (_mod_ctrl_down)
-      {
-        _world->select_chunks_in_range(_cursor_pos, _chunk_mover_ui->radius(), square_brush, true, _chunk_mover);
-      }
-    }
-
 
     for (auto& selection : currentSelection)
     {
@@ -3220,9 +3193,6 @@ void MapView::mouseMoveEvent (QMouseEvent* event)
     case editing_mode::mccv:
       shaderTool->change_radius(relative_movement.dx() / XSENS);
       break;
-    case editing_mode::chunk_mover:
-      _chunk_mover_ui->change_radius(relative_movement.dx() / XSENS);
-      break;
     }
   }
 
@@ -3421,14 +3391,6 @@ void MapView::wheelEvent (QWheelEvent* event)
       guiWater->change_height (delta_for_range (40.f));
     }
   }
-  else if (terrainMode == editing_mode::chunk_mover)
-  {
-    if (_mod_space_down)
-    {
-      _chunk_mover_ui->change_height_offset(delta_for_range(10.f));
-    }
-  }
-
   if (_current_tool)
   {
     _current_tool->wheel_event(event);
