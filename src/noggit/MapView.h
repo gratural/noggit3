@@ -12,6 +12,7 @@
 #include <noggit/bool_toggle_property.hpp>
 #include <noggit/camera.hpp>
 #include <noggit/tool_enums.hpp>
+#include <noggit/ui/noggit_tool.hpp>
 #include <noggit/ui/ObjectEditor.h>
 #include <noggit/ui/uid_fix_window.hpp>
 #include <noggit/unsigned_int_property.hpp>
@@ -350,4 +351,6 @@ private:
   QDockWidget* _clearing_tool_dock;
   noggit::ui::chunk_mover_ui* _chunk_mover_ui;
   QDockWidget* _chunk_mover_dock;
+
+  noggit::ui::noggit_tool* _current_tool = nullptr;
 };

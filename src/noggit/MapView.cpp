@@ -106,6 +106,12 @@ void MapView::setToolPropertyWidgetVisibility(editing_mode mode)
     dock->hide();
   }
 
+  if (_current_tool)
+  {
+    _current_tool->reset_input_states();
+    _current_tool = nullptr;
+  }
+
   switch (mode)
   {
   case editing_mode::ground:
@@ -1876,6 +1882,13 @@ void MapView::tick (float dt)
     update_cursor_pos();
   }
 
+  bool underMap = _world->isUnderMap(_cursor_pos);
+
+  if (_current_tool)
+  {
+    _current_tool->tick(dt, _cursor_pos, underMap, _world.get());
+  }
+
   if (_tablet_active && NoggitSettings.value ("tablet/enabled", false).toBool())
   {
     switch (terrainMode)
@@ -2111,8 +2124,6 @@ void MapView::tick (float dt)
 #endif
       if (leftMouse && selection.which() == eEntry_LiquidLayer && terrainMode == editing_mode::water)
       {
-        bool underMap = _world->isUnderMap(_cursor_pos);
-
         if (_display_mode == display_mode::in_3D && !underMap)
         {
           if (_mod_shift_down)
@@ -3015,6 +3026,11 @@ void MapView::keyPressEvent (QKeyEvent *event)
   {
     freelook = true;
   }
+
+  if (_current_tool)
+  {
+    _current_tool->key_press_event(event);
+  }
 }
 
 void MapView::keyReleaseEvent (QKeyEvent* event)
@@ -3084,6 +3100,10 @@ void MapView::keyReleaseEvent (QKeyEvent* event)
     freelook = false;
   }
 
+  if (_current_tool)
+  {
+    _current_tool->key_release_event(event);
+  }
 }
 
 void MapView::focusOutEvent (QFocusEvent*)
@@ -3112,6 +3132,11 @@ void MapView::focusOutEvent (QFocusEvent*)
   MoveObj = false;
   look = false;
   freelook = false;
+
+  if (_current_tool)
+  {
+    _current_tool->reset_input_states();
+  }
 }
 
 void MapView::enterEvent(QEvent*)
@@ -3239,6 +3264,11 @@ void MapView::mouseMoveEvent (QMouseEvent* event)
     updown = (relative_movement.dy() / YSENS);
   }
 
+  if (_current_tool)
+  {
+    _current_tool->mouse_move_event(relative_movement);
+  }
+
   _last_mouse_pos = event->pos();
 }
 
@@ -3314,6 +3344,11 @@ void MapView::mousePressEvent(QMouseEvent* event)
   else if (rightMouse)
   {
     look = true;
+  }
+
+  if (_current_tool)
+  {
+    _current_tool->mouse_press_event(event);
   }
 }
 
@@ -3401,6 +3436,11 @@ void MapView::wheelEvent (QWheelEvent* event)
       _chunk_mover_ui->change_height_offset(delta_for_range(10.f));
     }
   }
+
+  if (_current_tool)
+  {
+    _current_tool->wheel_event(event);
+  }
 }
 
 void MapView::mouseReleaseEvent (QMouseEvent* event)
@@ -3430,6 +3470,11 @@ void MapView::mouseReleaseEvent (QMouseEvent* event)
   case Qt::MiddleButton:
     MoveObj = false;
     break;
+  }
+
+  if (_current_tool)
+  {
+    _current_tool->mouse_release_event(event);
   }
 }
 
