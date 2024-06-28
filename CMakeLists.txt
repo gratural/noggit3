@@ -270,6 +270,7 @@ set ( noggit_ui_sources
       src/noggit/ui/Help.cpp
       src/noggit/ui/HelperModels.cpp
       src/noggit/ui/ModelImport.cpp
+      src/noggit/ui/noggit_tool.cpp
       src/noggit/ui/ObjectEditor.cpp
       src/noggit/ui/RotationEditor.cpp
       src/noggit/ui/slider_spinbox.cpp
@@ -385,6 +386,7 @@ set ( noggit_ui_headers
       src/noggit/ui/Help.h
       src/noggit/ui/HelperModels.h
       src/noggit/ui/ModelImport.h
+      src/noggit/ui/noggit_tool.hpp
       src/noggit/ui/ObjectEditor.h
       src/noggit/ui/RotationEditor.h
       src/noggit/ui/slider_spinbox.hpp
