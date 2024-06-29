@@ -58,8 +58,6 @@ namespace noggit
       float radius() const { return _radius.get(); }
       float inner_radius_ratio() const { return _inner_radius.get();  }
 
-      void storeCursorPos (math::vector_3d* cursor_pos) { _cursor_pos = cursor_pos; }
-
       QSize sizeHint() const override;
 
       eTerrainType _edit_type;
@@ -83,8 +81,6 @@ namespace noggit
       bool_toggle_property _models_follow_ground_normals = { false };
 
       bool_toggle_property* _auto_update_water_opacity;
-
-      math::vector_3d* _cursor_pos;
 
       int _vertex_mode;
 

@@ -420,9 +420,6 @@ void MapView::createGUI()
     , [this](int area_id) { changeZoneIDValue(area_id); }
   );
 
-  terrainTool->storeCursorPos(&_cursor_pos);
-
-
   for (auto dock : _tool_properties_docks)
   {
     _main_window->addDockWidget(Qt::RightDockWidgetArea, dock);

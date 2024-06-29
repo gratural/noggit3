@@ -27,7 +27,6 @@ namespace noggit
       , _vertex_angle (0.0f)
       , _vertex_orientation (0.0f)
       , _auto_update_water_opacity(auto_update_water_opacity)
-      , _cursor_pos(nullptr)
       , _vertex_mode(eVertexMode_Center)
     {
 
