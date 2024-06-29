@@ -116,6 +116,7 @@ void MapView::setToolPropertyWidgetVisibility(editing_mode mode)
   {
   case editing_mode::ground:
     _terrain_tool_dock->setVisible(!ui_hidden);
+    _current_tool = terrainTool;
     break;
   case editing_mode::flatten_blur:
     _flatten_blur_dock->setVisible(!ui_hidden);
@@ -2117,19 +2118,6 @@ void MapView::tick (float dt)
 
         switch (terrainMode)
         {
-        case editing_mode::ground:
-          if (_display_mode == display_mode::in_3D && !underMap)
-          {
-            if (_mod_shift_down)
-            {
-              terrainTool->changeTerrain(_world.get(), _cursor_pos, 7.5f * dt);
-            }
-            else if (_mod_ctrl_down)
-            {
-              terrainTool->changeTerrain(_world.get(), _cursor_pos, -7.5f * dt);
-            }
-          }
-          break;
         case editing_mode::paint:
           if (_mod_shift_down && _mod_ctrl_down && _mod_alt_down)
           {
@@ -3138,37 +3126,16 @@ void MapView::mouseMoveEvent (QMouseEvent* event)
 
   if (rightMouse && _mod_alt_down)
   {
-    if (terrainMode == editing_mode::ground)
-    {
-      terrainTool->change_inner_radius(relative_movement.dx() / 100.0f);
-    }
     if (terrainMode == editing_mode::paint)
     {
       texturingTool->change_hardness(relative_movement.dx() / 300.0f);
     }
   }
 
-  if (rightMouse && _mod_shift_down)
-  {
-    if (terrainMode == editing_mode::ground)
-    {
-      terrainTool->moveVertices (_world.get(), -relative_movement.dy() / YSENS);
-    }
-  }
-
-
-  if (rightMouse && _mod_space_down)
-  {
-    terrainTool->setOrientRelativeTo (_world.get(), _cursor_pos);
-  }
-
   if (leftMouse && _mod_alt_down)
   {
 	switch (terrainMode)
     {
-    case editing_mode::ground:
-      terrainTool->change_radius(relative_movement.dx() / XSENS);
-      break;
     case editing_mode::paint:
       texturingTool->change_radius(relative_movement.dx() / XSENS);
       break;
@@ -3185,9 +3152,6 @@ void MapView::mouseMoveEvent (QMouseEvent* event)
   {
     switch (terrainMode)
     {
-    case editing_mode::ground:
-      terrainTool->change_speed(relative_movement.dx() / 30.0f);
-      break;
     case editing_mode::paint:
       texturingTool->change_pressure(relative_movement.dx() / 300.0f);
       break;
@@ -3315,18 +3279,7 @@ void MapView::wheelEvent (QWheelEvent* event)
       }
     );
 
-  if (terrainMode == editing_mode::ground)
-  {
-    if (_mod_shift_down)
-    {
-      terrainTool->changeAngle (delta_for_range (178.f));
-    }
-    else if (_mod_alt_down)
-    {
-      terrainTool->changeOrientation (delta_for_range (360.f));
-    }
-  }
-  else if (terrainMode == editing_mode::paint)
+  if (terrainMode == editing_mode::paint)
   {
     if (_mod_space_down)
     {

@@ -19,7 +19,7 @@ namespace noggit
   namespace ui
   {
     terrain_tool::terrain_tool(bool_toggle_property* auto_update_water_opacity, QWidget* parent)
-      : QWidget(parent)
+      : noggit_tool(parent)
       , _edit_type (eTerrainType_Linear)
       , _radius(15.0f)
       , _speed(2.0f)
@@ -85,7 +85,7 @@ namespace noggit
       QFormLayout* radius_layout (new QFormLayout (radius_group));
 
       radius_layout->addRow(new slider_spinbox("Outer", &_radius, 0.f, 1000.f, 2, radius_group));
-      radius_layout->addRow(new slider_spinbox("Innder", &_inner_radius, 0.f, 1.f, 2, radius_group));
+      radius_layout->addRow(new slider_spinbox("Inner", &_inner_radius, 0.f, 1.f, 2, radius_group));
 
       layout->addWidget (radius_group);
 
@@ -176,8 +176,76 @@ namespace noggit
       setMinimumWidth(sizeHint().width());
     }
 
-    void terrain_tool::changeTerrain
-      (World* world, math::vector_3d const& pos, float dt)
+    void terrain_tool::tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world)
+    {
+      if (_vertices_height_dt != 0.f)
+      {
+        moveVertices(world, _vertices_height_dt);
+        _vertices_height_dt = 0.f;
+      }
+
+      if (cursor_under_map)
+      {
+        return;
+      }
+
+      if (_left_mouse_button)
+      {
+        if (_mod_shift_down)
+        {
+          changeTerrain(world, cursor_pos, 7.5f * dt);
+        }
+        else if (_mod_ctrl_down)
+        {
+          changeTerrain(world, cursor_pos, -7.5f * dt);
+        }
+      }
+
+      if (_right_mouse_button && _mod_space_down && _edit_type == eTerrainType_Vertex)
+      {
+        setOrientRelativeTo(world, cursor_pos);
+      }
+    }
+
+    void terrain_tool::mouse_move_event(QLineF const& relative_movement)
+    {
+      if (_left_mouse_button)
+      {
+        if (_mod_alt_down)
+        {
+          change_radius(relative_movement.dx() / mouse_sensibility);
+        }
+        if (_mod_space_down)
+        {
+          change_speed(relative_movement.dx() / (mouse_sensibility * 2.f));
+        }
+      }
+      if (_right_mouse_button)
+      {
+        if (_mod_shift_down && _edit_type == eTerrainType_Vertex)
+        {
+          _vertices_height_dt = -relative_movement.dy() / mouse_sensibility;
+        }
+        if (_mod_alt_down)
+        {
+          change_inner_radius(relative_movement.dx() / (mouse_sensibility * 15.f));
+        }
+      }
+    }
+
+    void terrain_tool::wheel_event(QWheelEvent* event)
+    {
+      if (_mod_alt_down)
+      {
+        changeOrientation(scroll_wheel_delta_for_range(event, 360.f));
+      }
+      else if (_mod_shift_down)
+      {
+        changeAngle(scroll_wheel_delta_for_range(event, 178.f));
+      }
+    }
+
+    void terrain_tool::changeTerrain(World* world, math::vector_3d const& pos, float dt)
     {
       if(_edit_type != eTerrainType_Vertex)
       {

@@ -7,6 +7,7 @@
 #include <noggit/bool_toggle_property.hpp>
 #include <noggit/float_property.hpp>
 #include <noggit/tool_enums.hpp>
+#include <noggit/ui/noggit_tool.hpp>
 
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QDial>
@@ -21,12 +22,16 @@ namespace noggit
 {
   namespace ui
   {
-    class terrain_tool : public QWidget
+    class terrain_tool : public noggit_tool
     {
       Q_OBJECT
 
     public:
       terrain_tool(bool_toggle_property* auto_update_water_opacity, QWidget* parent = nullptr);
+
+      virtual void tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world) override;
+      virtual void mouse_move_event(QLineF const& relative_movement) override;
+      virtual void wheel_event(QWheelEvent* event) override;
 
       void changeTerrain (World*, math::vector_3d const& pos, float dt);
 
@@ -82,6 +87,8 @@ namespace noggit
       math::vector_3d* _cursor_pos;
 
       int _vertex_mode;
+
+      float _vertices_height_dt = 0.f;
 
       // UI stuff:
       QButtonGroup* _type_button_group;
