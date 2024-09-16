@@ -256,8 +256,8 @@ namespace noggit
       int pz = chunk->py + chunk->mt->index.z * 16;
 
       math::vector_2i pos = { px, pz };
-      math::vector_2i const& size = _target_info.has_value() > 0 ? _target_info->size : _selection_info->size;
-      std::unordered_map<int, bool> const& grid = _target_info.has_value() > 0 ? _target_info->grid_data : _selection_info->grid_data;
+      math::vector_2i const& size = _target_info ? _target_info->size : _selection_info->size;
+      std::unordered_map<int, bool> const& grid = _target_info ? _target_info->grid_data : _selection_info->grid_data;
 
       if (_last_cursor_chunk != pos || force_update)
       {
@@ -907,7 +907,7 @@ namespace noggit
       return;
     }
 
-    math::vector_2i const& size = _target_info->size.x > 0 ? _target_info->size : _selection_info->size;
+    math::vector_2i const& size = _target_info ? _target_info->size : _selection_info->size;
 
     // update normals around the target area too
     int px = _last_cursor_chunk->x - (size.x / 2);
