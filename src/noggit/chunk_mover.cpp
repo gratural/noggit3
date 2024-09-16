@@ -537,7 +537,6 @@ namespace noggit
       return;
     }
 
-    clear_selection_target_display();
 
     if (_target_chunks.empty())
     {
@@ -808,10 +807,6 @@ namespace noggit
   void chunk_mover::disable_preview()
   {
     _preview_enabled = false;
-
-    clear_selection_target_display();
-    _target_info.reset();
-    _target_chunks.clear();
   }
 
   void chunk_mover::clear_selection_target_display()

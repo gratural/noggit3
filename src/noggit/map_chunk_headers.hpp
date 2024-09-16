@@ -127,6 +127,8 @@ namespace noggit
     bool clear_shadows;
     bool clear_models;
     bool fix_gaps;
+
+    bool preview_terrain_changes;
   };
 
   // values found by experimenting

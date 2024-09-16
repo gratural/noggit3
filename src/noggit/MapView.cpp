@@ -1410,6 +1410,7 @@ void MapView::createGUI()
   addHotkey(Qt::Key_F, MOD_none, [this] { _chunk_mover.mirror(true); }, [this] { return terrainMode == editing_mode::chunk_mover; });
   addHotkey(Qt::Key_F, MOD_alt,  [this] { _chunk_mover.mirror(false); }, [this] { return terrainMode == editing_mode::chunk_mover; });
   addHotkey(Qt::Key_X, MOD_none, [this] { _chunk_mover.clear_selection(); }, [this] { return terrainMode == editing_mode::chunk_mover; });
+  addHotkey(Qt::Key_T, MOD_none, [this] { _chunk_mover_ui->toggle_preview(); }, [this] { return terrainMode == editing_mode::chunk_mover; });
 
   connect(_main_window, &noggit::ui::main_window::exit_prompt_opened, this, &MapView::on_exit_prompt);
 }

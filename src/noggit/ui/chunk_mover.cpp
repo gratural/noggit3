@@ -29,6 +29,7 @@ namespace noggit::ui
     , _clear_models(true)
     , _radius(15.f)
     , _square_brush(true)
+    , _preview_enabled(true)
   {
     auto layout(new QFormLayout(this));
 
@@ -60,6 +61,7 @@ namespace noggit::ui
     param_layout->addRow(new checkbox("Fix Gaps", &_fix_gaps, param_group));
     param_layout->addRow(new checkbox("Clear Shadows", &_clear_shadows, param_group));
     param_layout->addRow(new checkbox("Clear Models", &_clear_models, param_group));
+    param_layout->addRow(new checkbox("Preview Changes", &_preview_enabled, param_group));
 
     layout->addRow(param_group);
   }
@@ -130,6 +132,15 @@ namespace noggit::ui
     params.clear_shadows = _clear_shadows.get();
     params.clear_models = _clear_models.get();
 
+    params.preview_terrain_changes = _preview_enabled.get();
+
     return params;
+  }
+
+  void chunk_mover_ui::toggle_preview()
+  {
+    _preview_enabled.toggle();
+
+    _chunk_mover->apply(true);
   }
 }

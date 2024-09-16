@@ -313,6 +313,7 @@ namespace noggit
       generate_hotkey_row({ font_noggit::alt, font_noggit::f }, "\a+\a - Mirror selection (vertical)", chunk_mover_layout);
       generate_hotkey_row({ font_noggit::v }, "\a - Paste selection", chunk_mover_layout);
       generate_hotkey_row({ font_noggit::x }, "\a - Clear selection", chunk_mover_layout);
+      generate_hotkey_row({ font_noggit::t }, "\a - Toggle preview", chunk_mover_layout);
       generate_hotkey_row({ font_noggit::space, font_noggit::mmb }, "\a+\a - Change height offset", chunk_mover_layout);
 
       layout->addWidget(tabs);

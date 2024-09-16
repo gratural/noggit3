@@ -303,6 +303,13 @@ void MapChunk::override_data(noggit::chunk_data& data, noggit::chunk_override_pa
 }
 void MapChunk::set_preview_data(noggit::chunk_data& data, noggit::chunk_override_params const& params)
 {
+  if (!params.preview_terrain_changes)
+  {
+    _preview_data.reset();
+    _preview_params.reset();
+    return;
+  }
+
   _preview_data = std::make_unique<noggit::chunk_data>(data);
   _preview_params = std::make_unique<noggit::chunk_override_params>(params);
 

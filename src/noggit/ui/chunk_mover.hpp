@@ -30,6 +30,8 @@ namespace noggit::ui
     bool use_square_brush() const { return _square_brush.get(); }
 
     void change_radius(float v) { _radius.change(v); }
+
+    void toggle_preview();
   private:
     noggit::chunk_mover* _chunk_mover;
 
@@ -48,5 +50,7 @@ namespace noggit::ui
     bool_toggle_property _fix_gaps;
     bool_toggle_property _clear_shadows;
     bool_toggle_property _clear_models;
+
+    bool_toggle_property _preview_enabled;
   };
 }
