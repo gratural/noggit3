@@ -228,11 +228,6 @@ void MapIndex::save()
 
 void MapIndex::enterTile(const tile_index& tile)
 {
-  if (!hasTile(tile))
-  {
-    return;
-  }
-
   int cx = tile.x;
   int cz = tile.z;
 
