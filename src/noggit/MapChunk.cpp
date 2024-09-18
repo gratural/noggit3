@@ -47,12 +47,13 @@ MapChunk::MapChunk(MapTile *maintile, MPQFile *f, bool bigAlpha, tile_mode mode)
     px = header.ix;
     py = header.iy;
 
-    float x = -header.xpos + ZEROPOINT;
-    float z = -header.zpos + ZEROPOINT;
     zbase = maintile->index.z * TILESIZE + py * CHUNKSIZE;
     xbase = maintile->index.x * TILESIZE + px * CHUNKSIZE;
     ybase = header.ypos;
 
+    // todo: mark ADT as changed if the values are significantly different (eg: when the ADT was moved)
+    header.xpos = ZEROPOINT - xbase;
+    header.zpos = ZEROPOINT - zbase;
 
     _4x4_holes = header.holes;
 
