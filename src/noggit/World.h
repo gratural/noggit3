@@ -314,6 +314,7 @@ public:
   std::vector<selection_type> get_models_on_chunk(math::vector_3d const& chunk_origin) { return _model_instance_storage.get_instances_on_chunk(chunk_origin); }
 
   void reload_tile(tile_index const& tile);
+  void ensure_tile_is_loaded(tile_index const& tile);
 
   void updateTilesEntry(selection_type const& entry, model_update type);
   void updateTilesWMO(WMOInstance* wmo, model_update type);

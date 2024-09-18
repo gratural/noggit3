@@ -2497,6 +2497,16 @@ void World::reload_tile(tile_index const& tile)
   mapIndex.reloadTile(tile);
 }
 
+void World::ensure_tile_is_loaded(tile_index const& tile)
+{
+  MapTile* adt = mapIndex.loadTile(tile);
+
+  if (adt)
+  {
+    adt->wait_until_loaded();
+  }
+}
+
 void World::updateTilesEntry(selection_type const& entry, model_update type)
 {
   if (entry.which() == eEntry_WMO)
