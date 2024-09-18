@@ -193,8 +193,10 @@ namespace noggit
         }
       }
 
-      MapChunk* chunk = _world->get_chunk_at(cd.origin + chunk_center_ofs);
+      // to make sure not to modify chunks while they are being loaded
+      _world->ensure_tile_is_loaded(cd.tile_index());
 
+      MapChunk* chunk = _world->get_chunk_at(cd.origin + chunk_center_ofs);
 
       if (chunk)
       {
