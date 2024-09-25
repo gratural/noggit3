@@ -54,6 +54,15 @@ TextureSet::TextureSet ( MapChunkHeader const& header
     {
       if (_layers_info[layer].flags & 0x100)
       {
+        int layer_size = (layer == nTextures - 1)
+          ? header.sizeAlpha - 8 - _layers_info[layer].ofsAlpha
+          : _layers_info[layer+1].ofsAlpha - _layers_info[layer].ofsAlpha
+          ;
+
+        // make sure to load using the right alphamap format
+        // todo: mark adt as changed if the format doesn't match
+        use_big_alphamaps = (layer_size == 4096 || _layers_info[layer].flags & 0x200);
+
         f->seek (alpha_base + _layers_info[layer].ofsAlpha);
         alphamaps[layer - 1] = std::make_unique<Alphamap> (f, _layers_info[layer].flags, use_big_alphamaps, do_not_fix_alpha_map);
       }
