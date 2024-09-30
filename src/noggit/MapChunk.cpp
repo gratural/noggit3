@@ -1071,6 +1071,8 @@ void MapChunk::reset_mccv()
 {
   _has_mccv = false;
   maybe_create_mccv();
+  require_vertices_buffer_update();
+  mt->need_chunk_data_update();
 }
 
 bool MapChunk::hasColors()
