@@ -118,6 +118,7 @@ namespace noggit
     bool height;
     bool textures;
     bool alphamaps;
+    bool vertex_colors;
     bool liquids;
     bool shadows;
     bool area_id;

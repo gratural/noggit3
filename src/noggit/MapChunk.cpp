@@ -247,9 +247,24 @@ noggit::chunk_data MapChunk::get_chunk_data()
 
 void MapChunk::override_data(noggit::chunk_data& data, noggit::chunk_override_params const& params)
 {
-  if (params.height)
+  if (params.height && params.vertex_colors)
   {
     vertices = data.vertices;
+  }
+  else if (params.height)
+  {
+    for (int i = 0; i < mapbufsize; ++i)
+    {
+      vertices[i].position = data.vertices[i].position;
+      vertices[i].normal = data.vertices[i].normal;
+    }
+  }
+  else if (params.vertex_colors)
+  {
+    for (int i = 0; i < mapbufsize; ++i)
+    {
+      vertices[i].color = data.vertices[i].color;
+    }
   }
 
   if (params.area_id)
@@ -314,9 +329,24 @@ void MapChunk::set_preview_data(noggit::chunk_data& data, noggit::chunk_override
   _preview_data = std::make_unique<noggit::chunk_data>(data);
   _preview_params = std::make_unique<noggit::chunk_override_params>(params);
 
-  if (!params.height)
+  if (!params.height && !params.vertex_colors)
   {
     _preview_data->vertices = vertices;
+  }
+  else if (!params.height)
+  {
+    for (int i = 0; i < mapbufsize; ++i)
+    {
+      _preview_data->vertices[i].position = vertices[i].position;
+      _preview_data->vertices[i].normal = vertices[i].normal;
+    }
+  }
+  else if (!params.vertex_colors)
+  {
+    for (int i = 0; i < mapbufsize; ++i)
+    {
+      _preview_data->vertices[i].color = vertices[i].color;
+    }
   }
 
   if (!params.area_id)

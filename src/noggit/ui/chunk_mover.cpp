@@ -19,6 +19,7 @@ namespace noggit::ui
     , _override_height(true)
     , _override_textures(true)
     , _override_alphamaps(true)
+    , _override_vertex_colors(true)
     , _override_liquids(true)
     , _override_shadows(false)
     , _override_area_id(true)
@@ -39,6 +40,7 @@ namespace noggit::ui
     overrides_layout->addRow(new checkbox("Height", &_override_height, overrides_group));
     overrides_layout->addRow(new checkbox("Textures", &_override_textures, overrides_group));
     overrides_layout->addRow(new checkbox("Alphamaps", &_override_alphamaps, overrides_group));
+    overrides_layout->addRow(new checkbox("Vertex Colors", &_override_vertex_colors, overrides_group));
     overrides_layout->addRow(new checkbox("Liquids", &_override_liquids, overrides_group));
     overrides_layout->addRow(new checkbox("Shadows", &_override_shadows, overrides_group));
     overrides_layout->addRow(new checkbox("Area ID", &_override_area_id, overrides_group));
@@ -122,6 +124,7 @@ namespace noggit::ui
     params.height = _override_height.get();
     params.textures = _override_textures.get();
     params.alphamaps = _override_alphamaps.get();
+    params.vertex_colors = _override_vertex_colors.get();
     params.liquids = _override_liquids.get();
     params.shadows = _override_shadows.get();
     params.area_id = _override_area_id.get();

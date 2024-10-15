@@ -38,6 +38,7 @@ namespace noggit::ui
     bool_toggle_property _override_height;
     bool_toggle_property _override_textures;
     bool_toggle_property _override_alphamaps;
+    bool_toggle_property _override_vertex_colors;
     bool_toggle_property _override_liquids;
     bool_toggle_property _override_shadows;
     bool_toggle_property _override_area_id;
