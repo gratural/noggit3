@@ -32,11 +32,13 @@ namespace noggit
       QRadioButton* radio_linear = new QRadioButton ("Linear");
       QRadioButton* radio_smooth = new QRadioButton ("Smooth");
       QRadioButton* radio_origin = new QRadioButton ("Origin");
+      QRadioButton* radio_inner = new QRadioButton ("Smooth inner vertices (wip)");
 
       _type_button_box->addButton (radio_flat, (int)eFlattenType_Flat);
       _type_button_box->addButton (radio_linear, (int)eFlattenType_Linear);
       _type_button_box->addButton (radio_smooth, (int)eFlattenType_Smooth);
       _type_button_box->addButton (radio_origin, (int)eFlattenType_Origin);
+      _type_button_box->addButton (radio_inner, (int)eFlattenType_Smooth_Inner);
 
       radio_linear->toggle();
 
@@ -46,6 +48,7 @@ namespace noggit
       flatten_type_layout->addWidget (radio_linear, 0, 1);
       flatten_type_layout->addWidget (radio_smooth, 1, 0);
       flatten_type_layout->addWidget (radio_origin, 1, 1);
+      flatten_type_layout->addWidget (radio_inner, 2, 0);
 
       layout->addRow (flatten_type_group);
 

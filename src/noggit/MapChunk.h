@@ -190,6 +190,8 @@ public:
                    , std::function<boost::optional<float> (float, float)> height
                    );
 
+  bool smooth_inner_vertices(math::vector_3d const& pos, float remain, float radius);
+
   void selectVertex(math::vector_3d const& pos, float radius, std::set<math::vector_3d*>& selected_vertices);
   void fixVertices(std::set<math::vector_3d*>& selected);
   // for the vertex tool

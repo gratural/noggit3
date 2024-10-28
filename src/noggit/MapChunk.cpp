@@ -1213,6 +1213,11 @@ bool MapChunk::flattenTerrain ( math::vector_3d const& pos
 {
   bool changed (false);
 
+  if (BrushType == eFlattenType_Smooth_Inner)
+  {
+    return smooth_inner_vertices(pos, remain, radius);
+  }
+
   for (int i(0); i < mapbufsize; ++i)
   {
 	  float const dist(misc::dist(vertices[i].position, pos));
@@ -1238,18 +1243,18 @@ bool MapChunk::flattenTerrain ( math::vector_3d const& pos
 	  if (BrushType == eFlattenType_Origin)
 	  {
 		  vertices[i].position.y = origin.y;
-		  changed = true;
-		  continue;
 	  }
-
-    vertices[i].position.y = math::interpolation::linear
-      ( BrushType == eFlattenType_Flat ? remain
-      : BrushType == eFlattenType_Linear ? remain * (1.f - dist / radius)
-      : BrushType == eFlattenType_Smooth ? pow (remain, 1.f + dist / radius)
-      : throw std::logic_error ("bad brush type")
-      , vertices[i].position.y
-      , ah
-      );
+    else
+    {
+      vertices[i].position.y = math::interpolation::linear
+        ( BrushType == eFlattenType_Flat ? remain
+        : BrushType == eFlattenType_Linear ? remain * (1.f - dist / radius)
+        : BrushType == eFlattenType_Smooth ? pow (remain, 1.f + dist / radius)
+        : throw std::logic_error ("bad brush type")
+        , vertices[i].position.y
+        , ah
+        );
+    }
 
     changed = true;
   }
@@ -1272,7 +1277,7 @@ bool MapChunk::blurTerrain ( math::vector_3d const& pos
 {
   bool changed (false);
 
-  if (BrushType == eFlattenType_Origin)
+  if (BrushType == eFlattenType_Origin || BrushType == eFlattenType_Smooth_Inner)
   {
     return false;
   }
@@ -1325,6 +1330,59 @@ bool MapChunk::blurTerrain ( math::vector_3d const& pos
       );
 
     changed = true;
+  }
+
+  if (changed)
+  {
+    updateVerticesData();
+  }
+
+  return changed;
+}
+
+bool MapChunk::smooth_inner_vertices(math::vector_3d const& pos, float remain, float radius)
+{
+  bool changed = false;
+
+  for (int z = 0; z < 8; ++z)
+  {
+    for (int x = 0; x < 8; ++x)
+    {
+      int id = (z * 17 + 9) + x;
+
+      math::vector_3d& v_pos = vertices[id].position;
+      float const dist(misc::dist(v_pos, pos));
+
+      if (dist < radius)
+      {
+        math::vector_3d const& v00 = vertices[id-9].position;
+        math::vector_3d const& v10 = vertices[id-8].position;
+        math::vector_3d const& v11 = vertices[id+9].position;
+        math::vector_3d const& v01 = vertices[id+8].position;
+
+        float dst_0 = (v00 - v11).length_squared();
+        float dst_1 = (v01 - v10).length_squared();
+
+        float target;
+
+        // target the center point between the 2 closest diagonally opposed corners
+        // todo: can be improved (hopefully)
+        if (dst_0 < dst_1)
+        {
+          target = ((v00 + v11) * 0.5f).y;
+        }
+        else
+        {
+          target = ((v01 + v10) * 0.5f).y;
+        }
+
+        float diff = target - v_pos.y;
+
+        v_pos.y += diff * remain;
+
+        changed = true;
+      }
+    }
   }
 
   if (changed)
