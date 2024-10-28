@@ -2248,7 +2248,7 @@ void MapView::tick (float dt)
     }
     if (updown)
     {
-      _camera.move_vertical(updown, dt);
+      _camera.move_vertical(updown, dt, false);
       _camera_moved_since_last_draw = true;
     }
   }

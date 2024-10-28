@@ -117,8 +117,9 @@ namespace noggit
     position += right() * sign * move_speed * dt;
   }
 
-  void camera::move_vertical (float sign, float dt)
+  void camera::move_vertical (float sign, float dt, bool local_space)
   {
-    position += up() * sign * move_speed * dt;
+    static math::vector_3d const world_up(0.0f, 1.0f, 0.0f);
+    position += (local_space ? up() : world_up) * sign * move_speed * dt;
   }
 }
