@@ -15,6 +15,7 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QToolButton>
+#include <QKeyEvent>
 
 
 #include <functional>
@@ -24,7 +25,7 @@ namespace noggit
   namespace ui
   {
     shader_tool::shader_tool(math::vector_4d& color, QWidget* parent)
-      : QWidget(parent)
+      : noggit_tool(parent)
       , _radius_property(15.f)
       , _speed_property(1.0f)
       , _color(color)
@@ -144,6 +145,51 @@ namespace noggit
     void shader_tool::addColorToPalette()
     {
       _color_palette->append();
+    }
+
+    void shader_tool::tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world)
+    {
+      if (!cursor_under_map && _left_mouse_button)
+      {
+        if (_mod_shift_down)
+        {
+          changeShader(world, cursor_pos, dt, true);
+        }
+        if (_mod_ctrl_down)
+        {
+          changeShader(world, cursor_pos, dt, false);
+        }
+      }
+
+      if (_middle_mouse_button)
+      {
+        pickColor(world, cursor_pos);
+      }
+    }
+
+    void shader_tool::mouse_move_event(QLineF const& relative_movement)
+    {
+      if (_left_mouse_button)
+      {
+        if (_mod_space_down)
+        {
+          changeSpeed(relative_movement.dx() / (mouse_sensibility * 2.f));
+        }
+        if (_mod_alt_down)
+        {
+          change_radius(relative_movement.dx() / mouse_sensibility);
+        }
+      }
+    }
+
+    void shader_tool::key_press_event(QKeyEvent* event)
+    {
+      noggit_tool::key_press_event(event);
+
+      if (event->key() == Qt::Key_Plus)
+      {
+        addColorToPalette();
+      }
     }
 
     void shader_tool::set_hsv()

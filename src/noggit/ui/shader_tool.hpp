@@ -4,6 +4,7 @@
 
 #include <math/vector_4d.hpp>
 #include <noggit/float_property.hpp>
+#include <noggit/ui/noggit_tool.hpp>
 #include <noggit/ui/slider_spinbox.hpp>
 
 #include <QtWidgets/QDoubleSpinBox>
@@ -21,7 +22,7 @@ namespace noggit
 {
   namespace ui
   {
-    class shader_tool : public QWidget
+    class shader_tool : public noggit_tool
     {
     public:
       shader_tool(math::vector_4d& color, QWidget* parent = nullptr);
@@ -37,6 +38,9 @@ namespace noggit
 
       QSize sizeHint() const override;
 
+      virtual void tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world) override;
+      virtual void mouse_move_event(QLineF const& relative_movement) override;
+      virtual void key_press_event(QKeyEvent* event) override;
     private:
       float_property _radius_property;
       float_property _speed_property;

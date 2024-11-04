@@ -135,6 +135,7 @@ void MapView::setToolPropertyWidgetVisibility(editing_mode mode)
     break;
   case editing_mode::mccv:
     _vertex_shading_dock->setVisible(!ui_hidden);
+    _current_tool = shaderTool;
     break;
   case editing_mode::object:
     _object_editor_dock->setVisible(!ui_hidden);
@@ -2144,19 +2145,6 @@ void MapView::tick (float dt)
             }
           }
           break;
-        case editing_mode::mccv:
-          if (!underMap)
-          {
-            if (_mod_shift_down)
-            {
-              shaderTool->changeShader(_world.get(), _cursor_pos, dt, true);
-            }
-            if (_mod_ctrl_down)
-            {
-              shaderTool->changeShader(_world.get(), _cursor_pos, dt, false);
-            }
-          }
-          break;
         }
       }
     }
@@ -2893,15 +2881,6 @@ void MapView::keyPressEvent (QKeyEvent *event)
   if (event->key() == Qt::Key_Plus)
   {
     keys = 1;
-
-    switch (terrainMode)
-    {
-      case editing_mode::mccv:
-      {
-        shaderTool->addColorToPalette();
-        break;
-      }
-    }
   }
   if (event->key() == Qt::Key_Minus)
   {
@@ -3086,9 +3065,6 @@ void MapView::mouseMoveEvent (QMouseEvent* event)
     case editing_mode::paint:
       texturingTool->change_radius(relative_movement.dx() / XSENS);
       break;
-    case editing_mode::mccv:
-      shaderTool->change_radius(relative_movement.dx() / XSENS);
-      break;
     }
   }
 
@@ -3098,9 +3074,6 @@ void MapView::mouseMoveEvent (QMouseEvent* event)
     {
     case editing_mode::paint:
       texturingTool->change_pressure(relative_movement.dx() / 300.0f);
-      break;
-    case editing_mode::mccv:
-      shaderTool->changeSpeed(relative_movement.dx() / XSENS);
       break;
     }
   }
@@ -3174,11 +3147,6 @@ void MapView::mousePressEvent(QMouseEvent* event)
     if (_world->has_selection())
     {
       MoveObj = true;
-    }
-
-    if(terrainMode == editing_mode::mccv)
-    {
-      shaderTool->pickColor(_world.get(), _cursor_pos);
     }
 
     if (terrainMode == editing_mode::water &&_liquid_id_below_cursor)
