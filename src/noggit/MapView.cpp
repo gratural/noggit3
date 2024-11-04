@@ -127,6 +127,7 @@ void MapView::setToolPropertyWidgetVisibility(editing_mode mode)
     break;
   case editing_mode::areaid:
     _areaid_editor_dock->setVisible(!ui_hidden);
+    _current_tool = ZoneIDBrowser;
     break;
   case editing_mode::water:
     _water_editor_dock->setVisible(!ui_hidden);
@@ -191,12 +192,6 @@ void MapView::DeleteSelectedObject()
 
   _world->delete_selected_models();
   _rotation_editor_need_update = true;
-}
-
-
-void MapView::changeZoneIDValue (int set)
-{
-  _selected_area_id = set;
 }
 
 
@@ -415,10 +410,7 @@ void MapView::createGUI()
     }
   );
 
-  ZoneIDBrowser->setMapID(_world->getMapID());
-  connect(ZoneIDBrowser, &noggit::ui::zone_id_browser::selected
-    , [this](int area_id) { changeZoneIDValue(area_id); }
-  );
+  ZoneIDBrowser->set_map_id(_world->getMapID());
 
   for (auto dock : _tool_properties_docks)
   {
@@ -610,9 +602,9 @@ void MapView::createGUI()
                 , "Set Area ID"
                 , [this]
                   {
-                    if (terrainMode == editing_mode::areaid && _selected_area_id != -1)
+                    if (terrainMode == editing_mode::areaid && ZoneIDBrowser->area_id())
                     {
-                      _world->setAreaID(_camera.position, _selected_area_id, true);
+                      _world->setAreaID(_camera.position, ZoneIDBrowser->area_id().value(), true);
                     }
                   }
                 );
@@ -1200,9 +1192,9 @@ void MapView::createGUI()
             , MOD_none
             , [&]
             {
-              if (_selected_area_id != -1)
+              if (ZoneIDBrowser->area_id())
               {
-                _world->setAreaID(_camera.position, _selected_area_id, true);
+                _world->setAreaID(_camera.position, ZoneIDBrowser->area_id().value(), true);
               }
             }
             , [&] { return terrainMode == editing_mode::areaid; }
@@ -2149,24 +2141,6 @@ void MapView::tick (float dt)
           else if (_mod_ctrl_down && !underMap)
           {
             _world->setHole(_cursor_pos, _mod_alt_down, true);
-          }
-          break;
-        case editing_mode::areaid:
-          if (!underMap)
-          {
-            if (_mod_shift_down)
-            {
-              // draw the selected AreaId on current selected chunk
-              _world->setAreaID(_cursor_pos, _selected_area_id, false);
-            }
-            else if (_mod_ctrl_down)
-            {
-              // pick areaID from chunk
-              MapChunk* chnk(boost::get<selected_chunk_type>(selection).chunk);
-              int newID = chnk->getAreaID();
-              _selected_area_id = newID;
-              ZoneIDBrowser->setZoneID(newID);
-            }
           }
           break;
         case editing_mode::flags:

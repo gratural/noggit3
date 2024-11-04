@@ -5,6 +5,7 @@
 #include <noggit/DBC.h>
 #include <noggit/Log.h>
 #include <noggit/Misc.h>
+#include <noggit/World.h>
 
 #include <QtWidgets/QVBoxLayout>
 
@@ -17,7 +18,7 @@ namespace noggit
   namespace ui
   {
     zone_id_browser::zone_id_browser(QWidget* parent)
-      : QWidget(parent)
+      : noggit_tool(parent)
       , _area_tree(new QTreeWidget())
       , mapID(-1)
     {
@@ -31,13 +32,13 @@ namespace noggit
                   auto const& selected_items = _area_tree->selectedItems();
                   if (selected_items.size())
                   {
-                    emit selected (selected_items.back()->data(0, 1).toInt());
+                    _area_id.emplace(selected_items.back()->data(0, 1).toInt());
                   }
                 }
               );
     }
 
-    void zone_id_browser::setMapID(int id)
+    void zone_id_browser::set_map_id(int id)
     {
       mapID = id;
 
@@ -51,12 +52,14 @@ namespace noggit
         }
       }
 
-      buildAreaList();
+      build_area_list();
     }
 
-    void zone_id_browser::setZoneID(int id)
+    void zone_id_browser::set_area_id(int id)
     {
       QSignalBlocker const block_area_tree(_area_tree);
+
+      _area_id = id;
 
       if (_items.find(id) != _items.end())
       {
@@ -72,7 +75,25 @@ namespace noggit
       }
     }
 
-    void zone_id_browser::buildAreaList()
+    void zone_id_browser::tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world)
+    {
+      if (!cursor_under_map && _left_mouse_button)
+      {
+        if (_mod_shift_down && _area_id)
+        {
+          // draw the selected AreaId on current selected chunk
+          world->setAreaID(cursor_pos, _area_id.value(), false);
+        }
+        else if (_mod_ctrl_down)
+        {
+          // pick areaID from chunk
+          MapChunk* chunk = world->get_chunk_at(cursor_pos);
+          set_area_id(chunk->getAreaID());
+        }
+      }
+    }
+
+    void zone_id_browser::build_area_list()
     {
       QSignalBlocker const block_area_tree(_area_tree);
       _area_tree->clear();

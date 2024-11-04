@@ -125,7 +125,6 @@ private:
   noggit::chunk_mover _chunk_mover;
   boost::optional<int> _liquid_id_below_cursor;
 
-  int _selected_area_id = -1;
   std::map<int, misc::random_color> _area_id_colors;
 
   math::ray intersect_ray() const;
@@ -151,7 +150,6 @@ private:
   void ResetSelectedObjectRotation();
   void snap_selected_models_to_the_ground();
   void DeleteSelectedObject();
-  void changeZoneIDValue (int set);
 
   QPointF _last_mouse_pos;
   float mh, mv, rh, rv;
