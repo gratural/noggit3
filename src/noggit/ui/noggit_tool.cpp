@@ -60,6 +60,8 @@ namespace noggit::ui
     _left_mouse_button   = false;
     _middle_mouse_button = false;
     _right_mouse_button  = false;
+
+    reset_extra_states();
   }
 
   float noggit_tool::scroll_wheel_delta_for_range(QWheelEvent* event, float range) const

@@ -1883,6 +1883,7 @@ void MapView::tick (float dt)
 
   if (_current_tool)
   {
+    _current_tool->set_window_size(width(), height());
     _current_tool->tick(dt, _cursor_pos, underMap, _world.get());
   }
 
