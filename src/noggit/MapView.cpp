@@ -131,6 +131,7 @@ void MapView::setToolPropertyWidgetVisibility(editing_mode mode)
     break;
   case editing_mode::water:
     _water_editor_dock->setVisible(!ui_hidden);
+    _current_tool = guiWater;
     break;
   case editing_mode::mccv:
     _vertex_shading_dock->setVisible(!ui_hidden);
@@ -2089,20 +2090,6 @@ void MapView::tick (float dt)
         scriptingTool->sendBrushEvent(_cursor_pos, 7.5f * dt);
       }
 #endif
-      if (leftMouse && selection.which() == eEntry_LiquidLayer && terrainMode == editing_mode::water)
-      {
-        if (_display_mode == display_mode::in_3D && !underMap)
-        {
-          if (_mod_shift_down)
-          {
-            guiWater->paintLiquid(_world.get(), _cursor_pos, true);
-          }
-          else if (_mod_ctrl_down)
-          {
-            guiWater->paintLiquid(_world.get(), _cursor_pos, false);
-          }
-        }
-      }
       if (leftMouse && selection.which() == eEntry_MapChunk)
       {
         bool underMap = _world->isUnderMap(_cursor_pos);
@@ -2154,19 +2141,6 @@ void MapView::tick (float dt)
             else if (_mod_ctrl_down)
             {
               _world->mapIndex.setFlag(false, _cursor_pos, 0x2);
-            }
-          }
-          break;
-        case editing_mode::water:
-          if (_display_mode == display_mode::in_3D && !underMap)
-          {
-            if (_mod_shift_down)
-            {
-              guiWater->paintLiquid(_world.get(), _cursor_pos, true);
-            }
-            else if (_mod_ctrl_down)
-            {
-              guiWater->paintLiquid(_world.get(), _cursor_pos, false);
             }
           }
           break;
@@ -3112,9 +3086,6 @@ void MapView::mouseMoveEvent (QMouseEvent* event)
     case editing_mode::paint:
       texturingTool->change_radius(relative_movement.dx() / XSENS);
       break;
-    case editing_mode::water:
-      guiWater->changeRadius(relative_movement.dx() / XSENS);
-      break;
     case editing_mode::mccv:
       shaderTool->change_radius(relative_movement.dx() / XSENS);
       break;
@@ -3265,22 +3236,6 @@ void MapView::wheelEvent (QWheelEvent* event)
     else if (_mod_shift_down)
     {
       texturingTool->change_spray_pressure (delta_for_range (10.f));
-    }
-  }
-  else if (terrainMode == editing_mode::water)
-  {
-    if (_mod_alt_down)
-    {
-      guiWater->changeOrientation (delta_for_range (360.f));
-    }
-    else if (_mod_shift_down)
-    {
-      guiWater->changeAngle (delta_for_range (89.f));
-    }
-    else if (_mod_space_down)
-    {
-      //! \note not actual range
-      guiWater->change_height (delta_for_range (40.f));
     }
   }
   if (_current_tool)

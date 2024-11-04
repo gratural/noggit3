@@ -5,8 +5,9 @@
 #include <noggit/bool_toggle_property.hpp>
 #include <noggit/tile_index.hpp>
 #include <noggit/tool_enums.hpp>
-#include <noggit/ui/checkbox.hpp>
 #include <noggit/unsigned_int_property.hpp>
+#include <noggit/ui/checkbox.hpp>
+#include <noggit/ui/noggit_tool.hpp>
 
 class QDoubleSpinBox;
 class QGroupBox;
@@ -20,7 +21,7 @@ namespace noggit
 {
   namespace ui
   {
-    class water : public QWidget
+    class water : public noggit_tool
     {
       Q_OBJECT
 
@@ -56,6 +57,10 @@ namespace noggit
       math::vector_3d ref_pos() const { return _lock_pos; }
 
       QSize sizeHint() const override;
+
+      virtual void tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world) override;
+      virtual void wheel_event(QWheelEvent* event) override;
+      virtual void mouse_move_event(QLineF const& relative_movement) override;
 
     signals:
       void regenerate_water_opacity (float factor);

@@ -27,7 +27,7 @@ namespace noggit
                  , bool_toggle_property* display_all_layers
                  , QWidget* parent
                  )
-      : QWidget (parent)
+      : noggit_tool(parent)
       , _liquid_id(5)
       , _liquid_type(0)
       , _radius(10.0f)
@@ -345,6 +345,46 @@ namespace noggit
     void water::toggle_liquids_intersect()
     {
       _cursor_intersect_liquids.toggle();
+    }
+
+    void water::tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world)
+    {
+      if (!cursor_under_map && _left_mouse_button)
+      {
+        if (_mod_shift_down)
+        {
+          paintLiquid(world, cursor_pos, true);
+        }
+        else if (_mod_ctrl_down)
+        {
+          paintLiquid(world, cursor_pos, false);
+        }
+      }
+    }
+
+    void water::wheel_event(QWheelEvent* event)
+    {
+      if (_mod_alt_down)
+      {
+        changeOrientation(scroll_wheel_delta_for_range(event, 360.f));
+      }
+      else if (_mod_shift_down)
+      {
+        changeAngle(scroll_wheel_delta_for_range(event, 89.f));
+      }
+      else if (_mod_space_down)
+      {
+        //! \note not actual range
+        change_height(scroll_wheel_delta_for_range(event, 40.f));
+      }
+    }
+
+    void water::mouse_move_event(QLineF const& relative_movement)
+    {
+      if (_left_mouse_button && _mod_alt_down)
+      {
+        changeRadius(relative_movement.dx() / mouse_sensibility);
+      }
     }
 
     float water::get_opacity_factor() const
