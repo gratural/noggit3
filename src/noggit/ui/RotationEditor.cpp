@@ -17,8 +17,9 @@ namespace noggit
 {
   namespace ui
   {
-    rotation_editor::rotation_editor(QWidget* parent, World* world)
+    rotation_editor::rotation_editor(QWidget* parent, World* world, noggit::bool_toggle_property* use_median_pivot_point)
       : QWidget (parent)
+      , _use_median_pivot_point(use_median_pivot_point)
     {
       setWindowTitle("Pos/Rotation Editor");
       setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint);
@@ -298,7 +299,7 @@ namespace noggit
           ( math::degrees(_rotation_x->value())
           , math::degrees(_rotation_y->value())
           , math::degrees(_rotation_z->value())
-          , *use_median_pivot_point
+          , _use_median_pivot_point->get()
           );
       }
     }

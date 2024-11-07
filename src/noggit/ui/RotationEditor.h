@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <noggit/bool_toggle_property.hpp>
 #include <noggit/Selection.h>
 
 #include <boost/optional.hpp>
@@ -19,12 +20,12 @@ namespace noggit
     class rotation_editor : public QWidget
     {
     public:
-      rotation_editor(QWidget* parent, World* world);
-
-      bool* use_median_pivot_point;
+      rotation_editor(QWidget* parent, World* world, noggit::bool_toggle_property* use_median_pivot_point);
 
       void updateValues(World* world);
     private:
+      noggit::bool_toggle_property* _use_median_pivot_point;
+
       // for single selection
       void set_model_rotation(World* world);
       // for multi selection

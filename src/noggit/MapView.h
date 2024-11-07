@@ -152,12 +152,6 @@ private:
   void DeleteSelectedObject();
 
   QPointF _last_mouse_pos;
-  float mh, mv, rh, rv;
-
-  float keyx = 0, keyy = 0, keyz = 0, keyr = 0, keys = 0;
-
-  bool MoveObj;
-  float numpad_moveratio = 0.001f;
 
   math::vector_3d objMove;
 
@@ -287,16 +281,9 @@ private:
   noggit::bool_toggle_property _auto_update_water_opacity = {true};
 
   noggit::bool_toggle_property _locked_cursor_mode = {false};
-  noggit::bool_toggle_property _move_model_to_cursor_position = {true};
-  noggit::bool_toggle_property _snap_multi_selection_to_ground = {false};
-  noggit::bool_toggle_property _rotate_along_ground = { true };
-  noggit::bool_toggle_property _rotate_along_ground_smooth = { true };
-  noggit::bool_toggle_property _rotate_along_ground_random = { false };
 
-  noggit::bool_toggle_property _use_median_pivot_point = {true};
   noggit::bool_toggle_property _display_all_water_layers = {true};
   noggit::unsigned_int_property _displayed_water_layer = {0};
-  noggit::object_paste_params _object_paste_params;
 
   noggit::bool_toggle_property _show_detail_info_window = {false};
   noggit::bool_toggle_property _show_minimap_window = {false};

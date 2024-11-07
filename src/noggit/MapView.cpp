@@ -84,7 +84,6 @@ void MapView::set_editing_mode (editing_mode mode)
   TexturePicker->hide();
   _texture_palette_dock->hide();
 
-  MoveObj = false;
   _world->reset_selection();
   _rotation_editor_need_update = true;
 
@@ -139,6 +138,7 @@ void MapView::setToolPropertyWidgetVisibility(editing_mode mode)
     break;
   case editing_mode::object:
     _object_editor_dock->setVisible(!ui_hidden);
+    _current_tool = objectEditor;
     break;
 #ifdef NOGGIT_HAS_SCRIPTING
   case editing_mode::scripting:
@@ -285,17 +285,7 @@ void MapView::createGUI()
   _tool_properties_docks.insert(_vertex_shading_dock);
 
   _object_editor_dock = new QDockWidget("Object", this);
-  objectEditor = new noggit::ui::object_editor(this
-    , _world.get()
-    , &_move_model_to_cursor_position
-    , &_snap_multi_selection_to_ground
-    , &_use_median_pivot_point
-    , &_object_paste_params
-    , &_rotate_along_ground
-    , &_rotate_along_ground_smooth
-    , &_rotate_along_ground_random
-    , _object_editor_dock
-  );
+  objectEditor = new noggit::ui::object_editor(this, _world.get(), _object_editor_dock);
   _object_editor_dock->setWidget(objectEditor);
   _tool_properties_docks.insert(_object_editor_dock);
 
@@ -1015,12 +1005,12 @@ void MapView::createGUI()
 
   addHotkey ( Qt::Key_V
             , MOD_ctrl
-            , [this] { objectEditor->pasteObject (_cursor_pos, _camera.position, _world.get(), &_object_paste_params); }
+            , [this] { objectEditor->pasteObject (_cursor_pos, _camera.position, _world.get()); }
             , [this] { return terrainMode == editing_mode::object; }
             );
   addHotkey ( Qt::Key_V
             , MOD_none
-            , [this] { objectEditor->pasteObject (_cursor_pos, _camera.position, _world.get(), &_object_paste_params); }
+            , [this] { objectEditor->pasteObject (_cursor_pos, _camera.position, _world.get()); }
             , [this] { return terrainMode == editing_mode::object; }
             );
   addHotkey ( Qt::Key_V
@@ -1045,7 +1035,7 @@ void MapView::createGUI()
 	         , [this]
              {
                objectEditor->copy_current_selection(_world.get());
-	             objectEditor->pasteObject(_cursor_pos, _camera.position, _world.get(), &_object_paste_params);
+	             objectEditor->pasteObject(_cursor_pos, _camera.position, _world.get());
              }
            , [this] { return terrainMode == editing_mode::object; }
            );
@@ -1881,6 +1871,11 @@ void MapView::tick (float dt)
 
   bool underMap = _world->isUnderMap(_cursor_pos);
 
+  if (terrainMode == editing_mode::object)
+  {
+    objectEditor->set_cam_yaw(_camera.yaw());
+  }
+
   if (_current_tool)
   {
     _current_tool->set_window_size(width(), height());
@@ -1933,155 +1928,6 @@ void MapView::tick (float dt)
     if (lastSelected != currentSelection)
     {
       _rotation_editor_need_update = true;
-    }
-
-    if (terrainMode == editing_mode::object)
-    {
-      // reset numpad_moveratio when no numpad key is pressed
-      if (!(keyx != 0 || keyy != 0 || keyz != 0 || keyr != 0 || keys != 0))
-      {
-        numpad_moveratio = 0.001f;
-      }
-      else // Set move scale and rotate for numpad keys
-      {
-        if (_mod_ctrl_down && _mod_shift_down)
-        {
-          numpad_moveratio += 0.1f;
-        }
-        else if (_mod_shift_down)
-        {
-          numpad_moveratio += 0.01f;
-        }
-        else if (_mod_ctrl_down)
-        {
-          numpad_moveratio += 0.0005f;
-        }
-      }
-
-      if (keys != 0.f)
-      {
-        _world->scale_selected_models(keys*numpad_moveratio / 50.f, World::m2_scaling_type::add);
-        _rotation_editor_need_update = true;
-      }
-      if (keyr != 0.f)
-      {
-        _world->rotate_selected_models( math::degrees(0.f)
-                                      , math::degrees(keyr * numpad_moveratio * 5.f)
-                                      , math::degrees(0.f)
-                                      , _use_median_pivot_point.get()
-                                      );
-        _rotation_editor_need_update = true;
-      }
-
-      if (MoveObj)
-      {
-        if (_mod_alt_down)
-        {
-          _world->scale_selected_models(std::pow(2.f, mv*4.f), World::m2_scaling_type::mult);
-        }
-        else if (_mod_shift_down)
-        {
-          _world->move_selected_models(0.f, mv*80.f, 0.f);
-        }
-        else
-        {
-          bool snapped = false;
-          if (_world->has_multiple_model_selected())
-          {
-            _world->set_selected_models_pos(_cursor_pos, false);
-
-            if (_snap_multi_selection_to_ground.get())
-            {
-              snap_selected_models_to_the_ground();
-              snapped = true;
-            }
-          }
-          else
-          {
-            if (!_move_model_to_cursor_position.get())
-            {
-              _world->move_selected_models((mv * dirUp - mh * dirRight)*80.f);
-            }
-            else
-            {
-              _world->set_selected_models_pos(_cursor_pos, false);
-              snapped = true;
-            }
-          }
-
-          if (snapped && _rotate_along_ground.get())
-          {
-            _world->rotate_selected_models_to_ground_normal(_rotate_along_ground_smooth.get());
-
-            if (_rotate_along_ground_random.get())
-            {
-              float minX = 0, maxX = 0, minY = 0, maxY = 0, minZ = 0, maxZ = 0;
-
-              if (NoggitSettings.value("model/random_rotation", false).toBool())
-              {
-                minY = _object_paste_params.minRotation;
-                maxY = _object_paste_params.maxRotation;
-              }
-
-              if (NoggitSettings.value("model/random_tilt", false).toBool())
-              {
-                minX = _object_paste_params.minTilt;
-                maxX = _object_paste_params.maxTilt;
-                minZ = minX;
-                maxZ = maxX;
-              }
-
-              _world->rotate_selected_models_randomly(minX, maxX, minY, maxY, minZ, maxZ);
-
-              if (NoggitSettings.value("model/random_size", false).toBool())
-              {
-                float min = _object_paste_params.minScale;
-                float max = _object_paste_params.maxScale;
-
-                _world->scale_selected_models(misc::randfloat(min, max), World::m2_scaling_type::set);
-              }
-            }
-          }
-        }
-
-        _rotation_editor_need_update = true;
-      }
-
-      if (keyx != 0.f || keyy != 0.f || keyz != 0.f)
-      {
-        _world->move_selected_models(keyx * numpad_moveratio, keyy * numpad_moveratio, keyz * numpad_moveratio);
-        _rotation_editor_need_update = true;
-      }
-
-      if (look)
-      {
-        if (_mod_ctrl_down) // X
-        {
-          _world->rotate_selected_models( math::degrees(rh + rv)
-                                        , math::degrees(0.f)
-                                        , math::degrees(0.f)
-                                        , _use_median_pivot_point.get()
-                                        );
-        }
-        if (_mod_shift_down) // Y
-        {
-          _world->rotate_selected_models( math::degrees(0.f)
-                                        , math::degrees(rh + rv)
-                                        , math::degrees(0.f)
-                                        , _use_median_pivot_point.get()
-                                        );
-        }
-        if (_mod_alt_down) // Z
-        {
-          _world->rotate_selected_models( math::degrees(0.f)
-                                        , math::degrees(0.f)
-                                        , math::degrees(rh + rv)
-                                        , _use_median_pivot_point.get()
-                                        );
-        }
-
-        _rotation_editor_need_update = true;
-      }
     }
 
     for (auto& selection : currentSelection)
@@ -2150,11 +1996,6 @@ void MapView::tick (float dt)
       }
     }
   }
-
-  mh = 0;
-  mv = 0;
-  rh = 0;
-  rv = 0;
 
   if (_display_mode != display_mode::in_2D)
   {
@@ -2843,50 +2684,6 @@ void MapView::keyPressEvent (QKeyEvent *event)
     updown = -1.0f;
   }
 
-  if (event->key() == Qt::Key_2 && event->modifiers() & Qt::KeypadModifier)
-  {
-    keyx = 1;
-  }
-  if (event->key() == Qt::Key_8 && event->modifiers() & Qt::KeypadModifier)
-  {
-    keyx = -1;
-  }
-
-  if (event->key() == Qt::Key_4 && event->modifiers() & Qt::KeypadModifier)
-  {
-    keyz = 1;
-  }
-  if (event->key() == Qt::Key_6 && event->modifiers() & Qt::KeypadModifier)
-  {
-    keyz = -1;
-  }
-
-  if (event->key() == Qt::Key_3 && event->modifiers() & Qt::KeypadModifier)
-  {
-    keyy = 1;
-  }
-  if (event->key() == Qt::Key_1 && event->modifiers() & Qt::KeypadModifier)
-  {
-    keyy = -1;
-  }
-
-  if (event->key() == Qt::Key_7 && event->modifiers() & Qt::KeypadModifier)
-  {
-    keyr = 1;
-  }
-  if (event->key() == Qt::Key_9 && event->modifiers() & Qt::KeypadModifier)
-  {
-    keyr = -1;
-  }
-
-  if (event->key() == Qt::Key_Plus)
-  {
-    keys = 1;
-  }
-  if (event->key() == Qt::Key_Minus)
-  {
-    keys = -1;
-  }
   if (event->key() == Qt::Key_Home)
   {
 	  _camera.position = math::vector_3d(_cursor_pos.x, _cursor_pos.y + 50, _cursor_pos.z); ;
@@ -2940,32 +2737,6 @@ void MapView::keyReleaseEvent (QKeyEvent* event)
     updown  = 0.0f;
   }
 
-
-  if ((event->key() == Qt::Key_2 || event->key() == Qt::Key_8) && event->modifiers() & Qt::KeypadModifier)
-  {
-    keyx = 0.0f;
-  }
-
-  if ((event->key() == Qt::Key_4 || event->key() == Qt::Key_6) && event->modifiers() & Qt::KeypadModifier)
-  {
-    keyz = 0.0f;
-  }
-
-  if ((event->key() == Qt::Key_3 || event->key() == Qt::Key_1) && event->modifiers() & Qt::KeypadModifier)
-  {
-    keyy = 0.0f;
-  }
-
-  if ((event->key() == Qt::Key_7 || event->key() == Qt::Key_9) && event->modifiers() & Qt::KeypadModifier)
-  {
-    keyr  = 0.0f;
-  }
-
-  if (event->key() == Qt::Key_Plus || event->key() == Qt::Key_Minus)
-  {
-    keys = 0.0f;
-  }
-
   if (event->key() == Qt::Key_L || event->key() == Qt::Key_Minus)
   {
     freelook = false;
@@ -2992,15 +2763,8 @@ void MapView::focusOutEvent (QFocusEvent*)
   strafing = 0.0f;
   updown = 0.0f;
 
-  keyx = 0;
-  keyz = 0;
-  keyy = 0;
-  keyr = 0;
-  keys = 0;
-
   leftMouse = false;
   rightMouse = false;
-  MoveObj = false;
   look = false;
   freelook = false;
 
@@ -3034,22 +2798,6 @@ void MapView::mouseMoveEvent (QMouseEvent* event)
     _minimap->update();
   }
 
-  if (MoveObj)
-  {
-    mh = -aspect_ratio()*relative_movement.dx() / static_cast<float>(width());
-    mv = -relative_movement.dy() / static_cast<float>(height());
-  }
-  else
-  {
-    mh = 0.0f;
-    mv = 0.0f;
-  }
-
-  if (_mod_shift_down || _mod_ctrl_down || _mod_alt_down || _mod_space_down)
-  {
-    rh = relative_movement.dx() / XSENS * 5.0f;
-    rv = relative_movement.dy() / YSENS * 5.0f;
-  }
 
   if (rightMouse && _mod_alt_down)
   {
@@ -3145,11 +2893,6 @@ void MapView::mousePressEvent(QMouseEvent* event)
     break;
 
   case Qt::MiddleButton:
-    if (_world->has_selection())
-    {
-      MoveObj = true;
-    }
-
     if (terrainMode == editing_mode::water &&_liquid_id_below_cursor)
     {
       guiWater->select_liquid(_liquid_id_below_cursor.value(), true);
@@ -3229,16 +2972,13 @@ void MapView::mouseReleaseEvent (QMouseEvent* event)
 
   case Qt::RightButton:
     rightMouse = false;
-
     look = false;
 
     if (_display_mode == display_mode::in_2D)
+    {
       updown = 0;
+    }
 
-    break;
-
-  case Qt::MiddleButton:
-    MoveObj = false;
     break;
   }
 

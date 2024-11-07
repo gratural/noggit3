@@ -28,6 +28,8 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QtWidgets/QMessageBox>
+#include <QKeyEvent>
+
 
 #include <fstream>
 #include <iostream>
@@ -41,18 +43,11 @@ namespace noggit
   {
     object_editor::object_editor ( MapView* mapView
                                  , World* world
-                                 , bool_toggle_property* move_model_to_cursor_position
-                                 , bool_toggle_property* snap_multi_selection_to_ground
-                                 , bool_toggle_property* use_median_pivot_point
-                                 , object_paste_params* paste_params
-                                 , bool_toggle_property* rotate_along_ground
-                                 , bool_toggle_property* rotate_along_ground_smooth
-                                 , bool_toggle_property* rotate_along_ground_random
                                  , QWidget* parent
                                  )
-            : QWidget(parent)
+            : noggit_tool(parent)
             , modelImport (new model_import(this))
-            , rotationEditor (new rotation_editor(mapView, world))
+            , rotationEditor (new rotation_editor(mapView, world, &_use_median_pivot_point))
             , helper_models_widget(new helper_models(this))
             , asset_browser_widget(new asset_browser(mapView, this))
             , _copy_model_stats (true)
@@ -153,7 +148,7 @@ namespace noggit
 
       // single model selection
       auto object_movement_cb ( new checkbox ( "Mouse move follow\ncursor on the ground"
-                                             , move_model_to_cursor_position
+                                             , &_move_model_to_cursor_position
                                              , this
                                              )
                               );
@@ -165,13 +160,13 @@ namespace noggit
       auto multi_select_movement_layout = new QFormLayout(multi_select_movement_box);
 
       auto multi_select_movement_cb ( new checkbox( "Mouse move snap\nmodels to the ground"
-                                                  , snap_multi_selection_to_ground
+                                                  , &_snap_multi_selection_to_ground
                                                   , this
                                                   )
                                     );
 
-      auto object_median_pivot_point (new checkbox ("Rotate around pivot point"
-                                                   , use_median_pivot_point
+      auto object_median_pivot_point (new checkbox ( "Rotate around pivot point"
+                                                   , &_use_median_pivot_point
                                                    , this
                                                    )
                                      );
@@ -184,18 +179,18 @@ namespace noggit
       auto object_rot_layout = new QFormLayout(object_rot_box);
 
       auto object_rotateground_cb ( new checkbox ( "Rotate following cursor"
-                                                 , rotate_along_ground
+                                                 , &_rotate_along_ground
                                                  , this
                                                  )
                                   );
       auto object_rotategroundsmooth_cb ( new checkbox ( "Smooth follow rotation"
-                                                       , rotate_along_ground_smooth
+                                                       , &_rotate_along_ground_smooth
                                                        , this
                                                        )
                                         );
 
       auto object_rotategroundrandom_cb ( new checkbox ( "Random rot/tilt/scale\n on rotate"
-                                                       , rotate_along_ground_random
+                                                       , &_rotate_along_ground_random
                                                        , this
                                                        )
                                         );
@@ -236,8 +231,6 @@ namespace noggit
       layout->addRow(importBox);
       layout->addRow (_filename);
 
-      rotationEditor->use_median_pivot_point = &_use_median_pivot_point;
-
       connect (rotation_group, &QGroupBox::toggled, [&] (int s)
       {
         NoggitSettings.set_value ("model/random_rotation", s);
@@ -256,54 +249,54 @@ namespace noggit
         NoggitSettings.values->sync();
       });
 
-      rotRangeStart->setValue(paste_params->minRotation);
-      rotRangeEnd->setValue(paste_params->maxRotation);
+      rotRangeStart->setValue(_paste_params.minRotation);
+      rotRangeEnd->setValue(_paste_params.maxRotation);
 
-      tiltRangeStart->setValue(paste_params->minTilt);
-      tiltRangeEnd->setValue(paste_params->maxTilt);
+      tiltRangeStart->setValue(_paste_params.minTilt);
+      tiltRangeEnd->setValue(_paste_params.maxTilt);
 
-      scaleRangeStart->setValue(paste_params->minScale);
-      scaleRangeEnd->setValue(paste_params->maxScale);
+      scaleRangeStart->setValue(_paste_params.minScale);
+      scaleRangeEnd->setValue(_paste_params.maxScale);
 
       connect ( rotRangeStart, qOverload<double> (&QDoubleSpinBox::valueChanged)
               , [=] (double v)
                 {
-                  paste_params->minRotation = v;
+                  _paste_params.minRotation = v;
                 }
       );
 
       connect ( rotRangeEnd, qOverload<double> (&QDoubleSpinBox::valueChanged)
               , [=] (double v)
                 {
-                  paste_params->maxRotation = v;
+                  _paste_params.maxRotation = v;
                 }
       );
 
       connect ( tiltRangeStart, qOverload<double> (&QDoubleSpinBox::valueChanged)
               , [=] (double v)
                 {
-                  paste_params->minTilt = v;
+                  _paste_params.minTilt = v;
                 }
       );
 
       connect ( tiltRangeEnd, qOverload<double> (&QDoubleSpinBox::valueChanged)
               , [=] (double v)
                 {
-                  paste_params->maxTilt = v;
+                  _paste_params.maxTilt = v;
                 }
       );
 
       connect ( scaleRangeStart, qOverload<double> (&QDoubleSpinBox::valueChanged)
               , [=] (double v)
                 {
-                  paste_params->minScale = v;
+                  _paste_params.minScale = v;
                 }
       );
 
       connect ( scaleRangeEnd, qOverload<double> (&QDoubleSpinBox::valueChanged)
               , [=] (double v)
                 {
-                  paste_params->maxScale = v;
+                  _paste_params.maxScale = v;
                 }
       );
 
@@ -314,11 +307,6 @@ namespace noggit
       });
 
       pasteModeGroup->button(pasteMode)->setChecked(true);
-
-      connect (object_median_pivot_point, &QCheckBox::stateChanged, [this](bool b)
-      {
-          _use_median_pivot_point = b;
-      });
 
       connect ( pasteModeGroup, qOverload<int> (&QButtonGroup::buttonClicked)
               , [&] (int id)
@@ -401,7 +389,6 @@ namespace noggit
     void object_editor::pasteObject ( math::vector_3d cursor_pos
                                     , math::vector_3d camera_pos
                                     , World* world
-                                    , object_paste_params* paste_params
                                     )
     {
       auto last_entry = world->get_last_selected_model();
@@ -465,7 +452,7 @@ namespace noggit
                       , pos
                       , scale
                       , rotation
-                      , paste_params
+                      , &_paste_params
                       );
         }
         else if (selection.which() == eEntry_WMO)
@@ -714,5 +701,201 @@ namespace noggit
     {
       return QSize(215, height());
     }
+
+    void object_editor::tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world)
+    {
+      // reset speed when no movement key is pressed
+      if(!_move_x_key && !_move_y_key && !_move_z_key && !_scale_key && !_rot_y_key)
+      {
+        _move_speed_factor = 0.001f;
+      }
+      else
+      {
+        if (_mod_ctrl_down && _mod_shift_down)
+        {
+          _move_speed_factor += 0.1f;
+        }
+        else if (_mod_shift_down)
+        {
+          _move_speed_factor += 0.01f;
+        }
+        else if (_mod_ctrl_down)
+        {
+          _move_speed_factor += 0.0005f;
+        }
+      }
+
+      if (_scale_key)
+      {
+        world->scale_selected_models(_scale_key * _move_speed_factor / 50.f, World::m2_scaling_type::add);
+        rotationEditor->updateValues(world);
+      }
+      if (_rot_y_key)
+      {
+        world->rotate_selected_models( math::degrees(0.f)
+                                     , math::degrees(_rot_y_key * _move_speed_factor * 5.f)
+                                     , math::degrees(0.f)
+                                     , _use_median_pivot_point.get()
+                                     );
+        rotationEditor->updateValues(world);
+      }
+      if (_move_x_key || _move_y_key || _move_z_key)
+      {
+        world->move_selected_models(_move_x_key * _move_speed_factor, _move_y_key * _move_speed_factor, _move_z_key * _move_speed_factor);
+        rotationEditor->updateValues(world);
+      }
+
+      if (_middle_mouse_button)
+      {
+        if (_mod_alt_down)
+        {
+          world->scale_selected_models(std::pow(2.f, _mouse_mov_y * 4.f), World::m2_scaling_type::mult);
+        }
+        else if (_mod_shift_down)
+        {
+          world->move_selected_models(0.f, _mouse_mov_y * 80.f, 0.f);
+        }
+        else
+        {
+          bool snapped = false;
+          if (world->has_multiple_model_selected())
+          {
+            world->set_selected_models_pos(cursor_pos, false);
+
+            if (_snap_multi_selection_to_ground.get())
+            {
+              world->snap_selected_models_to_the_ground();
+              snapped = true;
+            }
+          }
+          else
+          {
+            if (!_move_model_to_cursor_position.get())
+            {
+              math::vector_3d move(_mouse_mov_y, 0.f, -_mouse_mov_x);
+              math::rotate(0.f, 0.f, &move.x, &move.z, -_camera_yaw);
+
+              // todo: add a speed setting for it ? I doubt it's used much though
+              world->move_selected_models(move * 150.f);
+            }
+            else
+            {
+              world->set_selected_models_pos(cursor_pos, false);
+              snapped = true;
+            }
+          }
+
+          if (snapped && _rotate_along_ground.get())
+          {
+            world->rotate_selected_models_to_ground_normal(_rotate_along_ground_smooth.get());
+
+            if (_rotate_along_ground_random.get())
+            {
+              float minX = 0, maxX = 0, minY = 0, maxY = 0, minZ = 0, maxZ = 0;
+
+              if (NoggitSettings.value("model/random_rotation", false).toBool())
+              {
+                minY = _paste_params.minRotation;
+                maxY = _paste_params.maxRotation;
+              }
+
+              if (NoggitSettings.value("model/random_tilt", false).toBool())
+              {
+                minX = _paste_params.minTilt;
+                maxX = _paste_params.maxTilt;
+                minZ = minX;
+                maxZ = maxX;
+              }
+
+              world->rotate_selected_models_randomly(minX, maxX, minY, maxY, minZ, maxZ);
+
+              if (NoggitSettings.value("model/random_size", false).toBool())
+              {
+                float min = _paste_params.minScale;
+                float max = _paste_params.maxScale;
+
+                world->scale_selected_models(misc::randfloat(min, max), World::m2_scaling_type::set);
+              }
+            }
+          }
+        }
+
+        _mouse_mov_x = 0.f;
+        _mouse_mov_y = 0.f;
+
+        rotationEditor->updateValues(world);
+      }
+    }
+
+    void object_editor::reset_extra_states()
+    {
+      _mouse_mov_x = 0.f;
+      _mouse_mov_y = 0.f;
+
+      _scale_key = 0;
+      _rot_y_key = 0;
+    }
+
+    void object_editor::mouse_move_event(QLineF const& relative_movement)
+    {
+      _mouse_mov_x = -aspect_ratio() * relative_movement.dx() / static_cast<float>(_window_width);
+      _mouse_mov_y = -relative_movement.dy() / static_cast<float>(_window_height);
+    }
+
+    void object_editor::key_press_event(QKeyEvent* event)
+    {
+      noggit_tool::key_press_event(event);
+
+      auto key = event->key();
+
+      switch (key)
+      {
+        case Qt::Key_Plus: _scale_key = 1; break;
+        case Qt::Key_Minus: _scale_key = -1; break;
+      }
+
+      if (event->modifiers() & Qt::KeypadModifier)
+      {
+        switch (key)
+        {
+          case Qt::Key_7: _rot_y_key = 1; break;
+          case Qt::Key_9: _rot_y_key = -1; break;
+          case Qt::Key_2: _move_x_key = 1; break;
+          case Qt::Key_8: _move_x_key = -1; break;
+          case Qt::Key_1: _move_y_key = -1; break;
+          case Qt::Key_3: _move_y_key = 1; break;
+          case Qt::Key_4: _move_z_key = 1; break;
+          case Qt::Key_6: _move_z_key = -1; break;
+        }
+      }
+    }
+    void object_editor::key_release_event(QKeyEvent* event)
+    {
+      noggit_tool::key_release_event(event);
+
+      auto key = event->key();
+
+      switch (key)
+      {
+        case Qt::Key_Plus:
+        case Qt::Key_Minus: _scale_key = 0; break;
+      }
+
+      if (event->modifiers() & Qt::KeypadModifier)
+      {
+        switch (key)
+        {
+          case Qt::Key_7:
+          case Qt::Key_9: _rot_y_key = 0; break;
+          case Qt::Key_2:
+          case Qt::Key_8: _move_x_key = 0; break;
+          case Qt::Key_1:
+          case Qt::Key_3: _move_y_key = 0; break;
+          case Qt::Key_4:
+          case Qt::Key_6: _move_z_key = 0; break;
+        }
+      }
+    }
+
   }
 }
