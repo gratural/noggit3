@@ -55,7 +55,7 @@ namespace noggit
             break;
           }
         }
-        
+
         // default to 0 if there are entries
         if(get_context()->get_scripts().size()>0 && old_selection < 0)
         {
@@ -160,7 +160,7 @@ namespace noggit
       , MapView* view
       , QSettings* noggit_settings
       )
-      : QWidget(parent)
+      : noggit_tool(parent)
       , _cur_profile ("Default")
       , _view(view)
       , _noggit_settings(noggit_settings)
@@ -193,7 +193,7 @@ namespace noggit
       connect(_selection
              , QOverload<int>::of(&QComboBox::activated)
              , this
-             , [this](auto index) 
+             , [this](auto index)
              {
                clearLog();
                change_script(index);
@@ -264,10 +264,18 @@ namespace noggit
       _last_right = new_right;
     }
 
+    void scripting_tool::tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world)
+    {
+      if (world->has_selection() && !cursor_under_map)
+      {
+        sendBrushEvent(cursor_pos, 7.5f * dt);
+      }
+    }
+
     void scripting_tool::addDescription(std::string const& stext)
     {
-      _description->setText(_description->text() 
-                           + "\n" 
+      _description->setText(_description->text()
+                           + "\n"
                            + QString::fromStdString (stext)
                            );
     }

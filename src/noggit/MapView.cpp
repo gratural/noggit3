@@ -143,6 +143,7 @@ void MapView::setToolPropertyWidgetVisibility(editing_mode mode)
 #ifdef NOGGIT_HAS_SCRIPTING
   case editing_mode::scripting:
     _script_tool_dock->setVisible(!ui_hidden);
+    _current_tool = scriptingTool;
     break;
 #endif
   case editing_mode::clearing:
@@ -1932,12 +1933,6 @@ void MapView::tick (float dt)
 
     for (auto& selection : currentSelection)
     {
-#ifdef NOGGIT_HAS_SCRIPTING
-      if (selection.which() == eEntry_MapChunk && terrainMode == editing_mode::scripting)
-      {
-        scriptingTool->sendBrushEvent(_cursor_pos, 7.5f * dt);
-      }
-#endif
       if (leftMouse && selection.which() == eEntry_MapChunk)
       {
         bool underMap = _world->isUnderMap(_cursor_pos);

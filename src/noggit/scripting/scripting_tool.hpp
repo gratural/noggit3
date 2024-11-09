@@ -4,6 +4,7 @@
 #include <noggit/scripting/script_context.hpp>
 #include <noggit/scripting/script_brush.hpp>
 #include <noggit/tool_enums.hpp>
+#include <noggit/ui/noggit_tool.hpp>
 
 #include <math/trig.hpp>
 #include <math/vector_3d.hpp>
@@ -34,10 +35,10 @@ namespace noggit
     class script_context;
     class script_settings;
     class script_profiles;
-    class scripting_tool : public QWidget
+    class scripting_tool : public noggit::ui::noggit_tool
     {
     public:
-      scripting_tool(QWidget* parent
+      scripting_tool( QWidget* parent
                     , MapView* view
                     , QSettings * noggit_settings
                     );
@@ -50,6 +51,8 @@ namespace noggit
       void clearLog();
       void doReload();
       void sendBrushEvent(math::vector_3d const& pos,float dt);
+
+      virtual void tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world) override;
 
       MapView* get_view();
       script_context* get_context();
