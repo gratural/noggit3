@@ -8,7 +8,10 @@
 #include <noggit/ui/checkbox.hpp>
 #include <noggit/ui/CurrentTexture.h>
 #include <noggit/ui/slider_spinbox.hpp>
+#include <noggit/ui/TexturePicker.h>
 #include <noggit/ui/texture_swapper.hpp>
+#include <noggit/ui/TexturingGUI.h>
+
 #include <util/qt/overload.hpp>
 
 #include <QtWidgets/QFormLayout>
@@ -24,7 +27,7 @@ namespace noggit
                                    , bool_toggle_property* show_quick_palette
                                    , QWidget* parent
                                    )
-      : QWidget(parent)
+      : noggit_tool(parent)
       , _brush_level(255)
       , _radius(15.f)
       , _hardness(0.5f)
@@ -44,6 +47,8 @@ namespace noggit
       _current_texture->resize(QSize(225, 225));
       layout->addRow (_current_texture);
       layout->setAlignment(_current_texture, Qt::AlignHCenter);
+
+      texture_picker = new ui::texture_picker(_current_texture);
 
       auto tabs (new QTabWidget(this));
 
@@ -420,9 +425,66 @@ namespace noggit
       }
     }
 
+
+    void texturing_tool::tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world)
+    {
+      if (_left_mouse_button && !cursor_under_map)
+      {
+        if (_mod_shift_down && _mod_ctrl_down && _mod_alt_down)
+        {
+          // clear chunk textures
+          world->eraseTextures(cursor_pos);
+        }
+        else if (_mod_ctrl_down)
+        {
+          // Pick texture
+          texture_picker->getTextures(world->get_chunk_at(cursor_pos));
+        }
+        else if (_mod_shift_down && !!noggit::ui::selected_texture::get())
+        {
+          paint(world, cursor_pos, dt, *noggit::ui::selected_texture::get());
+        }
+      }
+    }
+
+    void texturing_tool::mouse_move_event(QLineF const& relative_movement)
+    {
+      if (_right_mouse_button && _mod_alt_down)
+      {
+        change_hardness(relative_movement.dx() / (mouse_sensibility * 50.f));
+      }
+      else if (_left_mouse_button)
+      {
+        if (_mod_alt_down)
+        {
+          change_radius(relative_movement.dx() / mouse_sensibility);
+        }
+        else if (_mod_space_down)
+        {
+          change_pressure(relative_movement.dx() / (mouse_sensibility * 50.f));
+        }
+      }
+    }
+
+    void texturing_tool::wheel_event(QWheelEvent* event)
+    {
+      if (_mod_space_down)
+      {
+        change_brush_level(scroll_wheel_delta_for_range(event, 255.f));
+      }
+      else if (_mod_alt_down)
+      {
+        change_spray_size(scroll_wheel_delta_for_range(event, 39.f));
+      }
+      else if (_mod_shift_down)
+      {
+        change_spray_pressure(scroll_wheel_delta_for_range(event, 10.f));
+      }
+    }
+
+
     void texturing_tool::change_tex_flag(World* world, math::vector_3d const& pos, bool add, scoped_blp_texture_reference texture)
     {
-
       std::size_t flag = 0;
 
       flag |= FLAG_ANIMATE;

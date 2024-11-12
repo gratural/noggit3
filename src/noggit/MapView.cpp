@@ -81,7 +81,7 @@ void MapView::set_editing_mode (editing_mode mode)
   objectEditor->modelImport->hide();
   objectEditor->rotationEditor->hide();
   TexturePalette->hide();
-  TexturePicker->hide();
+  texturingTool->texture_picker->hide();
   _texture_palette_dock->hide();
 
   _world->reset_selection();
@@ -123,6 +123,7 @@ void MapView::setToolPropertyWidgetVisibility(editing_mode mode)
     break;
   case editing_mode::paint:
     _texturing_dock->setVisible(!ui_hidden);
+    _current_tool = texturingTool;
     break;
   case editing_mode::areaid:
     _areaid_editor_dock->setVisible(!ui_hidden);
@@ -373,11 +374,10 @@ void MapView::createGUI()
   _keybindings->hide();
   connect(this, &QObject::destroyed, _keybindings, &QObject::deleteLater);
 
-  TexturePicker = new noggit::ui::texture_picker(texturingTool->_current_texture, this);
-  TexturePicker->hide();
-  connect(this, &QObject::destroyed, TexturePicker, &QObject::deleteLater);
+  texturingTool->texture_picker->hide();
+  connect(this, &QObject::destroyed, texturingTool->texture_picker, &QObject::deleteLater);
 
-  connect( TexturePicker
+  connect( texturingTool->texture_picker
          , &noggit::ui::texture_picker::set_texture
          , [=] (scoped_blp_texture_reference texture)
            {
@@ -386,20 +386,20 @@ void MapView::createGUI()
              noggit::ui::selected_texture::set(std::move(texture));
            }
          );
-  connect(TexturePicker, &noggit::ui::texture_picker::shift_left
+  connect(texturingTool->texture_picker, &noggit::ui::texture_picker::shift_left
     , [=]
     {
       makeCurrent();
       opengl::context::scoped_setter const _(::gl, context());
-      TexturePicker->shiftSelectedTextureLeft();
+      texturingTool->texture_picker->shiftSelectedTextureLeft();
     }
   );
-  connect(TexturePicker, &noggit::ui::texture_picker::shift_right
+  connect(texturingTool->texture_picker, &noggit::ui::texture_picker::shift_right
     , [=]
     {
       makeCurrent();
       opengl::context::scoped_setter const _(::gl, context());
-      TexturePicker->shiftSelectedTextureRight();
+      texturingTool->texture_picker->shiftSelectedTextureRight();
     }
   );
 
@@ -768,7 +768,7 @@ void MapView::createGUI()
     QWidget* widget_list[] =
     {
       TexturePalette,
-      TexturePicker,
+      texturingTool->texture_picker,
       guidetailInfos,
       _cursor_switcher.get(),
       _keybindings,
@@ -1426,7 +1426,7 @@ void MapView::on_exit_prompt()
   objectEditor->modelImport->hide();
   objectEditor->rotationEditor->hide();
   guidetailInfos->hide();
-  TexturePicker->hide();
+  texturingTool->texture_picker->hide();
   TexturePalette->hide();
 }
 
@@ -1818,7 +1818,7 @@ MapView::~MapView()
   // when the uid fix fail the UI isn't created
   if (!_uid_fix_failed)
   {
-    delete TexturePicker; // explicitly delete this here to avoid opengl context related crash
+    delete texturingTool->texture_picker; // explicitly delete this here to avoid opengl context related crash
     delete objectEditor;
     delete texturingTool;
   }
@@ -1939,29 +1939,6 @@ void MapView::tick (float dt)
 
         switch (terrainMode)
         {
-        case editing_mode::paint:
-          if (_mod_shift_down && _mod_ctrl_down && _mod_alt_down)
-          {
-            // clear chunk texture
-            if (!underMap)
-            {
-              _world->eraseTextures(_cursor_pos);
-            }
-          }
-          else if (_mod_ctrl_down && !ui_hidden)
-          {
-            // Pick texture
-            TexturePicker->getTextures(selection);
-          }
-          else  if (_mod_shift_down && !!noggit::ui::selected_texture::get())
-          {
-            if ((_display_mode == display_mode::in_3D && !underMap) || _display_mode == display_mode::in_2D)
-            {
-              texturingTool->paint(_world.get(), _cursor_pos, dt, *noggit::ui::selected_texture::get());
-            }
-          }
-          break;
-
         case editing_mode::holes:
           // no undermap check here, else it's impossible to remove holes
           if (_mod_shift_down)
@@ -2793,35 +2770,6 @@ void MapView::mouseMoveEvent (QMouseEvent* event)
     _minimap->update();
   }
 
-
-  if (rightMouse && _mod_alt_down)
-  {
-    if (terrainMode == editing_mode::paint)
-    {
-      texturingTool->change_hardness(relative_movement.dx() / 300.0f);
-    }
-  }
-
-  if (leftMouse && _mod_alt_down)
-  {
-	switch (terrainMode)
-    {
-    case editing_mode::paint:
-      texturingTool->change_radius(relative_movement.dx() / XSENS);
-      break;
-    }
-  }
-
-  if (leftMouse && _mod_space_down)
-  {
-    switch (terrainMode)
-    {
-    case editing_mode::paint:
-      texturingTool->change_pressure(relative_movement.dx() / 300.0f);
-      break;
-    }
-  }
-
   if (_display_mode == display_mode::in_2D && leftMouse && _mod_alt_down && _mod_shift_down)
   {
     strafing = ((relative_movement.dx() / XSENS) / -1) * 5.0f;
@@ -2917,34 +2865,6 @@ void MapView::wheelEvent (QWheelEvent* event)
   makeCurrent();
   opengl::context::scoped_setter const _ (::gl, context());
 
-  auto&& delta_for_range
-    ( [&] (float range)
-      {
-        //! \note / 8.f for degrees, / 40.f for smoothness
-        return (_mod_ctrl_down ? 0.01f : 0.1f)
-          * range
-          // alt = horizontal delta
-          * (_mod_alt_down ? event->angleDelta().x() : event->angleDelta().y())
-          / 320.f
-          ;
-      }
-    );
-
-  if (terrainMode == editing_mode::paint)
-  {
-    if (_mod_space_down)
-    {
-      texturingTool->change_brush_level (delta_for_range (255.f));
-    }
-    else if (_mod_alt_down)
-    {
-      texturingTool->change_spray_size (delta_for_range (39.f));
-    }
-    else if (_mod_shift_down)
-    {
-      texturingTool->change_spray_pressure (delta_for_range (10.f));
-    }
-  }
   if (_current_tool)
   {
     _current_tool->wheel_event(event);

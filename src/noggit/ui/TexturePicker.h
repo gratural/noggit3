@@ -23,7 +23,7 @@ namespace noggit
     public:
       texture_picker (current_texture*, QWidget* parent = nullptr);
 
-      void getTextures(selection_type lSelection);
+      void getTextures(MapChunk* chunk);
       void setTexture(size_t id, current_texture*);
       void shiftSelectedTextureLeft();
       void shiftSelectedTextureRight();

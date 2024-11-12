@@ -76,13 +76,12 @@ namespace noggit
 
     }
 
-    void texture_picker::getTextures(selection_type lSelection)
+    void texture_picker::getTextures(MapChunk* chunk)
     {
       show();
 
-      if (lSelection.which() == eEntry_MapChunk)
+      if (chunk)
       {
-        MapChunk* chunk = boost::get<selected_chunk_type> (lSelection).chunk;
         _chunk = chunk;
         update(false);
       }

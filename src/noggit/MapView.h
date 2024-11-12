@@ -314,7 +314,6 @@ private:
   noggit::ui::zone_id_browser* ZoneIDBrowser;
   noggit::ui::texture_palette_small* _texture_palette_small;
   QDockWidget* _areaid_editor_dock;
-  noggit::ui::texture_picker* TexturePicker;
   noggit::ui::water* guiWater;
   QDockWidget* _water_editor_dock;
   noggit::ui::object_editor* objectEditor;

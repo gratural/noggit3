@@ -8,6 +8,7 @@
 #include <noggit/float_property.hpp>
 #include <noggit/TextureManager.h>
 #include <noggit/unsigned_int_property.hpp>
+#include <noggit/ui/noggit_tool.hpp>
 
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QDial>
@@ -23,6 +24,7 @@ namespace noggit
   {
     class checkbox;
     class current_texture;
+    class texture_picker;
     class texture_swapper;
 
     enum class texturing_mode
@@ -32,7 +34,7 @@ namespace noggit
       anim
     };
 
-    class texturing_tool : public QWidget
+    class texturing_tool : public noggit_tool
     {
     public:
       texturing_tool ( const math::vector_3d* camera_pos
@@ -71,10 +73,15 @@ namespace noggit
       }
 
       current_texture* _current_texture;
+      texture_picker* texture_picker;
 
       texture_swapper* const texture_swap_tool() { return _texture_switcher; }
 
       QSize sizeHint() const override;
+
+      virtual void tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world) override;
+      virtual void mouse_move_event(QLineF const& relative_movement) override;
+      virtual void wheel_event(QWheelEvent* event) override;
 
     private:
       void change_tex_flag(World* world, math::vector_3d const& pos, bool add, scoped_blp_texture_reference texture);
