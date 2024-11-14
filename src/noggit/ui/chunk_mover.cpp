@@ -8,8 +8,11 @@
 #include <noggit/map_chunk_headers.hpp>
 #include <noggit/World.h>
 
+#include <QButtonGroup>
 #include <QFormLayout>
+#include <QGridLayout>
 #include <QGroupBox>
+#include <QRadioButton>
 
 namespace noggit::ui
 {
@@ -49,6 +52,31 @@ namespace noggit::ui
 
     layout->addRow(overrides_group);
 
+    QGroupBox* ground_param_group = new QGroupBox("Height Mode", this);
+    auto ground_param_layout(new QGridLayout(ground_param_group));
+
+    QButtonGroup* height_mode_group = new QButtonGroup(ground_param_group);
+    QRadioButton* hm_normal = new QRadioButton("Normal");
+    QRadioButton* hm_min = new QRadioButton("Min");
+    QRadioButton* hm_max = new QRadioButton("Max");
+    QRadioButton* hm_add = new QRadioButton("Add");
+    QRadioButton* hm_sub = new QRadioButton("Subtract");
+
+    height_mode_group->addButton(hm_normal, static_cast<int>(chunk_override_params::height_mode::normal));
+    height_mode_group->addButton(hm_min, static_cast<int>(chunk_override_params::height_mode::min));
+    height_mode_group->addButton(hm_max, static_cast<int>(chunk_override_params::height_mode::max));
+    height_mode_group->addButton(hm_add, static_cast<int>(chunk_override_params::height_mode::add));
+    height_mode_group->addButton(hm_sub, static_cast<int>(chunk_override_params::height_mode::subtract));
+    hm_normal->toggle();
+
+    ground_param_layout->addWidget(hm_normal, 0, 0);
+    ground_param_layout->addWidget(hm_min, 1, 0);
+    ground_param_layout->addWidget(hm_max, 1, 1);
+    ground_param_layout->addWidget(hm_add, 2, 0);
+    ground_param_layout->addWidget(hm_sub, 2, 1);
+
+    layout->addRow(ground_param_group);
+
     QGroupBox* param_group = new QGroupBox("Parameters", this);
     auto param_layout(new QFormLayout(param_group));
 
@@ -66,6 +94,14 @@ namespace noggit::ui
     param_layout->addRow(new checkbox("Preview Changes", &_preview_enabled, param_group));
 
     layout->addRow(param_group);
+
+
+    connect ( height_mode_group, qOverload<int> (&QButtonGroup::buttonClicked)
+            , [&] (int id)
+              {
+                _height_mode = static_cast<chunk_override_params::height_mode>(id);
+              }
+            );
   }
 
   void chunk_mover_ui::tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world)
@@ -130,6 +166,8 @@ namespace noggit::ui
     params.area_id = _override_area_id.get();
     params.holes = _override_holes.get();
     params.models = _override_models.get();
+
+    params.height_override_mode = _height_mode;
 
     params.fix_gaps = _fix_gaps.get();
     params.clear_shadows = _clear_shadows.get();

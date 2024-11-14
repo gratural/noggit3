@@ -247,23 +247,37 @@ noggit::chunk_data MapChunk::get_chunk_data()
 
 void MapChunk::override_data(noggit::chunk_data& data, noggit::chunk_override_params const& params)
 {
-  if (params.height && params.vertex_colors)
+  if (params.height && params.vertex_colors && params.height_override_mode == noggit::chunk_override_params::height_mode::normal)
   {
     vertices = data.vertices;
   }
-  else if (params.height)
+  else
   {
-    for (int i = 0; i < mapbufsize; ++i)
+    if (params.height)
     {
-      vertices[i].position = data.vertices[i].position;
-      vertices[i].normal = data.vertices[i].normal;
+      for (int i = 0; i < mapbufsize; ++i)
+      {
+        float h_orig = vertices[i].position.y, h_new = data.vertices[i].position.y, h = 0.f;
+
+        switch (params.height_override_mode)
+        {
+          case noggit::chunk_override_params::height_mode::normal:    h = h_new; break;
+          case noggit::chunk_override_params::height_mode::min:       h = std::min(h_orig, h_new); break;
+          case noggit::chunk_override_params::height_mode::max:       h = std::max(h_orig, h_new); break;
+          case noggit::chunk_override_params::height_mode::add:       h = h_orig + h_new; break;
+          case noggit::chunk_override_params::height_mode::subtract: h = h_orig - h_new; break;
+        }
+
+        vertices[i].position.y = h;
+        vertices[i].normal = data.vertices[i].normal;
+      }
     }
-  }
-  else if (params.vertex_colors)
-  {
-    for (int i = 0; i < mapbufsize; ++i)
+    if (params.vertex_colors)
     {
-      vertices[i].color = data.vertices[i].color;
+      for (int i = 0; i < mapbufsize; ++i)
+      {
+        vertices[i].color = data.vertices[i].color;
+      }
     }
   }
 
@@ -346,6 +360,23 @@ void MapChunk::set_preview_data(noggit::chunk_data& data, noggit::chunk_override
     for (int i = 0; i < mapbufsize; ++i)
     {
       _preview_data->vertices[i].color = vertices[i].color;
+    }
+  }
+
+  if (params.height && params.height_override_mode != noggit::chunk_override_params::height_mode::normal)
+  {
+    for (int i = 0; i < mapbufsize; ++i)
+    {
+      float h_orig = vertices[i].position.y, h_new = data.vertices[i].position.y, h = 0.f;
+      switch (params.height_override_mode)
+      {
+        case noggit::chunk_override_params::height_mode::min: h = std::min(h_orig, h_new); break;
+        case noggit::chunk_override_params::height_mode::max: h = std::max(h_orig, h_new); break;
+        case noggit::chunk_override_params::height_mode::add:       h = h_orig + h_new; break;
+        case noggit::chunk_override_params::height_mode::subtract: h = h_orig - h_new; break;
+      }
+
+      _preview_data->vertices[i].position.y = h;
     }
   }
 

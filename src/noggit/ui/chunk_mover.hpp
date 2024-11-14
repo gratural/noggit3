@@ -45,6 +45,7 @@ namespace noggit::ui
     bool_toggle_property _override_holes;
     bool_toggle_property _override_models;
 
+    chunk_override_params::height_mode _height_mode = chunk_override_params::height_mode::normal;
 
     float_property _radius;
     bool_toggle_property _square_brush;

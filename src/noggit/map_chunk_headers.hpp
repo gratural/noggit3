@@ -115,6 +115,15 @@ namespace noggit
 
   struct chunk_override_params
   {
+    enum class height_mode : int
+    {
+      normal,
+      min,
+      max,
+      add,
+      subtract
+    };
+
     bool height;
     bool textures;
     bool alphamaps;
@@ -124,6 +133,8 @@ namespace noggit
     bool area_id;
     bool holes;
     bool models;
+
+    height_mode height_override_mode;
 
     bool clear_shadows;
     bool clear_models;
