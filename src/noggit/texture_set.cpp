@@ -66,6 +66,10 @@ TextureSet::TextureSet ( MapChunkHeader const& header
         f->seek (alpha_base + _layers_info[layer].ofsAlpha);
         alphamaps[layer - 1] = std::make_unique<Alphamap> (f, _layers_info[layer].flags, use_big_alphamaps, do_not_fix_alpha_map);
       }
+      else if(layer > 0) // create empty alphamap
+      {
+        alphamaps[layer - 1] = std::make_unique<Alphamap>();
+      }
     }
 
     // always use big alpha for editing / rendering
