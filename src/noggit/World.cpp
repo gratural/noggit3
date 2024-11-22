@@ -2052,13 +2052,13 @@ bool World::sprayTexture(math::vector_3d const& pos, Brush *brush, float strengt
   return succ;
 }
 
-bool World::replaceTexture(math::vector_3d const& pos, float radius, scoped_blp_texture_reference const& old_texture, scoped_blp_texture_reference new_texture)
+bool World::replaceTexture(math::vector_3d const& pos, Brush const& brush, float change, scoped_blp_texture_reference const& old_texture, scoped_blp_texture_reference new_texture)
 {
   return for_all_chunks_in_range
-    ( pos, radius
+    ( pos, brush.get_radius()
       , [&](MapChunk* chunk)
       {
-        return chunk->replaceTexture(pos, radius, old_texture, new_texture);
+        return chunk->replaceTexture(pos, brush, change, old_texture, new_texture);
       }
     );
 }

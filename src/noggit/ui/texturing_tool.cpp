@@ -375,6 +375,7 @@ namespace noggit
       switch (_texturing_mode)
       {
         case texturing_mode::paint: return _hardness.get();
+        case texturing_mode::swap: return _texture_switcher->brush_mode() ? _texture_switcher->hardness() : 0.f;
         default: return 0.f;
       }
     }
@@ -386,16 +387,16 @@ namespace noggit
 
     void texturing_tool::paint (World* world, math::vector_3d const& pos, float dt, scoped_blp_texture_reference texture)
     {
-      float strength = 1.0f - pow(1.0f - _pressure.get(), dt * 10.0f);
-
       if (_texturing_mode == texturing_mode::swap)
       {
+        float strength = 1.0f - pow(1.0f - _texture_switcher->pressure(), dt * 10.0f);
+
         auto to_swap (_texture_switcher->texture_to_swap());
         if (to_swap)
         {
           if (_texture_switcher->brush_mode())
           {
-            world->replaceTexture(pos, _texture_switcher->radius(), to_swap.get(), texture);
+            world->replaceTexture(pos, _texture_switcher->brush(), strength, to_swap.get(), texture);
           }
           else
           {
@@ -405,6 +406,8 @@ namespace noggit
       }
       else if (_texturing_mode == texturing_mode::paint)
       {
+        float strength = 1.0f - pow(1.0f - _pressure.get(), dt * 10.0f);
+
         if (_spray_mode_group->isChecked())
         {
           world->sprayTexture(pos, &_spray_brush, alpha_target(), strength, _radius.get(), _spray_pressure.get(), texture);

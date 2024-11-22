@@ -660,12 +660,15 @@ bool TextureSet::replace_texture( float xbase
                                 , float zbase
                                 , float x
                                 , float z
-                                , float radius
+                                , Brush const& brush
+                                , float change
                                 , scoped_blp_texture_reference const& texture_to_replace
                                 , scoped_blp_texture_reference replacement_texture
                                 )
 {
   float dist = misc::getShortestDist(x, z, xbase, zbase, CHUNKSIZE);
+  float radius = brush.get_radius();
+  float inner_radius = brush.get_inner_radius();
 
   if (dist > radius)
   {
@@ -724,8 +727,9 @@ bool TextureSet::replace_texture( float xbase
       {
         int offset = j * 64 + i;
 
-        amap[new_tex_level][offset] += amap[old_tex_level][offset];
-        amap[old_tex_level][offset] = 0.f;
+        float v = amap[old_tex_level][offset] * brush.value_at_dist(dist) * change;
+        amap[new_tex_level][offset] += v;
+        amap[old_tex_level][offset] -= v;
 
         changed = true;
       }

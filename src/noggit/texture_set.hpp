@@ -56,7 +56,8 @@ public:
                       , float zbase
                       , float x
                       , float z
-                      , float radius
+                      , Brush const& brush
+                      , float change
                       , scoped_blp_texture_reference const& texture_to_replace
                       , scoped_blp_texture_reference replacement_texture
                       );

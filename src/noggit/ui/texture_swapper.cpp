@@ -25,6 +25,8 @@ namespace noggit
       : QWidget (parent)
       , _texture_to_swap()
       , _radius(15.f)
+      , _hardness(0.5f)
+      , _pressure(0.75f)
     {
       setWindowTitle ("Swap");
       setWindowFlags (Qt::Tool | Qt::WindowStaysOnTopHint);
@@ -51,6 +53,8 @@ namespace noggit
       _brush_mode_group->setLayout(brush_layout);
 
       brush_layout->addRow(new slider_spinbox("Radius", &_radius, 0.f, 100.f, 2, brush_content));
+      brush_layout->addRow(new slider_spinbox("Hardness", &_hardness, 0.f, 1.f, 2, brush_content));
+      brush_layout->addRow(new slider_spinbox("Pressure", &_pressure, 0.f, 1.f, 2, brush_content));
 
       connect(select, &QPushButton::clicked, [&]() {
         _texture_to_swap = selected_texture::get();
