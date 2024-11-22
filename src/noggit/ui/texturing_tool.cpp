@@ -302,6 +302,10 @@ namespace noggit
       {
         _hardness.change(change);
       }
+      else if (_texturing_mode == texturing_mode::swap)
+      {
+        _texture_switcher->change_hardness(change);
+      }
     }
 
     void texturing_tool::change_pressure(float change)
@@ -309,6 +313,10 @@ namespace noggit
       if (_texturing_mode == texturing_mode::paint)
       {
         _pressure.change(change);
+      }
+      else if (_texturing_mode == texturing_mode::swap)
+      {
+        _texture_switcher->change_pressure(change);
       }
     }
 

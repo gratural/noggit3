@@ -224,9 +224,11 @@ namespace noggit
       swapper_label->setStyleSheet(header_style);
       texture_layout->addRow(swapper_label);
 
-      generate_hotkey_row({ font_noggit::shift, font_noggit::lmb },    "\a+\a - Swap texture", texture_layout);
-      generate_hotkey_row({ font_noggit::alt, font_noggit::lmb_drag }, "\a+\a - Change radius", texture_layout);
-      generate_hotkey_row({ font_noggit::t },                          "\a - Toggle brush swapper", texture_layout);
+      generate_hotkey_row({ font_noggit::shift, font_noggit::lmb },      "\a+\a - Swap texture", texture_layout);
+      generate_hotkey_row({ font_noggit::alt, font_noggit::lmb_drag },   "\a+\a - Change radius", texture_layout);
+      generate_hotkey_row({ font_noggit::alt, font_noggit::rmb_drag },   "\a+\a - Change hardness", texture_layout);
+      generate_hotkey_row({ font_noggit::space, font_noggit::lmb_drag }, "\a+\a - Change pressure", texture_layout);
+      generate_hotkey_row({ font_noggit::t },                            "\a - Toggle brush swapper", texture_layout);
 
       auto anim_label = new QLabel("Anim:");
       anim_label->setStyleSheet(header_style);
