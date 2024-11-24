@@ -408,7 +408,8 @@ void liquid_layer::changeLiquidID(int id)
       _liquid_vertex_format = 1;
       break;
     case 1: // ocean
-      _liquid_vertex_format = 2;
+      // lvf 2 is only used for flat water at height 0
+      _liquid_vertex_format = misc::float_equals(_minimum, 0.f) && misc::float_equals(_maximum, 0.f) ? 2 : 0;
       _mclq_liquid_type = 1;
       break;
     default: // river
