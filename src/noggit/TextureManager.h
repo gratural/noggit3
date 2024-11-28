@@ -6,9 +6,9 @@
 #include <noggit/multimap_with_normalized_key.hpp>
 #include <opengl/texture.hpp>
 
-#include <boost/optional.hpp>
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -53,7 +53,7 @@ private:
 private:
   std::map<int, std::vector<uint32_t>> _data;
   std::map<int, std::vector<uint8_t>> _compressed_data;
-  boost::optional<GLint> _compression_format;
+  std::optional<GLint> _compression_format;
 
   static std::atomic<int> blp_tex_counter;
 };

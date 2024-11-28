@@ -91,7 +91,7 @@ void blp_texture::upload()
   {
     for (int i = 0; i < _compressed_data.size(); ++i)
     {
-      gl.compressedTexImage2D(GL_TEXTURE_2D, i, _compression_format.get(), width, height, 0, _compressed_data[i].size(), _compressed_data[i].data());
+      gl.compressedTexImage2D(GL_TEXTURE_2D, i, _compression_format.value(), width, height, 0, _compressed_data[i].size(), _compressed_data[i].data());
 
       width = std::max(width >> 1, 1);
       height = std::max(height >> 1, 1);
@@ -124,7 +124,7 @@ void blp_texture::upload_to_currently_bound_array(GLint array_layer, int startin
   {
     for (int i = starting_level; i < _compressed_data.size(); ++i)
     {
-      gl.compressedTexSubImage3D(GL_TEXTURE_2D_ARRAY, i - starting_level, 0, 0, array_layer, width, height, 1, _compression_format.get(), _compressed_data[i].size(), _compressed_data[i].data());
+      gl.compressedTexSubImage3D(GL_TEXTURE_2D_ARRAY, i - starting_level, 0, 0, array_layer, width, height, 1, _compression_format.value(), _compressed_data[i].size(), _compressed_data[i].data());
       width = std::max(width >> 1, 1);
       height = std::max(height >> 1, 1);
     }
@@ -139,7 +139,7 @@ GLint blp_texture::texture_format() const
   }
   else
   {
-    return _compression_format.get();
+    return _compression_format.value();
   }
 }
 
