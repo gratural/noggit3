@@ -4,8 +4,6 @@
 #include <noggit/ui/ObjectEditor.h>
 #include <noggit/MPQ.h>
 
-#include <boost/algorithm/string.hpp>
-
 
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QPushButton>
@@ -114,19 +112,21 @@ namespace noggit::ui
         continue;
       }
 
-      if (use_filter && !boost::contains(file, filter))
+      if (use_filter && file.find(filter) != std::string::npos)
       {
         continue;
       }
 
-      std::vector<std::string> tokens;
-      boost::split(tokens, file, boost::is_any_of("/"));
+      std::regex delimiter("/");
+      std::sregex_token_iterator it(file.begin(), file.end(), delimiter, -1);
+      std::sregex_token_iterator end;
 
       asset_tree_node* node = &root;
 
-      for (std::string const& token : tokens)
+      while(it != end)
       {
-        node = &node->add_child(token);
+        node = &node->add_child(*it);
+        ++it;
       }
     }
 
