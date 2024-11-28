@@ -15,9 +15,8 @@
 #include <noggit/wmo_liquid.hpp>
 #include <noggit/wmo_headers.hpp>
 
-#include <boost/optional.hpp>
-
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -247,7 +246,7 @@ public:
 
   std::vector<WMODoodadSet> doodadsets;
 
-  boost::optional<scoped_model_reference> skybox;
+  std::optional<scoped_model_reference> skybox;
 
   bool is_hidden() const { return _hidden; }
   void toggle_visibility() { _hidden = !_hidden; }

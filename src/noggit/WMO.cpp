@@ -11,12 +11,11 @@
 #include <opengl/primitives.hpp>
 #include <opengl/scoped.hpp>
 
-#include <boost/algorithm/string.hpp>
-
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <regex>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -171,7 +170,7 @@ void WMO::finishLoading ()
   if (size > 4)
   {
     std::string path = noggit::mpq::normalized_filename(std::string (reinterpret_cast<char const*>(f.getPointer ())));
-    boost::replace_all(path, "mdx", "m2");
+    path = std::regex_replace(path, std::regex("mdx"), "m2");
 
     if (path.length())
     {
@@ -557,7 +556,7 @@ bool WMO::draw_skybox ( math::matrix_4x4 const& model_view
 
     if (camera_pos.is_inside_of(extent.first, extent.second))
     {
-      ModelInstance sky(skybox.get()->filename);
+      ModelInstance sky(skybox.value()->filename);
       sky.pos = camera_pos;
       sky.scale = 2.f;
       sky.recalcExtents();
