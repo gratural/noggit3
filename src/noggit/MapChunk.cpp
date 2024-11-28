@@ -690,7 +690,7 @@ std::optional<float> MapChunk::get_exact_height_at(math::vector_3d const& pos)
 
   if (dist)
   {
-    return ray.position(dist.get()).y;
+    return ray.position(dist.value()).y;
   }
   else
   {

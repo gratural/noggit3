@@ -6,7 +6,7 @@
 
 namespace math
 {
-  boost::optional<float> ray::intersect_bounds
+  std::optional<float> ray::intersect_bounds
     (vector_3d const& min, vector_3d const& max) const
   {
     float tmin (std::numeric_limits<float>::lowest());
@@ -44,10 +44,10 @@ namespace math
       return tmin;
     }
 
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<float> ray::intersect_triangle
+  std::optional<float> ray::intersect_triangle
     (vector_3d const& v0, vector_3d const& v1, vector_3d const& v2) const
   {
     vector_3d const e1 (v1 - v0);
@@ -59,7 +59,7 @@ namespace math
 
     if (det == 0.0f)
     {
-      return boost::none;
+      return std::nullopt;
     }
 
     vector_3d const T (_origin - v0);
@@ -67,7 +67,7 @@ namespace math
 
     if (u < 0.0f || u > 1.0f)
     {
-      return boost::none;
+      return std::nullopt;
     }
 
     vector_3d const Q (T % e1);
@@ -75,7 +75,7 @@ namespace math
 
     if (v < 0.0f || u + v > 1.0f)
     {
-      return boost::none;
+      return std::nullopt;
     }
 
     float const t ((e2 * Q) / det);
@@ -85,6 +85,6 @@ namespace math
       return t;
     }
 
-    return boost::none;
+    return std::nullopt;
   }
 }

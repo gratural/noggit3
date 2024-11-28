@@ -5,7 +5,7 @@
 #include <math/matrix_4x4.hpp>
 #include <math/vector_3d.hpp>
 
-#include <boost/optional/optional.hpp>
+#include <optional>
 
 namespace math
 {
@@ -22,9 +22,9 @@ namespace math
             )
     {}
 
-    boost::optional<float> intersect_bounds
+    std::optional<float> intersect_bounds
       (vector_3d const& _min, vector_3d const& _max) const;
-    boost::optional<float> intersect_triangle
+    std::optional<float> intersect_triangle
       (vector_3d const& _v0, vector_3d const& _v1, vector_3d const& _v2) const;
 
     vector_3d position (float distance) const
