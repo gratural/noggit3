@@ -11,6 +11,7 @@
 #include <opengl/shader.fwd.hpp>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -54,7 +55,7 @@ struct SkyColor
 class Sky
 {
 public:
-  boost::optional<ModelInstance> skybox;
+  std::optional<ModelInstance> skybox;
 
   math::vector_3d pos;
   float r1, r2;

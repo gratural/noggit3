@@ -337,7 +337,7 @@ bool Skies::draw( math::matrix_4x4 const& model_view
     {
       if (sky.weight > 0.f && sky.skybox)
       {
-        auto& model = sky.skybox.get();
+        auto& model = sky.skybox.value();
         model.model->trans = sky.weight;
         model.pos = camera_pos;
         model.scale = 0.1f;
