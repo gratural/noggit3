@@ -11,6 +11,7 @@
 
 #include <atomic>
 #include <functional>
+#include <optional>
 #include <mutex>
 #include <unordered_map>
 
@@ -37,9 +38,9 @@ namespace noggit
     // perform uid duplicate check, return the uid of the stored instance
     std::uint32_t add_wmo_instance(WMOInstance instance, bool from_reloading);
 
-    boost::optional<ModelInstance*> get_model_instance(std::uint32_t uid);
-    boost::optional<WMOInstance*> get_wmo_instance(std::uint32_t uid);
-    boost::optional<selection_type> get_instance(std::uint32_t uid);
+    std::optional<ModelInstance*> get_model_instance(std::uint32_t uid);
+    std::optional<WMOInstance*> get_wmo_instance(std::uint32_t uid);
+    std::optional<selection_type> get_instance(std::uint32_t uid);
 
     std::vector<selection_type> get_instances_on_chunk(math::vector_3d const& chunk_origin);
     void delete_instances_on_chunk(math::vector_3d const& chunk_origin);
@@ -65,8 +66,8 @@ namespace noggit
 
     std::uint32_t unsafe_add_model_instance_no_world_upd(ModelInstance instance);
     std::uint32_t unsafe_add_wmo_instance_no_world_upd(WMOInstance instance);
-    boost::optional<ModelInstance*> unsafe_get_model_instance(std::uint32_t uid);
-    boost::optional<WMOInstance*> unsafe_get_wmo_instance(std::uint32_t uid);
+    std::optional<ModelInstance*> unsafe_get_model_instance(std::uint32_t uid);
+    std::optional<WMOInstance*> unsafe_get_wmo_instance(std::uint32_t uid);
 
   public:
     template<typename Fun>

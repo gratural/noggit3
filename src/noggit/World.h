@@ -303,7 +303,7 @@ public:
   // add a wmo instance to the world (needs to be positioned already), return the uid
   std::uint32_t add_wmo_instance(WMOInstance wmo_instance, bool from_reloading);
 
-  boost::optional<selection_type> get_model(std::uint32_t uid);
+  std::optional<selection_type> get_model(std::uint32_t uid);
   void remove_models_if_needed(std::vector<uint32_t> const& uids);
   void remove_models_on_chunk(math::vector_3d const& chunk_origin)
   {

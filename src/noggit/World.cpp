@@ -2317,7 +2317,7 @@ void World::deleteModelInstance(int pUniqueID)
 
   if (instance)
   {
-    remove_from_selection(instance.get());
+    remove_from_selection(instance.value());
   }
 }
 
@@ -2327,7 +2327,7 @@ void World::deleteWMOInstance(int pUniqueID)
 
   if (instance)
   {
-    remove_from_selection(instance.get());
+    remove_from_selection(instance.value());
   }
 }
 
@@ -2401,7 +2401,7 @@ ModelInstance* World::addM2 ( std::string const& filename
   model_instance.recalcExtents();
 
   std::uint32_t uid = _model_instance_storage.add_model_instance(std::move(model_instance), true);
-  auto model = _model_instance_storage.get_model_instance(uid).get();
+  auto model = _model_instance_storage.get_model_instance(uid).value();
 
   _models_by_filename[filename].push_back(model);
   _models_by_filename_with_wmo_doodads[filename].push_back(model);
@@ -2425,7 +2425,7 @@ WMOInstance* World::addWMO ( std::string const& filename
   wmo_instance.recalcExtents();
 
   std::uint32_t uid = _model_instance_storage.add_wmo_instance(std::move(wmo_instance), true);
-  auto wmo = _model_instance_storage.get_wmo_instance(uid).get();
+  auto wmo = _model_instance_storage.get_wmo_instance(uid).value();
 
   _wmos_by_filename[filename].push_back(wmo);
 
@@ -2461,7 +2461,7 @@ std::uint32_t World::add_wmo_instance(WMOInstance wmo_instance, bool from_reload
   return _model_instance_storage.add_wmo_instance(std::move(wmo_instance), from_reloading);
 }
 
-boost::optional<selection_type> World::get_model(std::uint32_t uid)
+std::optional<selection_type> World::get_model(std::uint32_t uid)
 {
   return _model_instance_storage.get_instance(uid);
 }

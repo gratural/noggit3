@@ -38,7 +38,7 @@ namespace noggit
     if (existing_instance)
     {
       // instance already loaded
-      if (existing_instance.get()->is_a_duplicate_of(instance))
+      if (existing_instance.value()->is_a_duplicate_of(instance))
       {
         _instance_count_per_uid[uid]++;
         return uid;
@@ -84,7 +84,7 @@ namespace noggit
     if (existing_instance)
     {
       // instance already loaded
-      if (existing_instance.get()->is_a_duplicate_of(instance))
+      if (existing_instance.value()->is_a_duplicate_of(instance))
       {
         _instance_count_per_uid[uid]++;
 
@@ -300,12 +300,12 @@ namespace noggit
     _wmos.clear();
   }
 
-  boost::optional<ModelInstance*> world_model_instances_storage::get_model_instance(std::uint32_t uid)
+  std::optional<ModelInstance*> world_model_instances_storage::get_model_instance(std::uint32_t uid)
   {
     std::unique_lock<std::mutex> const lock (_mutex);
     return unsafe_get_model_instance(uid);
   }
-  boost::optional<ModelInstance*> world_model_instances_storage::unsafe_get_model_instance(std::uint32_t uid)
+  std::optional<ModelInstance*> world_model_instances_storage::unsafe_get_model_instance(std::uint32_t uid)
   {
     auto it = _m2s.find(uid);
 
@@ -315,16 +315,16 @@ namespace noggit
     }
     else
     {
-      return boost::none;
+      return std::nullopt;
     }
   }
 
-  boost::optional<WMOInstance*> world_model_instances_storage::get_wmo_instance(std::uint32_t uid)
+  std::optional<WMOInstance*> world_model_instances_storage::get_wmo_instance(std::uint32_t uid)
   {
     std::unique_lock<std::mutex> const lock (_mutex);
     return unsafe_get_wmo_instance(uid);
   }
-  boost::optional<WMOInstance*> world_model_instances_storage::unsafe_get_wmo_instance(std::uint32_t uid)
+  std::optional<WMOInstance*> world_model_instances_storage::unsafe_get_wmo_instance(std::uint32_t uid)
   {
     auto it = _wmos.find(uid);
 
@@ -334,11 +334,11 @@ namespace noggit
     }
     else
     {
-      return boost::none;
+      return std::nullopt;
     }
   }
 
-  boost::optional<selection_type> world_model_instances_storage::get_instance(std::uint32_t uid)
+  std::optional<selection_type> world_model_instances_storage::get_instance(std::uint32_t uid)
   {
     std::unique_lock<std::mutex> const lock (_mutex);
 
@@ -358,7 +358,7 @@ namespace noggit
       }
       else
       {
-        return boost::none;
+        return std::nullopt;
       }
     }
   }
