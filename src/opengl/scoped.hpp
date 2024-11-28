@@ -5,8 +5,7 @@
 #include <opengl/context.hpp>
 #include <opengl/texture.hpp>
 
-#include <boost/optional.hpp>
-
+#include <optional>
 #include <stdexcept>
 
 namespace opengl
@@ -84,7 +83,7 @@ namespace opengl
 
     private:
       GLuint _buffer;
-      boost::optional<buffer_binder<GL_ELEMENT_ARRAY_BUFFER>> _impl;
+      std::optional<buffer_binder<GL_ELEMENT_ARRAY_BUFFER>> _impl;
     };
 
     template<std::size_t count>
