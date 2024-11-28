@@ -57,17 +57,18 @@ namespace noggit
       brush_layout->addRow(new slider_spinbox("Pressure", &_pressure, 0.f, 1.f, 2, brush_content));
 
       connect(select, &QPushButton::clicked, [&]() {
-        _texture_to_swap = selected_texture::get();
+        _texture_to_swap.emplace(*selected_texture::get());
+
         if (_texture_to_swap)
         {
-          _texture_to_swap_display->set_texture(_texture_to_swap.get()->filename);
+          _texture_to_swap_display->set_texture(_texture_to_swap.value()->filename);
         }
       });
 
       connect(swap_adt, &QPushButton::clicked, [this, camera_pos, world]() {
         if (_texture_to_swap)
         {
-          world->swapTexture (*camera_pos, _texture_to_swap.get());
+          world->swapTexture (*camera_pos, _texture_to_swap.value());
         }
       });
     }

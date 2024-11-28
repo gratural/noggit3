@@ -404,11 +404,11 @@ namespace noggit
         {
           if (_texture_switcher->brush_mode())
           {
-            world->replaceTexture(pos, _texture_switcher->brush(), strength, to_swap.get(), texture);
+            world->replaceTexture(pos, _texture_switcher->brush(), strength, to_swap.value(), texture);
           }
           else
           {
-            world->overwriteTextureAtCurrentChunk(pos, to_swap.get(), texture);
+            world->overwriteTextureAtCurrentChunk(pos, to_swap.value(), texture);
           }
         }
       }
