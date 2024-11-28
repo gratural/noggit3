@@ -8,10 +8,9 @@
 #include <math/vector_4d.hpp>
 #include <math/vector_2d.hpp>
 
-#include <boost/optional.hpp>
-
 #include <initializer_list>
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -68,7 +67,7 @@ namespace opengl
 
     friend struct scoped::use_program;
 
-    boost::optional<GLuint> _handle;
+    std::optional<GLuint> _handle;
   };
 
   namespace scoped

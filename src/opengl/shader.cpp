@@ -116,7 +116,6 @@ namespace opengl
 #endif
   }
   program::program (program&& other)
-    : _handle (boost::none)
   {
     std::swap (_handle, other._handle);
   }
