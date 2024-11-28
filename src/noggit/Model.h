@@ -203,7 +203,7 @@ struct ModelRenderPass : ModelTexUnit
   texture_unit_lookup tu_lookups[2];
   uint16_t textures[2];
   uint16_t uv_animations[2];
-  boost::optional<ModelPixelShader> pixel_shader;
+  std::optional<ModelPixelShader> pixel_shader;
 
   m2_render_pass_ubo_data ubo_data;
   bool need_ubo_data_update = true;
@@ -405,7 +405,7 @@ private:
   std::vector<uint16_t> _indices;
 
   std::vector<ModelRenderPass> _render_passes;
-  boost::optional<FakeGeometry> _fake_geometry;
+  std::optional<FakeGeometry> _fake_geometry;
 
   // ===============================
   // Animation
