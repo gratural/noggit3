@@ -825,12 +825,46 @@ namespace noggit
 
         rotationEditor->updateValues(world);
       }
+
+      if (_right_mouse_button)
+      {
+        if (_mod_ctrl_down)
+        {
+          world->rotate_selected_models( math::degrees(_mouse_rotation_dt)
+                                       , math::degrees(0.f)
+                                       , math::degrees(0.f)
+                                       , _use_median_pivot_point.get()
+                                       );
+          rotationEditor->updateValues(world);
+        }
+        if (_mod_shift_down)
+        {
+          world->rotate_selected_models( math::degrees(0.f)
+                                       , math::degrees(_mouse_rotation_dt)
+                                       , math::degrees(0.f)
+                                       , _use_median_pivot_point.get()
+                                       );
+          rotationEditor->updateValues(world);
+        }
+        if (_mod_alt_down)
+        {
+          world->rotate_selected_models( math::degrees(0.f)
+                                       , math::degrees(0.f)
+                                       , math::degrees(_mouse_rotation_dt)
+                                       , _use_median_pivot_point.get()
+                                       );
+          rotationEditor->updateValues(world);
+        }
+
+        _mouse_rotation_dt = 0.f;
+      }
     }
 
     void object_editor::reset_extra_states()
     {
       _mouse_mov_x = 0.f;
       _mouse_mov_y = 0.f;
+      _mouse_rotation_dt = 0.f;
 
       _scale_key = 0;
       _rot_y_key = 0;
@@ -840,6 +874,8 @@ namespace noggit
     {
       _mouse_mov_x = -aspect_ratio() * relative_movement.dx() / static_cast<float>(_window_width);
       _mouse_mov_y = -relative_movement.dy() / static_cast<float>(_window_height);
+      // todo: store x + y delta and rotate depending on the camera orientation ?
+      _mouse_rotation_dt = (relative_movement.dx() + relative_movement.dy()) / mouse_sensibility * 5.f;
     }
 
     void object_editor::key_press_event(QKeyEvent* event)

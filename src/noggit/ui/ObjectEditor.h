@@ -88,6 +88,8 @@ namespace noggit
       float _mouse_mov_x;
       float _mouse_mov_y;
 
+      float _mouse_rotation_dt = 0.f;
+
       float _move_speed_factor = 0.001f;
 
       int _scale_key = 0;
