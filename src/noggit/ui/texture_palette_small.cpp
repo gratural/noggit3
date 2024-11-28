@@ -124,7 +124,7 @@ namespace noggit
 
       std::string filename;
       if (noggit::ui::selected_texture::get())
-        filename = noggit::ui::selected_texture::get().get()->filename;
+        filename = noggit::ui::selected_texture::get().value()->filename;
       else
         filename = "tileset\\generic\\black.blp";
 

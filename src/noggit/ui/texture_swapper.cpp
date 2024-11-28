@@ -57,7 +57,7 @@ namespace noggit
       brush_layout->addRow(new slider_spinbox("Pressure", &_pressure, 0.f, 1.f, 2, brush_content));
 
       connect(select, &QPushButton::clicked, [&]() {
-        _texture_to_swap.emplace(*selected_texture::get());
+        _texture_to_swap = selected_texture::get();
 
         if (_texture_to_swap)
         {

@@ -24,10 +24,6 @@
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QVBoxLayout>
 
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/path.hpp>
-#include <boost/range/iterator_range.hpp>
-
 namespace noggit
 {
   namespace ui
@@ -190,9 +186,9 @@ namespace noggit
     }
 
     // selected_texture:
-    boost::optional<scoped_blp_texture_reference> selected_texture::texture = boost::none;
+    std::optional<scoped_blp_texture_reference> selected_texture::texture = std::nullopt;
 
-    boost::optional<scoped_blp_texture_reference> selected_texture::get()
+    std::optional<scoped_blp_texture_reference> selected_texture::get()
     {
       return selected_texture::texture;
     }

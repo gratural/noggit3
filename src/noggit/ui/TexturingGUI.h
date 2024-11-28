@@ -5,7 +5,7 @@
 #include <noggit/TextureManager.h>
 #include <noggit/ui/widget.hpp>
 
-#include <boost/optional.hpp>
+#include <optional>
 
 
 class QMouseEvent;
@@ -33,8 +33,8 @@ namespace noggit
     {
     public:
       static void set(scoped_blp_texture_reference t);
-      static boost::optional<scoped_blp_texture_reference> get();
-      static boost::optional<scoped_blp_texture_reference> texture;
+      static std::optional<scoped_blp_texture_reference> get();
+      static std::optional<scoped_blp_texture_reference> texture;
     };
   }
 }

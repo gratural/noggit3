@@ -2533,7 +2533,7 @@ void MapView::draw_map()
                , radius
                , use_liquid_intersect
                , texturingTool->show_unpaintable_chunks() && terrainMode == editing_mode::paint
-               , noggit::ui::selected_texture::texture ? noggit::ui::selected_texture::texture.get()->filename : ""
+               , noggit::ui::selected_texture::texture ? noggit::ui::selected_texture::texture.value()->filename : ""
                , _draw_contour.get()
                , inner_radius
                , ref_pos
