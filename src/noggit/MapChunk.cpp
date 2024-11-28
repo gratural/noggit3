@@ -657,11 +657,11 @@ float MapChunk::getHeight(int x, int z)
   return vertices[indexNoLoD(x, z)].position.y;
 }
 
-boost::optional<float> MapChunk::get_exact_height_at(math::vector_3d const& pos)
+std::optional<float> MapChunk::get_exact_height_at(math::vector_3d const& pos)
 {
   if (pos.x < vmin.x || pos.x > vmax.x || pos.z < vmin.z || pos.z > vmax.z)
   {
-    return boost::none;
+    return std::nullopt;
   }
 
   // put the ray above the max height to be sure always hit the terrain
@@ -694,7 +694,7 @@ boost::optional<float> MapChunk::get_exact_height_at(math::vector_3d const& pos)
   }
   else
   {
-    return boost::none;
+    return std::nullopt;
   }
 }
 
@@ -1005,7 +1005,7 @@ void MapChunk::updateVerticesData()
   mt->chunk_height_changed();
 }
 
-void MapChunk::recalcNorms (std::function<boost::optional<float> (float, float)> height)
+void MapChunk::recalcNorms (std::function<std::optional<float> (float, float)> height)
 {
   auto point
   (
@@ -1013,7 +1013,7 @@ void MapChunk::recalcNorms (std::function<boost::optional<float> (float, float)>
     {
       return math::vector_3d
              ( v.x + xdiff
-             , height (v.x + xdiff, v.z + zdiff).get_value_or (v.y)
+             , height (v.x + xdiff, v.z + zdiff).value_or(v.y)
              , v.z + zdiff
              );
     }
@@ -1303,7 +1303,7 @@ bool MapChunk::blurTerrain ( math::vector_3d const& pos
                            , float radius
                            , int BrushType
                            , flatten_mode const& mode
-                           , std::function<boost::optional<float> (float, float)> height
+                           , std::function<std::optional<float> (float, float)> height
                            )
 {
   bool changed (false);
@@ -1337,7 +1337,7 @@ bool MapChunk::blurTerrain ( math::vector_3d const& pos
         auto h (height (tx, tz));
         if (h)
         {
-          TotalHeight += (1.0f - dist2 / radius) * h.get();
+          TotalHeight += (1.0f - dist2 / radius) * h.value();
           TotalWeight += (1.0f - dist2 / radius);
         }
       }

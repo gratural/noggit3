@@ -20,6 +20,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 class MPQFile;
 namespace math
@@ -181,13 +182,13 @@ public:
   liquid_chunk* liquid_chunk() const;
 
   void updateVerticesData();
-  void recalcNorms (std::function<boost::optional<float> (float, float)> height);
+  void recalcNorms (std::function<std::optional<float> (float, float)> height);
 
   //! \todo implement Action stack for these
   bool changeTerrain(math::vector_3d const& pos, float change, float radius, int BrushType, float inner_radius, terrain_edit_mode edit_mode);
   bool flattenTerrain(math::vector_3d const& pos, float remain, float radius, int BrushType, flatten_mode const& mode, const math::vector_3d& origin, math::degrees angle, math::degrees orientation);
   bool blurTerrain ( math::vector_3d const& pos, float remain, float radius, int BrushType, flatten_mode const& mode
-                   , std::function<boost::optional<float> (float, float)> height
+                   , std::function<std::optional<float> (float, float)> height
                    );
 
   bool smooth_inner_vertices(math::vector_3d const& pos, float remain, float radius);
@@ -223,7 +224,7 @@ public:
   bool GetVertex(float x, float z, math::vector_3d *V);
   float getHeight(int x, int z);
   float getMinHeight() const { return vmin.y; }
-  boost::optional<float> get_exact_height_at(math::vector_3d const& pos);
+  std::optional<float> get_exact_height_at(math::vector_3d const& pos);
 
   void clearHeight();
 

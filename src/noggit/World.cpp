@@ -1996,11 +1996,11 @@ void World::blurTerrain(math::vector_3d const& pos, float remain, float radius, 
                                   , radius
                                   , BrushType
                                   , mode
-                                  , [this] (float x, float z) -> boost::optional<float>
+                                  , [this] (float x, float z) -> std::optional<float>
                                     {
                                       math::vector_3d vec;
                                       auto res (GetVertex (x, z, &vec));
-                                      return boost::make_optional (res, vec.y);
+                                      return res ? std::make_optional(vec.y) : std::nullopt;
                                     }
                                   );
       }
@@ -2013,11 +2013,11 @@ void World::blurTerrain(math::vector_3d const& pos, float remain, float radius, 
 
 void World::recalc_norms (MapChunk* chunk) const
 {
-  chunk->recalcNorms ( [this] (float x, float z) -> boost::optional<float>
+  chunk->recalcNorms ( [this] (float x, float z) -> std::optional<float>
                        {
                          math::vector_3d vec;
                          auto res (GetVertex (x, z, &vec));
-                         return boost::make_optional (res, vec.y);
+                         return res ? std::make_optional(vec.y) : std::nullopt;
                        }
                      );
 }
