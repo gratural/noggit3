@@ -3,7 +3,7 @@
 #include <noggit/alphamap.hpp>
 #include <opengl/context.hpp>
 
-#include <boost/optional/optional.hpp>
+#include <optional>
 
 Alphamap::Alphamap()
 {
@@ -186,7 +186,7 @@ std::vector<uint8_t> Alphamap::compress() const
   );
 
   std::vector<uint8_t> result;
-  boost::optional<std::size_t> current_copy_entry_offset (boost::none);
+  std::optional<std::size_t> current_copy_entry_offset (std::nullopt);
   auto const current_copy_entry
   (
     [&]
@@ -200,7 +200,7 @@ std::vector<uint8_t> Alphamap::compress() const
     auto const fill (consume_fill());
     if (fill)
     {
-      current_copy_entry_offset = boost::none;
+      current_copy_entry_offset = std::nullopt;
 
       result.emplace_back();
       result.emplace_back(*current);
@@ -213,7 +213,7 @@ std::vector<uint8_t> Alphamap::compress() const
     }
     else
     {
-      if ( current_copy_entry_offset == boost::none
+      if ( current_copy_entry_offset == std::nullopt
           || column_pos == 64
           )
       {
