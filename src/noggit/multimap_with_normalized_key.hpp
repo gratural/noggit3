@@ -7,10 +7,9 @@
 #include <noggit/Log.h>
 #include <noggit/MPQ.h>
 
-#include <boost/thread.hpp>
-
 #include <functional>
 #include <map>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 
@@ -38,7 +37,7 @@ namespace noggit
       std::string const normalized (_normalize (filename));
 
       {
-        boost::mutex::scoped_lock const lock(_mutex);
+        std::scoped_lock const lock(_mutex);
 
         if ([&] { return _counts[normalized]++; }())
         {
@@ -49,7 +48,7 @@ namespace noggit
 
       T* const obj ( [&]
                      {
-                       boost::mutex::scoped_lock const lock(_mutex);
+                       std::scoped_lock const lock(_mutex);
                        return &_elements.emplace ( std::piecewise_construct
                                                  , std::forward_as_tuple (normalized)
                                                  , std::forward_as_tuple (normalized, args...)
@@ -67,7 +66,7 @@ namespace noggit
       AsyncObject* obj = nullptr;
 
       {
-        boost::mutex::scoped_lock lock(_mutex);
+        std::scoped_lock lock(_mutex);
 
         if (--_counts.at (normalized) == 0)
         {
@@ -84,7 +83,7 @@ namespace noggit
         }
 
         {
-          boost::mutex::scoped_lock lock(_mutex);
+          std::scoped_lock lock(_mutex);
           _elements.erase (normalized);
           _counts.erase (normalized);
         }
@@ -92,7 +91,7 @@ namespace noggit
     }
     void apply (std::function<void (std::string const&, T&)> fun)
     {
-      boost::mutex::scoped_lock lock(_mutex);
+      std::scoped_lock lock(_mutex);
       for (auto& element : _elements)
       {
         fun (element.first, element.second);
@@ -100,7 +99,7 @@ namespace noggit
     }
     void apply (std::function<void (std::string const&, T const&)> fun) const
     {
-      boost::mutex::scoped_lock lock(_mutex);
+      std::scoped_lock lock(_mutex);
       for (auto const& element : _elements)
       {
         fun (element.first, element.second);
@@ -111,6 +110,6 @@ namespace noggit
     std::map<std::string, T> _elements;
     std::unordered_map<std::string, std::size_t> _counts;
     std::function<std::string (std::string)> _normalize;
-    boost::mutex _mutex;
+    std::mutex _mutex;
   };
 }
