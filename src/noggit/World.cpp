@@ -138,7 +138,7 @@ void World::update_selection_pivot()
   }
   else
   {
-    _multi_select_pivot = boost::none;
+    _multi_select_pivot = std::nullopt;
   }
 }
 
@@ -204,7 +204,7 @@ bool World::is_selected(std::uint32_t uid) const
   return false;
 }
 
-boost::optional<selection_type> World::get_last_selected_model() const
+std::optional<selection_type> World::get_last_selected_model() const
 {
   auto const it
     ( std::find_if ( _current_selection.rbegin()
@@ -217,14 +217,14 @@ boost::optional<selection_type> World::get_last_selected_model() const
     );
 
   return it == _current_selection.rend()
-    ? boost::optional<selection_type>() : boost::optional<selection_type> (*it);
+    ? std::optional<selection_type>() : std::optional<selection_type> (*it);
 }
 
 void World::set_current_selection(selection_type entry)
 {
   _current_selection.clear();
   _current_selection.push_back(entry);
-  _multi_select_pivot = boost::none;
+  _multi_select_pivot = std::nullopt;
 
   _selected_model_count = entry.which() == eEntry_MapChunk || entry.which() == eEntry_LiquidLayer ? 0 : 1;
 }
@@ -277,7 +277,7 @@ void World::remove_from_selection(std::uint32_t uid)
 void World::reset_selection()
 {
   _current_selection.clear();
-  _multi_select_pivot = boost::none;
+  _multi_select_pivot = std::nullopt;
   _selected_model_count = 0;
 }
 
@@ -391,7 +391,7 @@ void World::snap_selected_models_to_the_ground()
       : boost::get<selected_wmo_type>(entry)->pos
       ;
 
-    boost::optional<float> height = get_exact_height_at(pos);
+    std::optional<float> height = get_exact_height_at(pos);
 
     // this should never happen
     if (!height)
@@ -401,7 +401,7 @@ void World::snap_selected_models_to_the_ground()
     }
 
     // the ground can only be intersected once
-    pos.y = height.get();
+    pos.y = height.value();
 
     if (entry_is_m2)
     {
@@ -498,7 +498,7 @@ void World::set_selected_models_pos(math::vector_3d const& pos, bool change_heig
   // move models relative to the pivot when several are selected
   if (has_multiple_model_selected())
   {
-    math::vector_3d diff = pos - _multi_select_pivot.get();
+    math::vector_3d diff = pos - _multi_select_pivot.value();
 
     if (change_height)
     {
@@ -567,7 +567,7 @@ void World::rotate_selected_models(math::degrees rx, math::degrees ry, math::deg
         : boost::get<selected_wmo_type>(entry)->pos
         ;
 
-      math::vector_3d diff_pos = pos - _multi_select_pivot.get();
+      math::vector_3d diff_pos = pos - _multi_select_pivot.value();
       math::vector_3d rot_result = math::matrix_4x4(math::matrix_4x4::rotation_xyz, {rx, ry, rz}) * diff_pos;
 
       pos += rot_result - diff_pos;
@@ -1389,7 +1389,7 @@ void World::draw ( math::matrix_4x4 const& model_view
                             , camera_pos
                             , draw_wmo_doodads
                             , draw_fog
-                            , _liquid_render.get()
+                            , _liquid_render.value()
                             , animtime
                             , skies->hasSkies()
                             , display
@@ -1545,8 +1545,8 @@ void World::draw ( math::matrix_4x4 const& model_view
   {
     opengl::scoped::bool_setter<GL_DEPTH_TEST, GL_FALSE> const disable_depth_test;
 
-    float dist = (camera_pos - _multi_select_pivot.get()).length();
-    _sphere_render.draw(mvp, _multi_select_pivot.get(), cursor_color, std::min(2.f, std::max(0.15f, dist * 0.02f)));
+    float dist = (camera_pos - _multi_select_pivot.value()).length();
+    _sphere_render.draw(mvp, _multi_select_pivot.value(), cursor_color, std::min(2.f, std::max(0.15f, dist * 0.02f)));
   }
 
   if (draw_water)
@@ -1599,7 +1599,7 @@ void World::draw ( math::matrix_4x4 const& model_view
                       , culldistance
                       , camera_pos
                       , camera_moved
-                      , _liquid_render.get()
+                      , _liquid_render.value()
                       , water_shader
                       , animtime
                       , water_layer
@@ -1613,7 +1613,7 @@ void World::draw ( math::matrix_4x4 const& model_view
 
       for (auto& it : _wmo_liquids_to_draw)
       {
-        it.first->draw(it.second, _liquid_render.get());
+        it.first->draw(it.second, _liquid_render.value());
       }
     }
 
@@ -1718,7 +1718,7 @@ void World::update_models_emitters(float dt)
 
 unsigned int World::getAreaID (math::vector_3d const& pos)
 {
-  return for_maybe_chunk_at (pos, [&] (MapChunk* chunk) { return chunk->getAreaID(); }).get_value_or (-1);
+  return for_maybe_chunk_at (pos, [&] (MapChunk* chunk) { return chunk->getAreaID(); }).value_or(-1);
 }
 
 void World::clearHeight(math::vector_3d const& pos)
@@ -1847,13 +1847,13 @@ bool World::GetVertex(float x, float z, math::vector_3d *V) const
   return adt->finishedLoading() && adt->GetVertex(x, z, V);
 }
 
-boost::optional<float> World::get_exact_height_at(math::vector_3d const& pos)
+std::optional<float> World::get_exact_height_at(math::vector_3d const& pos)
 {
-  boost::optional<float> height;
+  std::optional<float> height;
 
   for_chunk_at(pos, [&] (MapChunk* chunk)
   {
-    height = chunk->get_exact_height_at(pos);
+    height = *chunk->get_exact_height_at(pos);
   });
 
   return height;
@@ -2217,7 +2217,7 @@ template<typename Fun>
 }
 
 template<typename Fun>
-  auto World::for_maybe_chunk_at(math::vector_3d const& pos, Fun&& fun) -> boost::optional<decltype (fun (nullptr))>
+  auto World::for_maybe_chunk_at(math::vector_3d const& pos, Fun&& fun) -> std::optional<decltype (fun (nullptr))>
 {
   MapTile* tile (mapIndex.getTile (pos));
   if (tile && tile->finishedLoading())
@@ -2226,7 +2226,7 @@ template<typename Fun>
   }
   else
   {
-    return boost::none;
+    return std::nullopt;
   }
 }
 

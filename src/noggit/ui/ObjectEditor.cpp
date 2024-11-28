@@ -417,8 +417,8 @@ namespace noggit
           if (last_entry)
           {
             math::vector_3d last_entry_pos = last_entry->which() == eEntry_Model
-              ? boost::get<selected_model_type>(last_entry.get())->pos
-              : boost::get<selected_wmo_type>(last_entry.get())->pos
+              ? boost::get<selected_model_type>(last_entry.value())->pos
+              : boost::get<selected_wmo_type>(last_entry.value())->pos
               ;
 
             pos = last_entry_pos + model_pos;
@@ -592,7 +592,7 @@ namespace noggit
 
           clone->scale = original->scale;
           clone->dir = original->dir;
-          clone->pos = pivot ? original->pos - pivot.get() : math::vector_3d();
+          clone->pos = pivot ? original->pos - pivot.value() : math::vector_3d();
 
           selected_model.push_back(clone);
           _model_instance_created.push_back(clone);
@@ -602,7 +602,7 @@ namespace noggit
           auto original = boost::get<selected_wmo_type>(selection);
           auto clone = new WMOInstance(original->wmo->filename);
           clone->dir = original->dir;
-          clone->pos = pivot ? original->pos - pivot.get() : math::vector_3d();
+          clone->pos = pivot ? original->pos - pivot.value() : math::vector_3d();
 
           selected_model.push_back(clone);
           _model_instance_created.push_back(clone);

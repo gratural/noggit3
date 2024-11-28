@@ -195,7 +195,7 @@ namespace noggit
 
       if (world->has_multiple_model_selected())
       {
-        math::vector_3d const& p = world->multi_select_pivot().get();
+        math::vector_3d const& p = world->multi_select_pivot().value();
 
         _position_x->setValue(p.x);
         _position_y->setValue(p.y);
@@ -220,7 +220,7 @@ namespace noggit
 
         if (entry)
         {
-          selection_type selection = entry.get();
+          selection_type selection = entry.value();
 
           if (selection.which() == eEntry_Model)
           {
