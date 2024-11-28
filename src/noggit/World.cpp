@@ -122,14 +122,14 @@ void World::update_selection_pivot()
 
     for (auto const& entry : _current_selection)
     {
-      if (entry.which() == eEntry_Model)
+      if (entry.index() == eEntry_Model)
       {
-        pivot += boost::get<selected_model_type>(entry)->pos;
+        pivot += std::get<selected_model_type>(entry)->pos;
         model_count++;
       }
-      else if (entry.which() == eEntry_WMO)
+      else if (entry.index() == eEntry_WMO)
       {
-        pivot += boost::get<selected_wmo_type>(entry)->pos;
+        pivot += std::get<selected_wmo_type>(entry)->pos;
         model_count++;
       }
     }
@@ -144,15 +144,15 @@ void World::update_selection_pivot()
 
 bool World::is_selected(selection_type selection) const
 {
-  if (selection.which() == eEntry_Model)
+  if (selection.index() == eEntry_Model)
   {
-    uint uid = boost::get<selected_model_type>(selection)->uid;
+    uint uid = std::get<selected_model_type>(selection)->uid;
     auto const& it = std::find_if(_current_selection.begin()
                                   , _current_selection.end()
                                   , [uid] (selection_type type)
     {
-      return type.type() == typeid(selected_model_type)
-        && boost::get<selected_model_type>(type)->uid == uid;
+      return type.index() == eEntry_Model
+        && std::get<selected_model_type>(type)->uid == uid;
     }
     );
 
@@ -161,15 +161,15 @@ bool World::is_selected(selection_type selection) const
       return true;
     }
   }
-  else if (selection.which() == eEntry_WMO)
+  else if (selection.index() == eEntry_WMO)
   {
-    uint uid = boost::get<selected_wmo_type>(selection)->mUniqueID;
+    uint uid = std::get<selected_wmo_type>(selection)->mUniqueID;
     auto const& it = std::find_if(_current_selection.begin()
                             , _current_selection.end()
                             , [uid] (selection_type type)
     {
-      return type.type() == typeid(selected_wmo_type)
-        && boost::get<selected_wmo_type>(type)->mUniqueID == uid;
+      return type.index() == eEntry_WMO
+        && std::get<selected_wmo_type>(type)->mUniqueID == uid;
     }
     );
     if (it != _current_selection.end())
@@ -185,16 +185,16 @@ bool World::is_selected(std::uint32_t uid) const
 {
   for (selection_type const& entry : _current_selection)
   {
-    if (entry.which() == eEntry_WMO)
+    if (entry.index() == eEntry_WMO)
     {
-      if (boost::get<selected_wmo_type>(entry)->mUniqueID == uid)
+      if (std::get<selected_wmo_type>(entry)->mUniqueID == uid)
       {
         return true;
       }
     }
-    else if (entry.which() == eEntry_Model)
+    else if (entry.index() == eEntry_Model)
     {
-      if (boost::get<selected_model_type>(entry)->uid == uid)
+      if (std::get<selected_model_type>(entry)->uid == uid)
       {
         return true;
       }
@@ -211,7 +211,7 @@ std::optional<selection_type> World::get_last_selected_model() const
                    , _current_selection.rend()
                    , [&] (selection_type const& entry)
                      {
-                       return entry.which() != eEntry_MapChunk && entry.which() != eEntry_LiquidLayer;
+                       return entry.index() != eEntry_MapChunk && entry.index() != eEntry_LiquidLayer;
                      }
                    )
     );
@@ -226,12 +226,12 @@ void World::set_current_selection(selection_type entry)
   _current_selection.push_back(entry);
   _multi_select_pivot = std::nullopt;
 
-  _selected_model_count = entry.which() == eEntry_MapChunk || entry.which() == eEntry_LiquidLayer ? 0 : 1;
+  _selected_model_count = entry.index() == eEntry_MapChunk || entry.index() == eEntry_LiquidLayer ? 0 : 1;
 }
 
 void World::add_to_selection(selection_type entry)
 {
-  if (entry.which() != eEntry_MapChunk && entry.which() != eEntry_LiquidLayer)
+  if (entry.index() != eEntry_MapChunk && entry.index() != eEntry_LiquidLayer)
   {
     _selected_model_count++;
   }
@@ -245,7 +245,7 @@ void World::remove_from_selection(selection_type entry)
   std::vector<selection_type>::iterator position = std::find(_current_selection.begin(), _current_selection.end(), entry);
   if (position != _current_selection.end())
   {
-    if (entry.which() != eEntry_MapChunk && entry.which() != eEntry_LiquidLayer)
+    if (entry.index() != eEntry_MapChunk && entry.index() != eEntry_LiquidLayer)
     {
       _selected_model_count--;
     }
@@ -259,13 +259,13 @@ void World::remove_from_selection(std::uint32_t uid)
 {
   for (auto it = _current_selection.begin(); it != _current_selection.end(); ++it)
   {
-    if (it->which() == eEntry_Model && boost::get<selected_model_type>(*it)->uid == uid)
+    if (it->index() == eEntry_Model && std::get<selected_model_type>(*it)->uid == uid)
     {
       _current_selection.erase(it);
       update_selection_pivot();
       return;
     }
-    else if (it->which() == eEntry_WMO && boost::get<selected_wmo_type>(*it)->mUniqueID == uid)
+    else if (it->index() == eEntry_WMO && std::get<selected_wmo_type>(*it)->mUniqueID == uid)
     {
       _current_selection.erase(it);
       update_selection_pivot();
@@ -378,7 +378,7 @@ void World::snap_selected_models_to_the_ground()
 {
   for (auto& entry : _current_selection)
   {
-    auto type = entry.which();
+    auto type = entry.index();
     if (type == eEntry_MapChunk)
     {
       continue;
@@ -387,8 +387,8 @@ void World::snap_selected_models_to_the_ground()
     bool entry_is_m2 = type == eEntry_Model;
 
     math::vector_3d& pos = entry_is_m2
-      ? boost::get<selected_model_type>(entry)->pos
-      : boost::get<selected_wmo_type>(entry)->pos
+      ? std::get<selected_model_type>(entry)->pos
+      : std::get<selected_wmo_type>(entry)->pos
       ;
 
     std::optional<float> height = get_exact_height_at(pos);
@@ -405,11 +405,11 @@ void World::snap_selected_models_to_the_ground()
 
     if (entry_is_m2)
     {
-      boost::get<selected_model_type>(entry)->recalcExtents();
+      std::get<selected_model_type>(entry)->recalcExtents();
     }
     else
     {
-      boost::get<selected_wmo_type>(entry)->recalcExtents();
+      std::get<selected_wmo_type>(entry)->recalcExtents();
     }
 
     updateTilesEntry(entry, model_update::add);
@@ -422,9 +422,9 @@ void World::scale_selected_models(float v, m2_scaling_type type)
 {
   for (auto& entry : _current_selection)
   {
-    if (entry.which() == eEntry_Model)
+    if (entry.index() == eEntry_Model)
     {
-      ModelInstance* mi = boost::get<selected_model_type>(entry);
+      ModelInstance* mi = std::get<selected_model_type>(entry);
 
       float scale = mi->scale;
 
@@ -459,7 +459,7 @@ void World::move_selected_models(float dx, float dy, float dz)
 {
   for (auto& entry : _current_selection)
   {
-    auto type = entry.which();
+    auto type = entry.index();
     if (type == eEntry_MapChunk)
     {
       continue;
@@ -468,8 +468,8 @@ void World::move_selected_models(float dx, float dy, float dz)
     bool entry_is_m2 = type == eEntry_Model;
 
     math::vector_3d& pos = entry_is_m2
-      ? boost::get<selected_model_type>(entry)->pos
-      : boost::get<selected_wmo_type>(entry)->pos
+      ? std::get<selected_model_type>(entry)->pos
+      : std::get<selected_wmo_type>(entry)->pos
       ;
 
     updateTilesEntry(entry, model_update::remove);
@@ -480,11 +480,11 @@ void World::move_selected_models(float dx, float dy, float dz)
 
     if (entry_is_m2)
     {
-      boost::get<selected_model_type>(entry)->recalcExtents();
+      std::get<selected_model_type>(entry)->recalcExtents();
     }
     else
     {
-      boost::get<selected_wmo_type>(entry)->recalcExtents();
+      std::get<selected_wmo_type>(entry)->recalcExtents();
     }
 
     updateTilesEntry(entry, model_update::add);
@@ -514,7 +514,7 @@ void World::set_selected_models_pos(math::vector_3d const& pos, bool change_heig
 
   for (auto& entry : _current_selection)
   {
-    auto type = entry.which();
+    auto type = entry.index();
     if (type == eEntry_MapChunk)
     {
       continue;
@@ -526,13 +526,13 @@ void World::set_selected_models_pos(math::vector_3d const& pos, bool change_heig
 
     if (entry_is_m2)
     {
-      ModelInstance* mi = boost::get<selected_model_type>(entry);
+      ModelInstance* mi = std::get<selected_model_type>(entry);
       mi->pos = pos;
       mi->recalcExtents();
     }
     else
     {
-      WMOInstance* wi = boost::get<selected_wmo_type>(entry);
+      WMOInstance* wi = std::get<selected_wmo_type>(entry);
       wi->pos = pos;
       wi->recalcExtents();
     }
@@ -550,7 +550,7 @@ void World::rotate_selected_models(math::degrees rx, math::degrees ry, math::deg
 
   for (auto& entry : _current_selection)
   {
-    auto type = entry.which();
+    auto type = entry.index();
     if (type == eEntry_MapChunk)
     {
       continue;
@@ -563,8 +563,8 @@ void World::rotate_selected_models(math::degrees rx, math::degrees ry, math::deg
     if (use_pivot && has_multi_select)
     {
       math::vector_3d& pos = entry_is_m2
-        ? boost::get<selected_model_type>(entry)->pos
-        : boost::get<selected_wmo_type>(entry)->pos
+        ? std::get<selected_model_type>(entry)->pos
+        : std::get<selected_wmo_type>(entry)->pos
         ;
 
       math::vector_3d diff_pos = pos - _multi_select_pivot.value();
@@ -574,19 +574,19 @@ void World::rotate_selected_models(math::degrees rx, math::degrees ry, math::deg
     }
 
     math::degrees::vec3& dir = entry_is_m2
-        ? boost::get<selected_model_type>(entry)->dir
-        : boost::get<selected_wmo_type>(entry)->dir
+        ? std::get<selected_model_type>(entry)->dir
+        : std::get<selected_wmo_type>(entry)->dir
         ;
 
     dir += dir_change;
 
     if (entry_is_m2)
     {
-      boost::get<selected_model_type>(entry)->recalcExtents();
+      std::get<selected_model_type>(entry)->recalcExtents();
     }
     else
     {
-      boost::get<selected_wmo_type>(entry)->recalcExtents();
+      std::get<selected_wmo_type>(entry)->recalcExtents();
     }
 
     updateTilesEntry(entry, model_update::add);
@@ -597,7 +597,7 @@ void World::rotate_selected_models_randomly(float minX, float maxX, float minY, 
 {
   for (auto& entry : _current_selection)
   {
-    auto type = entry.which();
+    auto type = entry.index();
     if (type == eEntry_MapChunk)
     {
       continue;
@@ -608,8 +608,8 @@ void World::rotate_selected_models_randomly(float minX, float maxX, float minY, 
     updateTilesEntry(entry, model_update::remove);
 
     math::degrees::vec3& dir = entry_is_m2
-      ? boost::get<selected_model_type>(entry)->dir
-      : boost::get<selected_wmo_type>(entry)->dir
+      ? std::get<selected_model_type>(entry)->dir
+      : std::get<selected_wmo_type>(entry)->dir
       ;
     float rx = misc::randfloat(minX, maxX);
     float ry = misc::randfloat(minY, maxY);
@@ -625,11 +625,11 @@ void World::rotate_selected_models_randomly(float minX, float maxX, float minY, 
 
     if (entry_is_m2)
     {
-      boost::get<selected_model_type>(entry)->recalcExtents();
+      std::get<selected_model_type>(entry)->recalcExtents();
     }
     else
     {
-      boost::get<selected_wmo_type>(entry)->recalcExtents();
+      std::get<selected_wmo_type>(entry)->recalcExtents();
     }
 
     updateTilesEntry(entry, model_update::add);
@@ -642,7 +642,7 @@ void World::set_selected_models_rotation(math::degrees rx, math::degrees ry, mat
 
   for (auto& entry : _current_selection)
   {
-    auto type = entry.which();
+    auto type = entry.index();
     if (type == eEntry_MapChunk)
     {
       continue;
@@ -653,19 +653,19 @@ void World::set_selected_models_rotation(math::degrees rx, math::degrees ry, mat
     updateTilesEntry(entry, model_update::remove);
 
     math::degrees::vec3& dir = entry_is_m2
-      ? boost::get<selected_model_type>(entry)->dir
-      : boost::get<selected_wmo_type>(entry)->dir
+      ? std::get<selected_model_type>(entry)->dir
+      : std::get<selected_wmo_type>(entry)->dir
       ;
 
     dir = new_dir;
 
     if (entry_is_m2)
     {
-      boost::get<selected_model_type>(entry)->recalcExtents();
+      std::get<selected_model_type>(entry)->recalcExtents();
     }
     else
     {
-      boost::get<selected_wmo_type>(entry)->recalcExtents();
+      std::get<selected_wmo_type>(entry)->recalcExtents();
     }
 
     updateTilesEntry(entry, model_update::add);
@@ -699,7 +699,7 @@ void World::rotate_selected_models_to_ground_normal(bool smoothNormals)
 {
   for (auto& entry : _current_selection)
   {
-    auto type = entry.which();
+    auto type = entry.index();
     if (type == eEntry_MapChunk)
     {
       continue;
@@ -710,13 +710,13 @@ void World::rotate_selected_models_to_ground_normal(bool smoothNormals)
     updateTilesEntry(entry, model_update::remove);
 
     math::vector_3d rayPos = entry_is_m2
-      ? boost::get<selected_model_type>(entry)->pos
-      : boost::get<selected_wmo_type>(entry)->pos
+      ? std::get<selected_model_type>(entry)->pos
+      : std::get<selected_wmo_type>(entry)->pos
       ;
 
     math::degrees::vec3& dir = entry_is_m2
-      ? boost::get<selected_model_type>(entry)->dir
-      : boost::get<selected_wmo_type>(entry)->dir
+      ? std::get<selected_model_type>(entry)->dir
+      : std::get<selected_wmo_type>(entry)->dir
       ;
 
     auto normal_vector = get_terrain_normal(rayPos, smoothNormals);
@@ -728,11 +728,11 @@ void World::rotate_selected_models_to_ground_normal(bool smoothNormals)
 
       if (entry_is_m2)
       {
-        boost::get<selected_model_type>(entry)->recalcExtents();
+        std::get<selected_model_type>(entry)->recalcExtents();
       }
       else
       {
-        boost::get<selected_wmo_type>(entry)->recalcExtents();
+        std::get<selected_wmo_type>(entry)->recalcExtents();
       }
     }
 
@@ -1319,9 +1319,9 @@ void World::draw ( math::matrix_4x4 const& model_view
 
     for (auto& selection : current_selection())
     {
-      if (selection.which() == eEntry_Model)
+      if (selection.index() == eEntry_Model)
       {
-        auto model = boost::get<selected_model_type>(selection);
+        auto model = std::get<selected_model_type>(selection);
         if (model->is_visible(frustum, culldistance, camera_pos, display))
         {
           model->draw_box(model_view, projection, true);
@@ -1437,9 +1437,9 @@ void World::draw ( math::matrix_4x4 const& model_view
 
     for (auto& selection : current_selection())
     {
-      if (selection.which() == eEntry_WMO)
+      if (selection.index() == eEntry_WMO)
       {
-        auto wmo = boost::get<selected_wmo_type>(selection);
+        auto wmo = std::get<selected_wmo_type>(selection);
 
         {
           wmo->draw_box_selected(model_view, projection);
@@ -1779,7 +1779,7 @@ std::optional<math::degrees::vec3> World::get_terrain_normal(math::vector_3d con
 
 
   // We hit the terrain, now we take the normal of this position and use it to get the rotation we want.
-  auto const& hitChunkInfo = boost::get<selected_chunk_type>(results.front().second);
+  auto const& hitChunkInfo = std::get<selected_chunk_type>(results.front().second);
 
   math::quaternion q;
   math::vector_3d normal;
@@ -2483,7 +2483,7 @@ void World::remove_models_if_needed(std::vector<uint32_t> const& uids)
   }
 
   // deselect the terrain when an adt is unloaded
-  if (_current_selection.size() == 1 && _current_selection.at(0).which() == eEntry_MapChunk)
+  if (_current_selection.size() == 1 && _current_selection.at(0).index() == eEntry_MapChunk)
   {
     reset_selection();
   }
@@ -2509,13 +2509,13 @@ void World::ensure_tile_is_loaded(tile_index const& tile)
 
 void World::updateTilesEntry(selection_type const& entry, model_update type)
 {
-  if (entry.which() == eEntry_WMO)
+  if (entry.index() == eEntry_WMO)
   {
-    updateTilesWMO (boost::get<selected_wmo_type> (entry), type);
+    updateTilesWMO (std::get<selected_wmo_type> (entry), type);
   }
-  else if (entry.which() == eEntry_Model)
+  else if (entry.index() == eEntry_Model)
   {
-    updateTilesModel (boost::get<selected_model_type> (entry), type);
+    updateTilesModel (std::get<selected_model_type> (entry), type);
   }
 }
 

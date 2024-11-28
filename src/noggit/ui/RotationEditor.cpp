@@ -222,9 +222,9 @@ namespace noggit
         {
           selection_type selection = entry.value();
 
-          if (selection.which() == eEntry_Model)
+          if (selection.index() == eEntry_Model)
           {
-            auto model = boost::get<selected_model_type>(selection);
+            auto model = std::get<selected_model_type>(selection);
             _position_x->setValue(model->pos.x);
             _position_y->setValue(model->pos.y);
             _position_z->setValue(model->pos.z);
@@ -237,7 +237,7 @@ namespace noggit
           }
           else // we know it's a wmo
           {
-            auto wmo = boost::get<selected_wmo_type>(selection);
+            auto wmo = std::get<selected_wmo_type>(selection);
             _position_x->setValue(wmo->pos.x);
             _position_y->setValue(wmo->pos.y);
             _position_z->setValue(wmo->pos.z);

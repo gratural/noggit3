@@ -654,13 +654,13 @@ void MapTile::save(World* world, bool save_using_mclq_liquids)
     }
     else
     {
-      if (model.value().which() == eEntry_WMO)
+      if (model.value().index() == eEntry_WMO)
       {
-        lObjectInstances.emplace_back(*boost::get<selected_wmo_type>(model.value()));
+        lObjectInstances.emplace_back(*std::get<selected_wmo_type>(model.value()));
       }
       else
       {
-        lModelInstances.emplace_back(*boost::get<selected_model_type>(model.value()));
+        lModelInstances.emplace_back(*std::get<selected_model_type>(model.value()));
       }
     }
   }

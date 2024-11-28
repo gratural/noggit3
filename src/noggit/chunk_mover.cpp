@@ -25,9 +25,9 @@ namespace noggit
 
   void chunk_mover::add_to_selection(selection_type selection, bool from_multi_select)
   {
-    if (selection.which() == eEntry_MapChunk)
+    if (selection.index() == eEntry_MapChunk)
     {
-      MapChunk* chunk = boost::get<selected_chunk_type>(selection).chunk;
+      MapChunk* chunk = std::get<selected_chunk_type>(selection).chunk;
       tile_index const& adt_index = chunk->mt->index;
       int index = chunk->chunk_index();
       int id = (adt_index.x + adt_index.z * 64) * 4096 + index;
@@ -43,9 +43,9 @@ namespace noggit
 
         for (selection_type model_selection : _world->get_models_on_chunk(chunk->vmin))
         {
-          if (model_selection.which() == eEntry_WMO)
+          if (model_selection.index() == eEntry_WMO)
           {
-            WMOInstance* wmo_instance = boost::get<selected_wmo_type>(model_selection);
+            WMOInstance* wmo_instance = std::get<selected_wmo_type>(model_selection);
 
             noggit::model_placement_data smd;
             smd.position = wmo_instance->pos - model_offset;
@@ -55,9 +55,9 @@ namespace noggit
 
             models.push_back(smd);
           }
-          else if (model_selection.which() == eEntry_Model)
+          else if (model_selection.index() == eEntry_Model)
           {
-            ModelInstance* model_instance = boost::get<selected_model_type>(model_selection);
+            ModelInstance* model_instance = std::get<selected_model_type>(model_selection);
 
             noggit::model_placement_data smd;
             smd.position = model_instance->pos - model_offset;
@@ -92,21 +92,21 @@ namespace noggit
 
   void chunk_mover::remove_from_selection(selection_type selection, bool from_multi_select)
   {
-    if (selection.which() == eEntry_WMO)
+    if (selection.index() == eEntry_WMO)
     {
-      WMOInstance* wmo_instance = boost::get<selected_wmo_type>(selection);
+      WMOInstance* wmo_instance = std::get<selected_wmo_type>(selection);
       std::uint32_t uid = wmo_instance->mUniqueID;
       _selected_models.erase(uid);
     }
-    else if (selection.which() == eEntry_Model)
+    else if (selection.index() == eEntry_Model)
     {
-      ModelInstance* model_instance = boost::get<selected_model_type>(selection);
+      ModelInstance* model_instance = std::get<selected_model_type>(selection);
       std::uint32_t uid = model_instance->uid;
       _selected_models.erase(uid);
     }
-    else if (selection.which() == eEntry_MapChunk)
+    else if (selection.index() == eEntry_MapChunk)
     {
-      MapChunk* chunk = boost::get<selected_chunk_type>(selection).chunk;
+      MapChunk* chunk = std::get<selected_chunk_type>(selection).chunk;
       tile_index const& adt_index = chunk->mt->index;
       int index = chunk->chunk_index();
       int id = (adt_index.x + adt_index.z * 64) * 4096 + index;

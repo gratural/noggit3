@@ -4,9 +4,8 @@
 
 #include <math/vector_3d.hpp>
 
-#include <boost/variant.hpp>
-
 #include <string>
+#include <variant>
 #include <vector>
 
 class ModelInstance;
@@ -56,11 +55,11 @@ struct selected_liquid_layer_type
 
 using selected_model_type = ModelInstance*;
 using selected_wmo_type = WMOInstance*;
-using selection_type = boost::variant < selected_model_type
-                                      , selected_wmo_type
-                                      , selected_chunk_type
-                                      , selected_liquid_layer_type
-                                      >;
+using selection_type = std::variant < selected_model_type
+                                    , selected_wmo_type
+                                    , selected_chunk_type
+                                    , selected_liquid_layer_type
+                                    >;
 //! \note Keep in same order as variant!
 enum eSelectionEntryTypes
 {

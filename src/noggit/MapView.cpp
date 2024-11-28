@@ -68,6 +68,7 @@
 #include <map>
 #include <regex>
 #include <string>
+#include <utility>
 #include <vector>
 
 static const float XSENS = 15.0f;
@@ -162,16 +163,16 @@ void MapView::ResetSelectedObjectRotation()
 {
   for (auto& selection : _world->current_selection())
   {
-    if (selection.which() == eEntry_WMO)
+    if (selection.index() == eEntry_WMO)
     {
-      WMOInstance* wmo = boost::get<selected_wmo_type>(selection);
+      WMOInstance* wmo = std::get<selected_wmo_type>(selection);
       _world->updateTilesWMO(wmo, model_update::remove);
       wmo->resetDirection();
       _world->updateTilesWMO(wmo, model_update::add);
     }
-    else if (selection.which() == eEntry_Model)
+    else if (selection.index() == eEntry_Model)
     {
-      ModelInstance* m2 = boost::get<selected_model_type>(selection);
+      ModelInstance* m2 = std::get<selected_model_type>(selection);
       _world->updateTilesModel(m2, model_update::remove);
       m2->resetDirection();
       m2->recalcExtents();
@@ -1229,13 +1230,13 @@ void MapView::createGUI()
                 {
                   for (auto& selection : _world->current_selection())
                   {
-                    if (selection.which() == eEntry_Model)
+                    if (selection.index() == eEntry_Model)
                     {
-                      boost::get<selected_model_type>(selection)->model->toggle_visibility();
+                      std::get<selected_model_type>(selection)->model->toggle_visibility();
                     }
-                    else if (selection.which() == eEntry_WMO)
+                    else if (selection.index() == eEntry_WMO)
                     {
-                      boost::get<selected_wmo_type>(selection)->wmo->toggle_visibility();
+                      std::get<selected_wmo_type>(selection)->wmo->toggle_visibility();
                     }
                   }
                 }
@@ -1703,12 +1704,12 @@ void MapView::paintGL()
 
 
     float cy = _camera.position.y;
-    boost::optional<float> c1, c2, c3, c_final;
+    std::optional<float> c1, c2, c3, c_final;
 
     if (!results.empty())
     {
       auto hit = results.front().second;
-      if (hit.which() == eEntry_LiquidLayer)
+      if (hit.index() == eEntry_LiquidLayer)
       {
         auto h = _world->get_exact_height_at(_camera.position);
         if (h)
@@ -1748,7 +1749,7 @@ void MapView::paintGL()
 
     if (c_final)
     {
-      // c_final = c1 if c1 != boost::none
+      // c_final = c1 if c1 != std::none
       if (c2)
       {
         c_final = std::max(*c2, *c_final);
@@ -1933,7 +1934,7 @@ void MapView::tick (float dt)
 
     for (auto& selection : currentSelection)
     {
-      if (leftMouse && selection.which() == eEntry_MapChunk)
+      if (leftMouse && selection.index() == eEntry_MapChunk)
       {
         bool underMap = _world->isUnderMap(_cursor_pos);
 
@@ -2066,11 +2067,11 @@ void MapView::tick (float dt)
   }
   else if (currentSelection.size() == 1)
   {
-    switch (currentSelection.begin()->which())
+    switch (currentSelection.begin()->index())
     {
     case eEntry_Model:
       {
-      auto instance(boost::get<selected_model_type>(*currentSelection.begin()));
+      auto instance(std::get<selected_model_type>(*currentSelection.begin()));
         _status_selection->setText
           ( QString ("%1: %2")
           . arg (instance->uid)
@@ -2080,7 +2081,7 @@ void MapView::tick (float dt)
       }
     case eEntry_WMO:
       {
-      auto instance(boost::get<selected_wmo_type>(*currentSelection.begin()));
+      auto instance(std::get<selected_wmo_type>(*currentSelection.begin()));
         _status_selection->setText
           ( QString ("%1: %2")
           . arg (instance->mUniqueID)
@@ -2090,7 +2091,7 @@ void MapView::tick (float dt)
       }
     case eEntry_MapChunk:
       {
-      auto chunk(boost::get<selected_chunk_type>(*currentSelection.begin()).chunk);
+      auto chunk(std::get<selected_chunk_type>(*currentSelection.begin()).chunk);
         _status_selection->setText
           (QString ("%1, %2").arg (chunk->px).arg (chunk->py));
         break;
@@ -2147,11 +2148,11 @@ void MapView::tick (float dt)
       std::stringstream select_info;
       auto lastSelection = currentSelection.back();
 
-      switch (lastSelection.which())
+      switch (lastSelection.index())
       {
       case eEntry_Model:
         {
-        auto instance(boost::get<selected_model_type>(lastSelection));
+        auto instance(std::get<selected_model_type>(lastSelection));
           select_info << "filename: " << instance->model->filename
                       << "\nunique ID: " << instance->uid
                       << "\nposition X/Y/Z: " << instance->pos.x << " / " << instance->pos.y << " / " << instance->pos.z
@@ -2178,7 +2179,7 @@ void MapView::tick (float dt)
         }
       case eEntry_WMO:
         {
-        auto instance(boost::get<selected_wmo_type>(lastSelection));
+        auto instance(std::get<selected_wmo_type>(lastSelection));
           select_info << "filename: " << instance->wmo->filename
                       << "\nunique ID: " << instance->mUniqueID
                       << "\nposition X/Y/Z: " << instance->pos.x << " / " << instance->pos.y << " / " << instance->pos.z
@@ -2206,7 +2207,7 @@ void MapView::tick (float dt)
         }
       case eEntry_MapChunk:
         {
-        auto chunk(boost::get<selected_chunk_type>(lastSelection).chunk);
+        auto chunk(std::get<selected_chunk_type>(lastSelection).chunk);
           mcnk_flags const& flags = chunk->header.flags;
 
           select_info << "MCNK " << chunk->px << ", " << chunk->py << " (" << chunk->py * 16 + chunk->px
@@ -2261,7 +2262,7 @@ void MapView::tick (float dt)
         }
       case eEntry_LiquidLayer:
         {
-          auto layer(boost::get<selected_liquid_layer_type>(lastSelection).layer);
+          auto layer(std::get<selected_liquid_layer_type>(lastSelection).layer);
 
           select_info << "\liquid id:" << layer->liquid_id() << " (\"" << gLiquidTypeDB.getLiquidName(layer->liquid_id()) << "\")\n";
 
@@ -2360,7 +2361,7 @@ void MapView::doSelection (bool selectTerrainOnly, bool intersect_liquids)
 
     if (QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ShiftModifier))
     {
-      if (hit.which() == eEntry_Model || hit.which() == eEntry_WMO)
+      if (hit.index() == eEntry_Model || hit.index() == eEntry_WMO)
       {
         if (!_world->is_selected(hit))
         {
@@ -2378,10 +2379,10 @@ void MapView::doSelection (bool selectTerrainOnly, bool intersect_liquids)
       _world->add_to_selection(hit);
     }
 
-    _cursor_pos = hit.which() == eEntry_Model ? boost::get<selected_model_type>(hit)->pos
-      : hit.which() == eEntry_WMO ? boost::get<selected_wmo_type>(hit)->pos
-      : hit.which() == eEntry_MapChunk ? boost::get<selected_chunk_type>(hit).position
-      : hit.which() == eEntry_LiquidLayer ? boost::get<selected_liquid_layer_type>(hit).position
+    _cursor_pos = hit.index() == eEntry_Model ? std::get<selected_model_type>(hit)->pos
+      : hit.index() == eEntry_WMO ? std::get<selected_wmo_type>(hit)->pos
+      : hit.index() == eEntry_MapChunk ? std::get<selected_chunk_type>(hit).position
+      : hit.index() == eEntry_LiquidLayer ? std::get<selected_liquid_layer_type>(hit).position
       : throw std::logic_error("bad variant");
   }
 
@@ -2398,15 +2399,15 @@ void MapView::update_cursor_pos()
   {
     auto const& hit(results.front().second);
 
-    if (hit.which() == eEntry_LiquidLayer)
+    if (hit.index() == eEntry_LiquidLayer)
     {
-      auto found = boost::get<selected_liquid_layer_type>(hit);
+      auto found = std::get<selected_liquid_layer_type>(hit);
       _cursor_pos = found.position;
       _liquid_id_below_cursor = found.liquid_id;
     }
     else
     {
-      _cursor_pos = boost::get<selected_chunk_type>(hit).position;
+      _cursor_pos = std::get<selected_chunk_type>(hit).position;
     }
 
     if (terrainMode == editing_mode::chunk_mover)
@@ -2794,13 +2795,13 @@ void MapView::selectModel(std::string const& model)
   if (boost::ends_with (model, ".m2"))
   {
     ModelInstance mi(model);
-    _world->set_current_selection(boost::get<selected_model_type>(&mi));
+    _world->set_current_selection(&mi);
 
   }
   else if (boost::ends_with (model, ".wmo"))
   {
     WMOInstance wi(model);
-    _world->set_current_selection(boost::get<selected_wmo_type>(&wi));
+    _world->set_current_selection(&wi);
   }
 
   objectEditor->copy_current_selection(_world.get());
@@ -2811,9 +2812,9 @@ void MapView::change_selected_wmo_doodadset(int set)
 {
   for (auto& selection : _world->current_selection())
   {
-    if (selection.which() == eEntry_WMO)
+    if (selection.index() == eEntry_WMO)
     {
-      auto wmo = boost::get<selected_wmo_type>(selection);
+      auto wmo = std::get<selected_wmo_type>(selection);
       wmo->change_doodadset(set);
       _world->updateTilesWMO(wmo, model_update::doodadset);
     }

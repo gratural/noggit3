@@ -247,15 +247,15 @@ namespace noggit
   {
     for (auto& it : instances)
     {
-      if (it.which() == eEntry_Model)
+      if (it.index() == eEntry_Model)
       {
-        auto& instance = boost::get<selected_model_type>(it);
+        auto& instance = std::get<selected_model_type>(it);
         _world->updateTilesModel(instance, model_update::remove);
         delete_instance(instance->uid);
       }
-      else if (it.which() == eEntry_WMO)
+      else if (it.index() == eEntry_WMO)
       {
-        auto& instance = boost::get<selected_wmo_type>(it);
+        auto& instance = std::get<selected_wmo_type>(it);
         _world->updateTilesWMO(instance, model_update::remove);
         delete_instance(instance->mUniqueID);
       }
