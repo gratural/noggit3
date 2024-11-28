@@ -17,8 +17,6 @@
 #include <noggit/ui/uid_fix_window.hpp>
 #include <noggit/unsigned_int_property.hpp>
 
-#include <boost/optional.hpp>
-
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QTimer>
 #include <QtWidgets/QDockWidget>
@@ -123,7 +121,7 @@ public:
   noggit::bool_toggle_property _draw_hidden_models = {false};
 private:
   noggit::chunk_mover _chunk_mover;
-  boost::optional<int> _liquid_id_below_cursor;
+  std::optional<int> _liquid_id_below_cursor;
 
   std::map<int, misc::random_color> _area_id_colors;
 
