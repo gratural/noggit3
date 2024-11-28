@@ -18,7 +18,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
     name: ${{ matrix.platform }}-${{ matrix.compiler }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: "release dependency: linuxdeployqt (linux)"
       run: |
@@ -45,7 +45,7 @@ jobs:
       run: sudo apt update && sudo apt install -y qtbase5-dev qt5-default
       if: ${{ matrix.platform == 'ubuntu-18.04' }}
     - name: "dependency: qt5 (windows)"
-      uses: jurplel/install-qt-action@v2
+      uses: jurplel/install-qt-action@v4
       with:
         version: 5.15.1
         arch: win64_msvc2019_64
@@ -74,7 +74,7 @@ jobs:
         echo 'Categories=Game;' >> "${{ github.workspace }}/install/default.desktop"
         "${{ runner.workspace }}/linuxdeployqt" "${{ github.workspace }}/install/noggit" -appimage -bundle-non-qt-libs -no-strip -verbose=2
       if: ${{ matrix.platform == 'ubuntu-18.04' }}
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.platform }}-${{ matrix.compiler }}-appimage
         path: Noggit*.AppImage
@@ -96,7 +96,7 @@ jobs:
         dest: noggit-${{ matrix.platform }}-${{ matrix.compiler }}-dependencies-${{ github.sha }}.zip
         files: dependencies/
       if: ${{ matrix.platform == 'windows-2019' }}
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.platform }}-${{ matrix.compiler }}-dependencies
         path: noggit-${{ matrix.platform }}-${{ matrix.compiler }}-dependencies-${{ github.sha }}.zip
@@ -106,7 +106,7 @@ jobs:
       with:
         dest: noggit-${{ matrix.platform }}-${{ matrix.compiler }}-${{ github.sha }}.zip
         files: install
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.platform }}-${{ matrix.compiler }}
         path: noggit-${{ matrix.platform }}-${{ matrix.compiler }}-${{ github.sha }}.zip
