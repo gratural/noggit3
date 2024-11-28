@@ -2792,13 +2792,13 @@ void MapView::mouseMoveEvent (QMouseEvent* event)
 
 void MapView::selectModel(std::string const& model)
 {
-  if (boost::ends_with (model, ".m2"))
+  if (misc::str_ends_with(model, ".m2"))
   {
     ModelInstance mi(model);
     _world->set_current_selection(&mi);
 
   }
-  else if (boost::ends_with (model, ".wmo"))
+  else if (misc::str_ends_with(model, ".wmo"))
   {
     WMOInstance wi(model);
     _world->set_current_selection(&wi);

@@ -551,7 +551,7 @@ namespace noggit
 
       std::vector<selection_type> selected_model;
 
-      if (boost::ends_with (filename, ".m2"))
+      if (misc::str_ends_with (filename, ".m2"))
       {
         ModelInstance* mi = new ModelInstance(filename);
 
@@ -560,7 +560,7 @@ namespace noggit
         selected_model.push_back(mi);
         replace_selection(selected_model);
       }
-      else if (boost::ends_with (filename, ".wmo"))
+      else if (misc::str_ends_with (filename, ".wmo"))
       {
         WMOInstance* wi = new WMOInstance(filename);
 

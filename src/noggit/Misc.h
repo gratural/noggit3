@@ -78,6 +78,8 @@ namespace misc
     }
   }
 
+  bool str_ends_with(std::string const& str, std::string const& end);
+
   math::vector_3d texture_anim_params(std::uint32_t flags);
 
   struct random_color : math::vector_4d

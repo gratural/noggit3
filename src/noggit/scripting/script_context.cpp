@@ -32,7 +32,7 @@ namespace noggit
     script_context::script_context(scripting_tool * tool): _tool(tool)
     {
       open_libraries(sol::lib::base,sol::lib::table,sol::lib::string);
-      script_scoped_function<std::shared_ptr<script_brush>(std::string const&)> 
+      script_scoped_function<std::shared_ptr<script_brush>(std::string const&)>
         add_brush(this,"brush",
         [this](std::string const& name)
         {
@@ -69,7 +69,7 @@ namespace noggit
       for (boost::filesystem::recursive_directory_iterator dir("scripts"); dir != end; ++dir)
       {
         std::string file = dir->path().string();
-        if (!boost::ends_with(file, ".lua") || boost::ends_with(file, ".spec.lua"))
+        if (!misc::str_ends_with(file, ".lua") || misc::str_ends_with(file, ".spec.lua"))
         {
           continue;
         }
@@ -179,7 +179,7 @@ namespace noggit
       auto mod = file_to_module(file);
       _file_stack.push_back(mod);
       sol::protected_function_result res = script_file(file);
-      _modules[mod] = res.get_type() == sol::type::table 
+      _modules[mod] = res.get_type() == sol::type::table
         ? res.get<sol::table>()
         : create_table();
       _file_stack.pop_back();

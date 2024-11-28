@@ -178,6 +178,11 @@ namespace misc
     return float_equals(v1.x._, v2.x._) && float_equals(v1.y._, v2.y._) && float_equals(v1.z._, v2.z._);
   }
 
+  bool str_ends_with(std::string const& str, std::string const& end)
+  {
+    return str.size() < end.size() ? false : std::equal(end.rbegin(), end.rend(), str.rbegin());
+  }
+
   math::vector_3d texture_anim_params(std::uint32_t flags)
   {
     if (!flags & FLAG_ANIMATE)
