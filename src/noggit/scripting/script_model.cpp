@@ -5,15 +5,25 @@
 #include <noggit/scripting/script_exception.hpp>
 
 #include <noggit/World.h>
+#include <noggit/Misc.h>
 #include <noggit/ModelInstance.h>
 #include <noggit/WMOInstance.h>
 #include <noggit/ui/ObjectEditor.h>
 
-#include <util/visit.hpp>
 
 #include <sol/sol.hpp>
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/algorithm/string/case_conv.hpp>
+
+// code from https://gist.github.com/s3rvac/d1f30364ce1f732d75ef0c89a1c8c1ef
+template<typename... Ts> struct make_overload : Ts... { using Ts::operator()...; };
+template<typename... Ts> make_overload(Ts...) -> make_overload<Ts...>;
+
+template<typename Variant, typename... Alternatives>
+decltype(auto) visit_variant(Variant&& variant, Alternatives&&... alternatives) {
+  return std::visit(
+    make_overload{ std::forward<Alternatives>(alternatives)... },
+    std::forward<Variant>(variant)
+  );
+}
 
 namespace noggit
 {
@@ -31,12 +41,12 @@ namespace noggit
 
     math::vector_3d model::get_pos()
     {
-      return util::visit (_impl, [] (auto x) { return x->pos; });
+      return visit_variant (_impl, [] (auto x) { return x->pos; });
     }
 
     void model::set_pos(math::vector_3d& pos)
     {
-      return util::visit ( _impl
+      return visit_variant ( _impl
                          , [&, this] (ModelInstance * as_m2) {
                             this->world()->updateTilesModel(as_m2, model_update::remove);
                             as_m2->pos = pos;
@@ -54,13 +64,13 @@ namespace noggit
 
     math::vector_3d model::get_rot()
     {
-      return math::vector_3d {util::visit (_impl, [] (auto x) { return x->dir; })};
+      return math::vector_3d {visit_variant (_impl, [] (auto x) { return x->dir; })};
     }
 
     void model::set_rot(math::vector_3d& rot)
     {
       math::degrees::vec3 dir = math::degrees::vec3{ rot };
-      return util::visit ( _impl
+      return visit_variant ( _impl
                          , [dir, this] (ModelInstance * as_m2) {
                             this->world()->updateTilesModel(as_m2, model_update::remove);
                             as_m2->dir = dir;
@@ -77,7 +87,7 @@ namespace noggit
 
     float model::get_scale()
     {
-      return util::visit ( _impl
+      return visit_variant ( _impl
                          , [] (ModelInstance const* as_m2) {
                              return as_m2->scale;
                            }
@@ -89,7 +99,7 @@ namespace noggit
 
     void model::set_scale(float scale)
     {
-      return util::visit ( _impl
+      return visit_variant ( _impl
                          , [scale, this] (ModelInstance * as_m2) {
                             this->world()->updateTilesModel(as_m2, model_update::remove);
                             as_m2->scale = scale;
@@ -102,7 +112,7 @@ namespace noggit
 
     unsigned model::get_uid()
     {
-      return util::visit ( _impl
+      return visit_variant ( _impl
                          , [] (ModelInstance const* as_m2) {
                              return as_m2->uid;
                            }
@@ -114,7 +124,7 @@ namespace noggit
 
     std::string model::get_filename()
     {
-      return util::visit ( _impl
+      return visit_variant ( _impl
                       , [] (ModelInstance const* as_m2) {
                           return as_m2->model->filename;
                         }
@@ -126,16 +136,14 @@ namespace noggit
 
     bool model::has_filename(std::string const& name)
     {
-      std::string copy = std::string(name);
-      boost::to_lower(copy);
-      std::replace(copy.begin(),copy.end(),'\\','/');
+      std::string copy = mpq::normalized_filename(name);
       return copy == get_filename();
     }
 
     void model::remove()
     {
       std::vector<selection_type> type;
-      util::visit (_impl, [&] (auto x) { type.emplace_back (x); });
+      visit_variant (_impl, [&] (auto x) { type.emplace_back (x); });
       world()->delete_models(type);
     }
 
@@ -148,9 +156,9 @@ namespace noggit
 
       remove();
 
-      if (boost::ends_with(filename, ".wmo"))
+      if (misc::str_ends_with(filename, ".wmo"))
       {
-        _impl = 
+        _impl =
           world()->addWMO(filename, get_pos(), math::degrees::vec3 {get_rot()});
       }
       else

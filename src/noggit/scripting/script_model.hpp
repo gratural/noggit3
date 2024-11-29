@@ -5,7 +5,7 @@
 
 #include <math/vector_3d.hpp>
 
-#include <boost/variant.hpp>
+#include <variant>
 
 class World;
 
@@ -43,7 +43,7 @@ namespace noggit
       void replace(std::string const& filename);
 
     private:
-      boost::variant<ModelInstance*, WMOInstance*> _impl;
+      std::variant<ModelInstance*, WMOInstance*> _impl;
     };
 
     void collect_models(
