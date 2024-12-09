@@ -13,7 +13,6 @@
 #include <noggit/map_index.hpp>
 #include <noggit/uid_storage.hpp>
 
-#include <boost/range/adaptor/map.hpp>
 
 #include <forward_list>
 

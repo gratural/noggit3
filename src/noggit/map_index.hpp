@@ -8,8 +8,6 @@
 #include <noggit/Misc.h>
 #include <noggit/tile_index.hpp>
 
-#include <boost/range/iterator_range.hpp>
-
 #include <cassert>
 #include <cstdint>
 #include <ctime>
@@ -123,15 +121,29 @@ public:
   };
 
   template<bool Load>
-    using tile_range = boost::iterator_range<tile_iterator<Load>>;
+    struct tile_range
+  {
+    tile_range(tile_iterator<Load>&& begin, tile_iterator<Load>&& end)
+      : _begin(std::move(begin))
+      , _end(std::move(end))
+    {
+
+    }
+
+    tile_iterator<Load>& begin() { return _begin; }
+    tile_iterator<Load>& end() { return _end; }
+
+    tile_iterator<Load> _begin;
+    tile_iterator<Load> _end;
+  };
+  
 
   template<bool Load>
     auto tiles ( std::function<bool (tile_index const&, MapTile*)> pred
                = [] (tile_index const&, MapTile*) { return true; }
                )
   {
-    return boost::make_iterator_range
-      (tile_iterator<Load> {this, {0, 0}, pred}, tile_iterator<Load>{});
+    return tile_range<Load>(tile_iterator<Load> {this, { 0, 0 }, pred}, tile_iterator<Load>{});
   }
 
   tile_range<false> loaded_tiles();

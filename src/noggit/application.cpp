@@ -17,6 +17,7 @@
 #include <util/exception_to_string.hpp>
 
 #include <boost/filesystem.hpp>
+#include <boost/range/iterator_range.hpp>
 #include <boost/thread/thread.hpp>
 
 #include <algorithm>
