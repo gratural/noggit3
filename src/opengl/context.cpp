@@ -7,8 +7,6 @@
 #include <opengl/context.hpp>
 #include <opengl/scoped.hpp>
 
-#include <boost/current_function.hpp>
-
 #include <QtCore/QSysInfo>
 #include <QtGui/QOpenGLFunctions>
 #include <QtOpenGLExtensions/QOpenGLExtensions>
@@ -191,267 +189,267 @@ namespace opengl
 
   void context::enable (GLenum target)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glEnable (target);
   }
   void context::disable (GLenum target)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glDisable (target);
   }
   GLboolean context::isEnabled (GLenum target)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glIsEnabled (target);
   }
   void context::viewport (GLint x, GLint y, GLsizei width, GLsizei height)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glViewport (x, y, width, height);
   }
   void context::depthFunc (GLenum target)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glDepthFunc (target);
   }
   void context::depthMask (GLboolean mask)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glDepthMask (mask);
   }
   void context::blendFunc (GLenum sfactor, GLenum dfactor)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glBlendFunc (sfactor, dfactor);
   }
 
   void context::clear (GLenum target)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glClear (target);
   }
   void context::clearColor (GLfloat r, GLfloat g, GLfloat b, GLfloat a)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glClearColor (r, g, b, a);
   }
 
   void context::readBuffer (GLenum target)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glReadBuffer (target);
   }
   void context::readPixels (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* data)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glReadPixels (x, y, width, height, format, type, data);
   }
 
   void context::lineWidth (GLfloat width)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glLineWidth (width);
   }
 
   void context::pointParameterf (GLenum pname, GLfloat param)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glPointParameterf (pname, param);
   }
   void context::pointParameteri (GLenum pname, GLint param)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glPointParameteri (pname, param);
   }
   void context::pointParameterfv (GLenum pname, GLfloat const* param)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glPointParameterfv (pname, param);
   }
   void context::pointParameteriv (GLenum pname, GLint const* param)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glPointParameteriv (pname, param);
   }
   void context::pointSize (GLfloat size)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glPointSize (size);
   }
 
   void context::hint (GLenum target, GLenum mode)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glHint (target, mode);
   }
   void context::polygonMode (GLenum face, GLenum mode)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glPolygonMode (face, mode);
   }
 
   void context::genTextures (GLuint count, GLuint* textures)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glGenTextures (count, textures);
   }
   void context::deleteTextures (GLuint count, GLuint* textures)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glDeleteTextures (count, textures);
   }
   void context::bindTexture (GLenum target, GLuint texture)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glBindTexture (target, texture);
   }
   void context::texImage2D (GLenum target, GLint level, GLint internal_format, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, GLvoid const* data)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glTexImage2D (target, level, internal_format, width, height, border, format, type, data);
   }
   void context::texImage3D (GLenum target, GLint level, GLint internal_format, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, GLvoid const* data)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glTexImage3D (target, level, internal_format, width, height, depth, border, format, type, data);
   }
   void context::texSubImage2D(GLenum target, GLint level, GLint x_offset, GLint y_offset, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid const* data)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glTexSubImage2D (target, level, x_offset, y_offset, width, height, format, type, data);
   }
   void context::texSubImage3D(GLenum target, GLint level, GLint x_offset, GLint y_offset, GLint z_offset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLvoid const* data)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glTexSubImage3D(target, level, x_offset, y_offset, z_offset, width, height, depth, format, type, data);
   }
   void context::compressedTexImage2D (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, GLvoid const* data)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glCompressedTexImage2D (target, level, internalformat, width, height, border, imageSize, data);
   }
   void context::compressedTexSubImage3D(GLenum target, GLint level, GLint x_offset, GLint y_offset, GLint z_offset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, GLvoid const* data)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glCompressedTexSubImage3D(target, level, x_offset, y_offset, z_offset, width, height, depth, format, imageSize, data);
   }
   void context::generateMipmap (GLenum target)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glGenerateMipmap (target);
   }
   void context::activeTexture (GLenum target)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glActiveTexture (target);
   }
 #ifdef USE_BINDLESS_TEXTURES
   GLuint64 context::getTextureHandleARB(GLuint texture)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _.extension_functions<QOpenGLExtension_ARB_bindless_texture>()->glGetTextureHandleARB(texture);
   }
   void context::makeTextureHandleResidentARB(GLuint64 handle)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     _.extension_functions<QOpenGLExtension_ARB_bindless_texture>()->glMakeTextureHandleResidentARB(handle);
   }
 #endif
   void context::texParameteri (GLenum target, GLenum pname, GLint param)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glTexParameteri (target, pname, param);
   }
   void context::texParameterf (GLenum target, GLenum pname, GLfloat param)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glTexParameterf (target, pname, param);
   }
   void context::texParameteriv (GLenum target, GLenum pname, GLint const* params)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glTexParameteriv (target, pname, params);
   }
   void context::texParameterfv (GLenum target, GLenum pname, GLfloat const* params)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glTexParameterfv (target, pname, params);
   }
 
   void context::genVertexArrays (GLuint count, GLuint* arrays)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glGenVertexArrays(count, arrays);
   }
   void context::deleteVertexArray (GLuint count, GLuint* arrays)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glDeleteVertexArrays(count, arrays);
   }
   void context::bindVertexArray (GLenum array)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glBindVertexArray(array);
   }
   void context::genBuffers (GLuint count, GLuint* buffers)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glGenBuffers (count, buffers);
   }
   void context::deleteBuffers (GLuint count, GLuint* buffers)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glDeleteBuffers (count, buffers);
   }
   void context::bindBuffer (GLenum target, GLuint buffer)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glBindBuffer (target, buffer);
   }
   void context::bindBufferBase(GLenum target, GLuint index, GLuint buffer)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glBindBufferBase (target, index, buffer);
   }
   void context::bufferData (GLenum target, GLsizeiptr size, GLvoid const* data, GLenum usage)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glBufferData (target, size, data, usage);
   }
   void context::bufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, GLvoid const* data)
   {
-    verify_context_and_check_for_gl_errors const _(_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _(_current_context, __func__);
     return _current_context->functions()->glBufferSubData(target, offset, size, data);
   }
   GLvoid* context::mapBuffer (GLenum target, GLenum access)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glMapBuffer (target, access);
   }
   GLboolean context::unmapBuffer (GLenum target)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glUnmapBuffer (target);
   }
 
   void context::drawElements (GLenum mode, GLsizei count, GLenum type, index_buffer_is_already_bound, std::intptr_t indices_offset)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glDrawElements (mode, count, type, reinterpret_cast<void*> (indices_offset));
   }
   void context::drawElementsInstanced (GLenum mode, GLsizei count, GLsizei instancecount, GLenum type, index_buffer_is_already_bound, std::intptr_t indices_offset)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glDrawElementsInstanced (mode, count, type, reinterpret_cast<void*> (indices_offset), instancecount);
   }
   void context::drawRangeElements (GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, index_buffer_is_already_bound, std::intptr_t indices_offset)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glDrawRangeElements (mode, start, end, count, type, reinterpret_cast<void*> (indices_offset));
   }
   void context::multiDrawElements(GLenum mode, const GLsizei* count, GLenum type, const void* const* indices, GLsizei drawcount)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glMultiDrawElements(mode, count, type, indices, drawcount);
   }
 
@@ -506,24 +504,24 @@ namespace opengl
 
   void context::genPrograms (GLsizei count, GLuint* programs)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _.extension_functions<QOpenGLExtension_ARB_vertex_program>()->glGenProgramsARB (count, programs);
   }
   void context::deletePrograms (GLsizei count, GLuint* programs)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _.extension_functions<QOpenGLExtension_ARB_vertex_program>()->glDeleteProgramsARB (count, programs);
   }
   void context::bindProgram (GLenum target, GLuint program)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _.extension_functions<QOpenGLExtension_ARB_vertex_program>()->glBindProgramARB (target, program);
   }
   void context::programString (GLenum target, GLenum format, GLsizei len, GLvoid const* pointer)
   {
     verify_context_and_check_for_gl_errors const _
       ( _current_context
-      , BOOST_CURRENT_FUNCTION
+      , __func__
       , [this]
         {
           GLint error_position;
@@ -535,61 +533,61 @@ namespace opengl
   }
   void context::getProgramiv (GLuint program, GLenum pname, GLint* params)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glGetProgramiv (program, pname, params);
   }
   void context::programLocalParameter4f (GLenum target, GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _.extension_functions<QOpenGLExtension_ARB_vertex_program>()->glProgramLocalParameter4fARB (target, index, x, y, z, w);
   }
 
   void context::getBooleanv (GLenum target, GLboolean* value)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glGetBooleanv (target, value);
   }
   void context::getDoublev (GLenum target, GLdouble* value)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glGetDoublev (target, value);
   }
   void context::getFloatv (GLenum target, GLfloat* value)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glGetFloatv (target, value);
   }
   void context::getIntegerv (GLenum target, GLint* value)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glGetIntegerv (target, value);
   }
 
   GLubyte const* context::getString (GLenum target)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glGetString (target);
   }
 
   GLuint context::createShader (GLenum shader_type)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glCreateShader (shader_type);
   }
   void context::deleteShader (GLuint shader)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glDeleteShader (shader);
   }
   void context::shaderSource (GLuint shader, GLsizei count, GLchar const** string, GLint const* length)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glShaderSource (shader, count, string, length);
   }
   void context::compile_shader (GLuint shader)
   {
     {
-      verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+      verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
       _current_context->functions()->glCompileShader (shader);
     }
     if (get_shader (shader, GL_COMPILE_STATUS) != GL_TRUE)
@@ -602,7 +600,7 @@ namespace opengl
   }
   GLint context::get_shader (GLuint shader, GLenum pname)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     GLint params;
     _current_context->functions()->glGetShaderiv (shader, pname, &params);
     return params;
@@ -610,28 +608,28 @@ namespace opengl
 
   GLuint context::createProgram()
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glCreateProgram();
   }
   void context::deleteProgram (GLuint program)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glDeleteProgram (program);
   }
   void context::attachShader (GLuint program, GLuint shader)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glAttachShader (program, shader);
   }
   void context::detachShader (GLuint program, GLuint shader)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glDetachShader (program, shader);
   }
   void context::link_program (GLuint program)
   {
     {
-      verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+      verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
       _current_context->functions()->glLinkProgram (program);
     }
     if (get_program (program, GL_LINK_STATUS) != GL_TRUE)
@@ -643,7 +641,7 @@ namespace opengl
   }
   void context::useProgram (GLuint program)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glUseProgram (program);
   }
   void context::validate_program (GLuint program)
@@ -659,7 +657,7 @@ namespace opengl
     }
 
     {
-      verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+      verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
       _current_context->functions()->glValidateProgram (program);
     }
     if (get_program (program, GL_VALIDATE_STATUS) != GL_TRUE)
@@ -671,14 +669,14 @@ namespace opengl
   }
   GLint context::get_program (GLuint program, GLenum pname)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     GLint params;
     _current_context->functions()->glGetProgramiv (program, pname, &params);
     return params;
   }
   std::string context::get_program_info_log(GLuint program)
   {
-    verify_context_and_check_for_gl_errors const _(_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _(_current_context, __func__);
     std::vector<char> log(get_program(program, GL_INFO_LOG_LENGTH));
 
     if (log.empty())
@@ -693,38 +691,38 @@ namespace opengl
 
   GLint context::getAttribLocation (GLuint program, GLchar const* name)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glGetAttribLocation (program, name);
   }
   void context::vertexAttribPointer (GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid const* pointer)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glVertexAttribPointer (index, size, type, normalized, stride, pointer);
   }
   void context::vertexAttribIPointer (GLuint index, GLint size, GLenum type, GLsizei stride, GLvoid const* pointer)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glVertexAttribIPointer(index, size, type, stride, pointer);
   }
   void context::vertexAttribDivisor (GLuint index, GLuint divisor)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glVertexAttribDivisor(index, divisor);
   }
   void context::enableVertexAttribArray (GLuint index)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glEnableVertexAttribArray (index);
   }
   void context::disableVertexAttribArray (GLuint index)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glDisableVertexAttribArray (index);
   }
 
   GLint context::getUniformLocation (GLuint program, GLchar const* name)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     auto val (_current_context->functions()->glGetUniformLocation (program, name));
     if (val == -1)
     {
@@ -735,123 +733,123 @@ namespace opengl
 
   void context::uniform1i (GLint location, GLint value)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glUniform1i (location, value);
   }
   void context::uniform1f (GLint location, GLfloat value)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glUniform1f (location, value);
   }
 
   void context::uniform1iv (GLint location, GLsizei count, GLint const* value)
   {
-    verify_context_and_check_for_gl_errors const _(_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _(_current_context, __func__);
     return _current_context->functions()->glUniform1iv(location, count, value);
   }
 
   void context::uniform2fv (GLint location, GLsizei count, GLfloat const* value)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glUniform2fv (location, count, value);
   }
   void context::uniform2uiv (GLint location, GLsizei count, GLuint const* value)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _4_1_core_func->glUniform2uiv (location, count, value);
   }
   void context::uniform3fv (GLint location, GLsizei count, GLfloat const* value)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glUniform3fv (location, count, value);
   }
   void context::uniform4iv (GLint location, GLsizei count, GLint const* value)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glUniform4iv (location, count, value);
   }
   void context::uniform4fv (GLint location, GLsizei count, GLfloat const* value)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glUniform4fv (location, count, value);
   }
   void context::uniformMatrix4fv (GLint location, GLsizei count, GLboolean transpose, GLfloat const* value)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glUniformMatrix4fv (location, count, transpose, value);
   }
   GLuint context::getUniformBlockIndex(GLuint program, const GLchar* name)
   {
-    verify_context_and_check_for_gl_errors const _(_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _(_current_context, __func__);
     return _4_1_core_func->glGetUniformBlockIndex(program, name);
   }
   void context::uniformBlockBinding(GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding)
   {
-    verify_context_and_check_for_gl_errors const _(_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _(_current_context, __func__);
     _4_1_core_func->glUniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding);
   }
 
   void context::clearStencil (GLint s)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glClearStencil (s);
   }
   void context::stencilFunc (GLenum func, GLint ref, GLuint mask)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glStencilFunc (func, ref, mask);
   }
   void context::stencilOp (GLenum sfail, GLenum dpfail, GLenum dppass)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glStencilOp (sfail, dpfail, dppass);
   }
   void context::colorMask (GLboolean r, GLboolean g, GLboolean b, GLboolean a)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glColorMask (r, g, b, a);
   }
 
   void context::polygonOffset (GLfloat factor, GLfloat units)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glPolygonOffset (factor, units);
   }
 
   void context::genFramebuffers (GLsizei n, GLuint *ids)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glGenFramebuffers (n, ids);
   }
   void context::bindFramebuffer (GLenum target, GLuint framebuffer)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glBindFramebuffer (target, framebuffer);
   }
   void context::framebufferTexture2D (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glFramebufferTexture2D (target, attachment, textarget, texture, level);
   }
 
   void context::genRenderbuffers (GLsizei n, GLuint *ids)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glGenRenderbuffers (n, ids);
   }
   void context::bindRenderbuffer (GLenum target, GLuint renderbuffer)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glBindRenderbuffer (target, renderbuffer);
   }
   void context::renderbufferStorage (GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glRenderbufferStorage (target, internalformat, width, height);
   }
   void context::framebufferRenderbuffer (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer)
   {
-    verify_context_and_check_for_gl_errors const _ (_current_context, BOOST_CURRENT_FUNCTION);
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glFramebufferRenderbuffer (target, attachment, renderbuffertarget, renderbuffer);
   }
 
