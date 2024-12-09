@@ -15,6 +15,7 @@
 #include <cstring>
 #include <fstream>
 #include <list>
+#include <mutex>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -26,8 +27,8 @@ namespace
   typedef std::list<ArchiveEntry> ArchivesMap;
   ArchivesMap _openArchives;
 
-  boost::mutex gListfileLoadingMutex;
-  boost::mutex gMPQFileMutex;
+  std::mutex gListfileLoadingMutex;
+  std::mutex gMPQFileMutex;
 }
 
 std::unordered_set<std::string> gListfile;
@@ -62,8 +63,8 @@ void MPQArchive::finishLoading()
 
   HANDLE fh;
 
-  boost::mutex::scoped_lock lock2(gMPQFileMutex);
-  boost::mutex::scoped_lock lock(gListfileLoadingMutex);
+  std::lock_guard<std::mutex> lock2(gMPQFileMutex);
+  std::lock_guard<std::mutex> lock(gListfileLoadingMutex);
 
   if (SFileOpenFileEx(_archiveHandle, "(listfile)", 0, &fh))
   {
@@ -159,9 +160,9 @@ bool MPQArchive::openFile(std::string const& file, HANDLE* fileHandle) const
 
 namespace
 {
-  boost::filesystem::path getDiskPath (std::string const& normalized_filename)
+  std::filesystem::path getDiskPath (std::string const& normalized_filename)
   {
-    return boost::filesystem::path (NoggitSettings.project_path())
+    return std::filesystem::path (NoggitSettings.project_path())
       / normalized_filename;
   }
 
@@ -205,7 +206,7 @@ MPQFile::MPQFile(std::string const& filename)
     return;
   }
 
-  boost::mutex::scoped_lock lock(gMPQFileMutex);
+  std::lock_guard<std::mutex> lock(gMPQFileMutex);
 
   for (ArchivesMap::reverse_iterator i = _openArchives.rbegin(); i != _openArchives.rend(); ++i)
   {
@@ -236,7 +237,7 @@ bool MPQFile::exists (std::string const& filename)
 }
 bool MPQFile::existsOnDisk (std::string const& filename)
 {
-  return boost::filesystem::exists (getDiskPath (filename));
+  return std::filesystem::exists (getDiskPath (filename));
 }
 
 size_t MPQFile::read(void* dest, size_t bytes)
@@ -302,16 +303,16 @@ char const* MPQFile::getPointer() const
 
 void MPQFile::save_file_to_folder(std::string const& folder)
 {
-  save_file(boost::filesystem::path(folder) / _filename);
+  save_file(std::filesystem::path(folder) / _filename);
 }
 
-void MPQFile::save_file(boost::filesystem::path& path)
+void MPQFile::save_file(std::filesystem::path& path)
 {
   LogDebug << "Save file to: " << path << std::endl;
 
   auto const directory_name(path.parent_path());
-  boost::system::error_code ec;
-  boost::filesystem::create_directories(directory_name, ec);
+  std::error_code ec;
+  std::filesystem::create_directories(directory_name, ec);
 
   if (ec)
   {
