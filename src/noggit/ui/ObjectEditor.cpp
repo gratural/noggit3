@@ -15,8 +15,6 @@
 #include <noggit/ui/checkbox.hpp>
 #include <util/qt/overload.hpp>
 
-#include <boost/algorithm/string/predicate.hpp>
-
 #include <QClipboard>
 #include <QGuiApplication>
 #include <QFormLayout>

@@ -7,9 +7,6 @@
 #include <noggit/Misc.h>
 #include <noggit/Selection.h>
 
-#include <boost/filesystem.hpp>
-#include <boost/format.hpp>
-
 #include <algorithm>
 #include <string>
 

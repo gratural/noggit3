@@ -11,8 +11,6 @@
 #include <QLabel>
 #include <QWidget>
 
-#include <boost/optional.hpp>
-
 class MapView;
 class QButtonGroup;
 class World;

@@ -48,7 +48,6 @@ struct BLPHeader
 };
 #pragma pack(pop)
 
-#include <boost/thread.hpp>
 #include <noggit/MPQ.h>
 
 void blp_texture::bind()

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <boost/optional.hpp>
+
 #include <math/trig.hpp>
 #include <math/vector_3d.hpp>
 #include <math/vector_4d.hpp>

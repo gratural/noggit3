@@ -13,7 +13,6 @@
 #include <algorithm>    // std::min
 #include <iostream>     // std::cout
 
-#include <boost/utility/in_place_factory.hpp>
 
 TextureSet::TextureSet ( MapChunkHeader const& header
                        , MPQFile* f

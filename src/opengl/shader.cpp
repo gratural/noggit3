@@ -9,8 +9,6 @@
 #include <opengl/shader.hpp>
 #include <opengl/texture.hpp>
 
-#include <boost/filesystem/string_file.hpp>
-
 #include <QFile>
 #include <QTextStream>
 

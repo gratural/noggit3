@@ -24,10 +24,6 @@
 #include <opengl/scoped.hpp>
 #include <opengl/shader.hpp>
 
-#include <boost/filesystem.hpp>
-#include <boost/range/adaptor/map.hpp>
-#include <boost/thread/thread.hpp>
-
 #include <QtWidgets/QMessageBox>
 
 #include <algorithm>

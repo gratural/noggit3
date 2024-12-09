@@ -5,10 +5,6 @@
 #include <noggit/MPQ.h>
 #include <noggit/settings.hpp>
 
-#include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
-
 #include <algorithm>
 #include <cstdint>
 #include <cstdio>

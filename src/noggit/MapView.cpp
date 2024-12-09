@@ -45,9 +45,6 @@
 
 #include "revision.h"
 
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/filesystem.hpp>
-
 #include <QtCore/QTimer>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QMouseEvent>

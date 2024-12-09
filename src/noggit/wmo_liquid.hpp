@@ -12,8 +12,6 @@
 #include <noggit/wmo_headers.hpp>
 #include <opengl/scoped.hpp>
 
-#include <boost/optional.hpp>
-
 #include <memory>
 
 

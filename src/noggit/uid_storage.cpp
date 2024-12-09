@@ -3,8 +3,6 @@
 #include <noggit/uid_storage.hpp>
 #include <noggit/settings.hpp>
 
-#include <boost/filesystem.hpp>
-
 bool uid_storage::hasMaxUIDStored(uint32_t mapID)
 {
   return NoggitSettings.uids->value(QString::number(mapID), -1).toUInt() != -1;

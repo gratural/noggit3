@@ -12,7 +12,6 @@
 #include <noggit/MapView.h>
 #include <noggit/World.h>
 #include <noggit/liquid_chunk.hpp>
-#include <boost/algorithm/string/predicate.hpp>
 
 namespace noggit
 {
@@ -154,7 +153,7 @@ namespace noggit
     MH2O_Attributes chunk::getRenderOrDefault()
     {
         return _chunk->liquid_chunk()->attributes;
-        
+
     }
 
     MH2O_Attributes & chunk::getOrCreateRender()

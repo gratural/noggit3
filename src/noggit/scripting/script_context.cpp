@@ -8,9 +8,6 @@
 #include <noggit/MapView.h>
 #include <noggit/World.h>
 #include <noggit/camera.hpp>
-
-#include <boost/algorithm/string/predicate.hpp>
-
 #include <noggit/Log.h>
 
 #include <filesystem>
