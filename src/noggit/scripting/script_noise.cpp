@@ -4,7 +4,7 @@
 #include <noggit/scripting/script_exception.hpp>
 #include <noggit/scripting/script_context.hpp>
 
-#include <boost/algorithm/string.hpp>
+#include <string>
 
 namespace noggit
 {
@@ -106,30 +106,32 @@ namespace noggit
       _start_y = start_y;
       _size = width*height;
       _noise.resize(_size);
-      auto upper = boost::algorithm::to_upper_copy<std::string>(algorithm);
+
+      std::string upper = algorithm;
+      std::transform(upper.begin(), upper.end(), upper.begin(), ::toupper);
 
       FastNoise::SmartNode<> generator = nullptr;
-      if(upper=="SIMPLEX")
+      if (upper == "SIMPLEX")
       {
         generator = FastNoise::New<FastNoise::Simplex>();
       }
-      else if(upper=="PERLIN")
+      else if (upper == "PERLIN")
       {
         generator = FastNoise::New<FastNoise::Perlin>();
       }
-      else if(upper=="VALUE")
+      else if (upper == "VALUE")
       {
         generator = FastNoise::New<FastNoise::Value>();
       }
-      else if(upper=="FRACTAL")
+      else if (upper == "FRACTAL")
       {
         generator = FastNoise::New<FastNoise::FractalFBm>();
       }
-      else if(upper=="CELLULAR")
+      else if (upper == "CELLULAR")
       {
         generator = FastNoise::New<FastNoise::CellularValue>();
       }
-      else if(upper=="WHITE")
+      else if (upper == "WHITE")
       {
         generator = FastNoise::New<FastNoise::White>();
       }
