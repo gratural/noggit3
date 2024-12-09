@@ -130,11 +130,6 @@ if(VALIDATE_OPENGL_PROGRAMS)
   endif()
 endif()
 
-# todo: we should probably always require that to avoid an incomplete
-# installation with shared libs. it is static on windows luckily.
-if (APPLE OR WIN32)
-  set (Boost_USE_STATIC_LIBS ON)
-endif()
 
 if (WIN32)
   if ("cxx_variable_templates" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
@@ -145,7 +140,6 @@ if (WIN32)
 endif()
 
 FIND_PACKAGE( OpenGL REQUIRED )
-FIND_PACKAGE( Boost 1.71 COMPONENTS thread filesystem system unit_test_framework REQUIRED )
 find_package (Qt5 COMPONENTS Widgets OpenGL OpenGLExtensions)
 
 if (USE_SQL)
@@ -580,9 +574,6 @@ endif()
 
 TARGET_LINK_LIBRARIES (noggit
   ${OPENGL_LIBRARIES}
-  Boost::thread
-  Boost::filesystem
-  Boost::system
   Qt5::Widgets
   Qt5::OpenGL
   Qt5::OpenGLExtensions
@@ -691,7 +682,7 @@ else()
 
   SET(APPS "${CMAKE_CURRENT_BINARY_DIR}/noggit.app")
 
-  SET(DIRS ${OPENGL_LIBRARY_DIR} ${STORMLIB_LIBRARY_DIR} ${Boost_LIBRARY_DIR})
+  SET(DIRS ${OPENGL_LIBRARY_DIR} ${STORMLIB_LIBRARY_DIR})
   INSTALL(CODE " include(BundleUtilities) fixup_bundle(\"${APPS}\"   \"\"   \"${DIRS}\" " COMPONENT Runtime)
 
   SET(CPACK_BUNDLE_NAME "Noggit 3")
@@ -703,51 +694,6 @@ else()
   SET(CPACK_PACKAGE_FILE_NAME "Noggit 3")
   INCLUDE(CPack)
 endif()
-
-add_library (noggit-math STATIC
-  "src/math/matrix_4x4.cpp"
-  "src/math/vector_2d.cpp"
-)
-add_library (noggit::math ALIAS noggit-math)
-target_compile_options (noggit-math PRIVATE ${NOGGIT_CXX_FLAGS})
-
-include (CTest)
-enable_testing()
-
-# boost::unit_test_framework, when linked using a shared library,
-# needs to be explicitly told to generate `main()` as well. CMake's
-# FindBoost does not do that, so detect what type of library it gave
-# us and fix up that flag if needed.
-# todo: what is the state of this on windows?
-if ( TARGET Boost::unit_test_framework
-    AND Boost_UNIT_TEST_FRAMEWORK_LIBRARY MATCHES ".*\.so[0-9\.]*$")
-  get_property (_current_options
-    TARGET Boost::unit_test_framework
-    PROPERTY INTERFACE_COMPILE_DEFINITIONS)
-  set (_boost_test_shared_link_option BOOST_TEST_DYN_LINK)
-  if (NOT _boost_test_shared_link_option IN_LIST _current_options)
-    set_property (TARGET Boost::unit_test_framework APPEND
-      PROPERTY INTERFACE_COMPILE_DEFINITIONS ${_boost_test_shared_link_option})
-  endif()
-endif()
-
-add_executable (math-vector_2d.test test/math/vector_2d.cpp)
-target_compile_definitions (math-vector_2d.test PRIVATE "-DBOOST_TEST_MODULE=\"math\"")
-target_compile_options (math-vector_2d.test PRIVATE ${NOGGIT_CXX_FLAGS})
-target_link_libraries (math-vector_2d.test Boost::unit_test_framework noggit::math)
-add_test (NAME math-vector_2d COMMAND $<TARGET_FILE:math-vector_2d.test>)
-
-add_executable (math-trig.test test/math/trig.cpp)
-target_compile_definitions (math-trig.test PRIVATE "-DBOOST_TEST_MODULE=\"math\"")
-target_compile_options (math-trig.test PRIVATE ${NOGGIT_CXX_FLAGS})
-target_link_libraries (math-trig.test Boost::unit_test_framework noggit::math)
-add_test (NAME math-trig COMMAND $<TARGET_FILE:math-trig.test>)
-
-add_executable (math-matrix_4x4.test test/math/matrix_4x4.cpp)
-target_compile_definitions (math-matrix_4x4.test PRIVATE "-DBOOST_TEST_MODULE=\"math\"")
-target_compile_options (math-matrix_4x4.test PRIVATE ${NOGGIT_CXX_FLAGS})
-target_link_libraries (math-matrix_4x4.test Boost::unit_test_framework noggit::math)
-add_test (NAME math-matrix_4x4 COMMAND $<TARGET_FILE:math-matrix_4x4.test>)
 
 include (FetchContent)
 
