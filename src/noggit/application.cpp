@@ -16,9 +16,7 @@
 #include <opengl/context.hpp>
 #include <util/exception_to_string.hpp>
 
-#include <boost/filesystem.hpp>
-#include <boost/range/iterator_range.hpp>
-#include <boost/thread/thread.hpp>
+#include <filesystem>
 
 #include <algorithm>
 #include <cstdlib>
@@ -54,7 +52,7 @@ private:
 
   std::unique_ptr<noggit::ui::main_window> main_window;
 
-  boost::filesystem::path wowpath;
+  std::filesystem::path wowpath;
 
   bool fullscreen;
   bool doAntiAliasing;
@@ -64,19 +62,19 @@ void Noggit::initPath(char *argv[])
 {
   try
   {
-    boost::filesystem::path startupPath(argv[0]);
+    std::filesystem::path startupPath(argv[0]);
     startupPath.remove_filename();
 
     if (startupPath.is_relative())
     {
-      boost::filesystem::current_path(boost::filesystem::current_path() / startupPath);
+      std::filesystem::current_path(std::filesystem::current_path() / startupPath);
     }
     else
     {
-      boost::filesystem::current_path(startupPath);
+      std::filesystem::current_path(startupPath);
     }
   }
-  catch (const boost::filesystem::filesystem_error& ex)
+  catch (const std::filesystem::filesystem_error& ex)
   {
     LogError << ex.what() << std::endl;
   }
@@ -86,15 +84,12 @@ void Noggit::loadMPQs()
 {
   // load project folder listfile first, todo: make that async
   {
-    auto const prefix(boost::filesystem::path(NoggitSettings.project_path()));
+    auto const prefix(std::filesystem::path(NoggitSettings.project_path()));
     auto const prefix_size(prefix.string().length());
 
-    if (boost::filesystem::exists(prefix))
+    if (std::filesystem::exists(prefix))
     {
-      for (auto const& entry_abs
-        : boost::make_iterator_range
-        (boost::filesystem::recursive_directory_iterator(prefix), {})
-        )
+      for (auto const& entry_abs : std::filesystem::recursive_directory_iterator(prefix))
       {
         gListfile.emplace(
           noggit::mpq::normalized_filename
@@ -133,7 +128,7 @@ void Noggit::loadMPQs()
   // Find locale, take first one.
   for (int i(0); i < 10; ++i)
   {
-    if (boost::filesystem::exists (wowpath / "Data" / locales[i]))
+    if (std::filesystem::exists (wowpath / "Data" / locales[i]))
     {
       locale = locales[i];
       NOGGIT_LOG << "Locale: " << locale << std::endl;
@@ -153,40 +148,36 @@ void Noggit::loadMPQs()
     std::string path((wowpath / "Data" / archiveNames[i]).string());
     std::string::size_type location(std::string::npos);
 
-    do
-    {
-      location = path.find("{locale}");
-      if (location != std::string::npos)
-      {
-        path.replace(location, 8, locale);
-      }
-    } while (location != std::string::npos);
+    path = misc::replace(path, "{locale}", std::string(locale));
 
     if (path.find("{number}") != std::string::npos)
     {
-      location = path.find("{number}");
-      path.replace(location, 8, " ");
       for (char j = '2'; j <= '9'; j++)
       {
-        path.replace(location, 1, std::string(&j, 1));
-        if (boost::filesystem::exists(path))
-          MPQArchive::loadMPQ (AsyncLoader::instance, path, true);
+        std::string file = misc::replace(path, "{number}", std::to_string(j));
+
+        if (std::filesystem::exists(file))
+        {
+          MPQArchive::loadMPQ(AsyncLoader::instance, file, true);
+        }
       }
     }
     else if (path.find("{character}") != std::string::npos)
     {
-      location = path.find("{character}");
-      path.replace(location, 11, " ");
       for (char c = 'a'; c <= 'z'; c++)
       {
-        path.replace(location, 1, std::string(&c, 1));
-        if (boost::filesystem::exists(path))
-          MPQArchive::loadMPQ (AsyncLoader::instance, path, true);
+        std::string file = misc::replace(path, "{character}", std::to_string(c));
+
+        if (std::filesystem::exists(file))
+        {
+          MPQArchive::loadMPQ(AsyncLoader::instance, file, true);
+        }
       }
     }
-    else
-      if (boost::filesystem::exists(path))
-        MPQArchive::loadMPQ (AsyncLoader::instance, path, true);
+    else if (std::filesystem::exists(path))
+    {
+      MPQArchive::loadMPQ(AsyncLoader::instance, path, true);
+    }
   }
 }
 
