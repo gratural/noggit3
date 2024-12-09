@@ -79,6 +79,7 @@ namespace misc
   }
 
   bool str_ends_with(std::string const& str, std::string const& end);
+  std::string replace(std::string const& str, std::string const& substring, std::string const& replacement);
 
   math::vector_3d texture_anim_params(std::uint32_t flags);
 

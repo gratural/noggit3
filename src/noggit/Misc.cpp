@@ -182,6 +182,19 @@ namespace misc
   {
     return str.size() < end.size() ? false : std::equal(end.rbegin(), end.rend(), str.rbegin());
   }
+  std::string replace(std::string const& str, std::string const& substring, std::string const& replacement)
+  {
+    std::string result = str;
+    auto pos = result.find(substring);
+
+    while (pos != std::string::npos)
+    {
+      result.replace(pos, substring.size(), replacement);
+      pos = result.find(substring);
+    }
+
+    return result;
+  }
 
   math::vector_3d texture_anim_params(std::uint32_t flags)
   {

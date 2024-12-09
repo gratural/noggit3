@@ -8,9 +8,6 @@
 #include <opengl/context.hpp>
 #include <opengl/scoped.hpp>
 
-#include <boost/filesystem.hpp>
-#include <boost/format.hpp>
-
 #include <algorithm>
 #include <string>
 
@@ -64,7 +61,7 @@ liquid_layer_ubo_data liquid_render::ubo_data(int liquid_id)
     std::vector<std::string> textures;
     for (int i = 1;; ++i)
     {
-      std::string file = boost::str(boost::format(filename) % i);
+      std::string file = misc::replace(filename, "%d", std::to_string(i));
 
       if (MPQFile::exists(file))
       {
