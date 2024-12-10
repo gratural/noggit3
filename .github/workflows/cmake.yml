@@ -24,22 +24,7 @@ jobs:
       run: |
         wget "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage" -O "${{ runner.workspace }}/linuxdeployqt"
         chmod +x "${{ runner.workspace }}/linuxdeployqt"
-      if: ${{ matrix.platform == 'ubuntu-18.04' }}
-
-    - name: "dependency: boost (linux)"
-      run: sudo apt update && sudo apt install -y libboost-filesystem-dev libboost-system-dev libboost-test-dev libboost-thread-dev libboost-dev
-      if: ${{ matrix.platform == 'ubuntu-18.04' }}
-
-    - name: "dependency: boost (windows)"
-      run: |
-        $Url = "https://sourceforge.net/projects/boost/files/boost-binaries/1.72.0/boost_1_72_0-msvc-14.2-64.exe"
-        (New-Object System.Net.WebClient).DownloadFile($Url, "$env:TEMP\boost.exe")
-        Start-Process -Wait -FilePath "$env:TEMP\boost.exe" "/SILENT","/SP-","/SUPPRESSMSGBOXES","/DIR=C:\hostedtoolcache\windows\Boost\1.72.0\x86_64"
-      if: ${{ matrix.platform == 'windows-2019' }}
-    - name: "dependency: boost (windows) - env variable"
-      run: echo "BOOST_ROOT=C:\hostedtoolcache\windows\Boost\1.72.0\x86_64" >> $GITHUB_ENV
-      shell: bash
-      if: ${{ matrix.platform == 'windows-2019' }}
+      if: ${{ matrix.platform == 'ubuntu-18.04' }}    
 
     - name: "dependency: qt5 (linux)"
       run: sudo apt update && sudo apt install -y qtbase5-dev qt5-default
