@@ -28,11 +28,11 @@ namespace noggit::ui
     , _override_area_id(true)
     , _override_holes(true)
     , _override_models(true)
+    , _radius(15.f)
+    , _square_brush(true)
     , _fix_gaps(true)
     , _clear_shadows(true)
     , _clear_models(true)
-    , _radius(15.f)
-    , _square_brush(true)
     , _preview_enabled(true)
   {
     auto layout(new QFormLayout(this));

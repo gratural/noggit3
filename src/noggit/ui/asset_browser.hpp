@@ -45,8 +45,9 @@ struct asset_tree_node
 
     return *this;
   }
-  std::vector<asset_tree_node> children;
+
   std::string name;
+  std::vector<asset_tree_node> children;
 };
 
 namespace noggit::ui

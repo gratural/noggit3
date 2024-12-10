@@ -18,8 +18,8 @@ public:
 private:
   void update_values();
 
+  float _radius;
   float _inner_ratio;
   float _inner_size;
   float _outer_size;
-  float _radius;
 };

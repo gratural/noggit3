@@ -18,6 +18,7 @@ option (VALIDATE_OPENGL_PROGRAMS "Validate Opengl programs" ON)
 include ("cmake/add_compiler_flag_if_supported.cmake")
 
 add_noggit_compiler_flag_if_supported (-Werror=reorder)
+add_noggit_compiler_flag_if_supported (/we5038)
 add_noggit_compiler_flag_if_supported (-Werror=conditional-uninitialized)
 add_noggit_compiler_flag_if_supported (-Werror=unused)
 add_noggit_compiler_flag_if_supported (-Werror=unused-parameter)

@@ -152,16 +152,18 @@ liquid_layer::liquid_layer(MPQFile &f, std::size_t base_pos, math::vector_3d con
 }
 
 liquid_layer::liquid_layer(math::vector_3d const& base, noggit::liquid_layer_data const& data)
-  : pos(base)
+  : _subchunks(data.subchunk_mask)
   , _vertices(data.vertices)
-  , _subchunks(data.subchunk_mask)
+  , pos(base)
 {
   changeLiquidID(data.liquid_id);
   update_min_max();
 }
 
 liquid_layer::liquid_layer(liquid_layer&& other)
-  : _liquid_id(other._liquid_id)
+  : _fatigue_enabled(other._fatigue_enabled)
+  , _need_data_update(other._need_data_update)
+  , _liquid_id(other._liquid_id)
   , _liquid_vertex_format(other._liquid_vertex_format)
   , _minimum(other._minimum)
   , _maximum(other._maximum)
@@ -170,8 +172,6 @@ liquid_layer::liquid_layer(liquid_layer&& other)
   , _vertices(other._vertices)
   , _indices_by_lod(other._indices_by_lod)
   , _indices_count_by_lod(other._indices_count_by_lod)
-  , _fatigue_enabled(other._fatigue_enabled)
-  , _need_data_update(other._need_data_update)
   , pos(other.pos)
 {
   // update liquid type and vertex format
@@ -179,7 +179,9 @@ liquid_layer::liquid_layer(liquid_layer&& other)
 }
 
 liquid_layer::liquid_layer(liquid_layer const& other)
-  : _liquid_id(other._liquid_id)
+  : _fatigue_enabled(other._fatigue_enabled)
+  , _need_data_update(other._need_data_update)
+  , _liquid_id(other._liquid_id)
   , _minimum(other._minimum)
   , _maximum(other._maximum)
   , _center(other._center)
@@ -187,8 +189,6 @@ liquid_layer::liquid_layer(liquid_layer const& other)
   , _vertices(other._vertices)
   , _indices_by_lod(other._indices_by_lod)
   , _indices_count_by_lod(other._indices_count_by_lod)
-  , _fatigue_enabled(other._fatigue_enabled)
-  , _need_data_update(other._need_data_update)
   , pos(other.pos)
 {
   // update liquid type and vertex format

@@ -1437,8 +1437,8 @@ MapView::MapView( math::degrees camera_yaw0
                 , bool from_bookmark
                 )
   : _camera (camera_pos, camera_yaw0, camera_pitch0)
-  , _debug_cam (camera_pos, camera_yaw0, camera_pitch0)
   , _world (std::move (world))
+  , _debug_cam(camera_pos, camera_yaw0, camera_pitch0)
   , _chunk_mover(_world.get())
   , mTimespeed(0.0f)
   , _uid_fix (uid_fix)
