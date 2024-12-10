@@ -67,10 +67,10 @@ jobs:
 
     - run: |
         mkdir dependencies/
-        cp -av "${{ env.Qt5_Dir }}/bin/Qt5Core.dll" dependencies/
-        cp -av "${{ env.Qt5_Dir }}/bin/Qt5Gui.dll" dependencies/
-        cp -av "${{ env.Qt5_Dir }}/bin/Qt5OpenGL.dll" dependencies/
-        cp -av "${{ env.Qt5_Dir }}/bin/Qt5Widgets.dll" dependencies/
+        cp -av "${{ env.QT_ROOT_DIR }}/bin/Qt5Core.dll" dependencies/
+        cp -av "${{ env.QT_ROOT_DIR }}/bin/Qt5Gui.dll" dependencies/
+        cp -av "${{ env.QT_ROOT_DIR }}/bin/Qt5OpenGL.dll" dependencies/
+        cp -av "${{ env.QT_ROOT_DIR }}/bin/Qt5Widgets.dll" dependencies/
       if: ${{ matrix.platform == 'windows-2019' }}
       shell: bash
     - run: |
