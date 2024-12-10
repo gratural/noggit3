@@ -24,9 +24,9 @@ namespace noggit
       uids = std::make_unique<QSettings>(project_folder + "uid.ini", QSettings::Format::IniFormat);
     }
 
-    QVariant value(const QString& key, const QVariant& default = QVariant()) const
+    QVariant value(const QString& key, const QVariant& default_value = QVariant()) const
     {
-      return values->value(key, default);
+      return values->value(key, default_value);
     }
 
     void set_value(const QString& key, const QVariant& value)
