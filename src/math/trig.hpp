@@ -98,12 +98,12 @@ namespace math
   }
 }
 
-inline math::degrees operator"" _deg (long double v)
+inline math::degrees operator""_deg (long double v)
 {
   return math::degrees {static_cast<float> (v)};
 }
 
-inline math::degrees operator"" _deg (unsigned long long int v)
+inline math::degrees operator""_deg (unsigned long long int v)
 {
   return math::degrees {static_cast<float> (v)};
 }
