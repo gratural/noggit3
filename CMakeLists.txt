@@ -143,6 +143,7 @@ endif()
 
 FIND_PACKAGE( OpenGL REQUIRED )
 find_package (Qt5 COMPONENTS Widgets OpenGL OpenGLExtensions)
+find_package (Threads REQUIRED)
 
 if (USE_SQL)
   find_library(MYSQL_LIBRARY
@@ -576,6 +577,7 @@ endif()
 
 TARGET_LINK_LIBRARIES (noggit
   ${OPENGL_LIBRARIES}
+  Threads::Threads
   Qt5::Widgets
   Qt5::OpenGL
   Qt5::OpenGLExtensions
