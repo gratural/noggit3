@@ -73,7 +73,7 @@ namespace noggit
       }
 
       current_texture* _current_texture;
-      texture_picker* texture_picker;
+      texture_picker* _texture_picker;
 
       texture_swapper* const texture_swap_tool() { return _texture_switcher; }
 

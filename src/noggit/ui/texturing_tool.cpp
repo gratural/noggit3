@@ -48,7 +48,7 @@ namespace noggit
       layout->addRow (_current_texture);
       layout->setAlignment(_current_texture, Qt::AlignHCenter);
 
-      texture_picker = new ui::texture_picker(_current_texture);
+      _texture_picker = new ui::texture_picker(_current_texture);
 
       auto tabs (new QTabWidget(this));
 
@@ -449,7 +449,7 @@ namespace noggit
         else if (_mod_ctrl_down)
         {
           // Pick texture
-          texture_picker->getTextures(world->get_chunk_at(cursor_pos));
+          _texture_picker->getTextures(world->get_chunk_at(cursor_pos));
         }
         else if (_mod_shift_down && !!noggit::ui::selected_texture::get())
         {
