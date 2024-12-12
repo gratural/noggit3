@@ -338,7 +338,7 @@ namespace noggit
   {
     std::string normalized_filename (std::string filename)
     {
-      std::transform (filename.begin(), filename.end(), filename.begin(), ::tolower);
+      std::transform (filename.begin(), filename.end(), filename.begin(), [](unsigned char c) { return std::tolower(c); });
       std::transform ( filename.begin(), filename.end(), filename.begin()
                      , [] (char c)
                        {
@@ -349,7 +349,7 @@ namespace noggit
     }
     std::string normalized_filename_insane (std::string filename)
     {
-      std::transform (filename.begin(), filename.end(), filename.begin(), ::toupper);
+      std::transform (filename.begin(), filename.end(), filename.begin(), [](unsigned char c) { return std::toupper(c); });
       std::transform ( filename.begin(), filename.end(), filename.begin()
                      , [] (char c)
                        {

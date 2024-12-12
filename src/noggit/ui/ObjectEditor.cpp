@@ -653,7 +653,7 @@ namespace noggit
         while (!file.eof())
         {
           getline(file, line);
-          std::transform(line.begin(), line.end(), line.begin(), ::tolower);
+          std::transform(line.begin(), line.end(), line.begin(), [](unsigned char c) { return std::tolower(c); });
           std::regex regex( type == eEntry_Model
                           ? "([a-z]+\\\\([a-z0-9_ ]+\\\\)*[a-z0-9_ ]+\\.)(mdx|m2)"
                           : "([a-z]+\\\\([a-z0-9_ ]+\\\\)*[a-z0-9_ ]+\\.)(wmo)"

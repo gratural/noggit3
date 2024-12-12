@@ -157,7 +157,7 @@ namespace misc
 
   std::string normalize_adt_filename(std::string filename)
   {
-    std::transform (filename.begin(), filename.end(), filename.begin(), ::toupper);
+    std::transform (filename.begin(), filename.end(), filename.begin(), [](unsigned char c) { return std::toupper(c); });
     std::transform ( filename.begin(), filename.end(), filename.begin()
                    , [](char c)
                      {

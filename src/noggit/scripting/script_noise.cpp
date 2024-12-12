@@ -108,7 +108,7 @@ namespace noggit
       _noise.resize(_size);
 
       std::string upper = algorithm;
-      std::transform(upper.begin(), upper.end(), upper.begin(), ::toupper);
+      std::transform(upper.begin(), upper.end(), upper.begin(), [](unsigned char c) { return std::toupper(c); });
 
       FastNoise::SmartNode<> generator = nullptr;
       if (upper == "SIMPLEX")
