@@ -179,7 +179,7 @@ public:
   bool hasColors();
   math::vector_3d pickMCCV(math::vector_3d const& pos);
 
-  liquid_chunk* liquid_chunk() const;
+  ::liquid_chunk* liquid_chunk() const;
 
   void updateVerticesData();
   void recalcNorms (std::function<std::optional<float> (float, float)> height);

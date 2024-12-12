@@ -86,7 +86,7 @@ namespace noggit
     int world_id_x;
     int world_id_z;
 
-    tile_index tile_index() const { return ::tile_index(origin); };
+    ::tile_index tile_index() const { return ::tile_index(origin); };
     int id_x() const { return world_id_x % 16; }
     int id_z() const { return world_id_z % 16; }
 
