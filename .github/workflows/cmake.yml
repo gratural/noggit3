@@ -9,6 +9,9 @@ jobs:
           - platform: ubuntu-20.04
             compiler: g++-9
             compiler_c: gcc-9
+          - platform: ubuntu-20.04
+            compiler: clang++-10
+            compiler_c: clang-10
           - platform: windows-2019
             compiler: msvc2019 ## == vs 16
             compiler_c: msvc2019
@@ -21,7 +24,12 @@ jobs:
       run: |
         wget "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage" -O "${{ runner.workspace }}/linuxdeployqt"
         chmod +x "${{ runner.workspace }}/linuxdeployqt"
-      if: ${{ matrix.platform == 'ubuntu-20.04' }}    
+      if: ${{ matrix.platform == 'ubuntu-20.04' }}
+
+    - name: "dependency: clang (linux)"
+      run: sudo apt update && sudo apt install clang-10
+      if: ${{ matrix.platform == 'ubuntu-20.04' && matrix.compiler == 'clang++-10' }}
+
     - name: "dependency: qt5 (linux)"
       run: sudo apt update && sudo apt install -y qtbase5-dev qt5-default
       if: ${{ matrix.platform == 'ubuntu-20.04' }}
