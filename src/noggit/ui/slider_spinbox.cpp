@@ -4,6 +4,8 @@
 
 #include <QtWidgets/QFormLayout>
 
+#include <cmath>
+
 namespace noggit::ui
 {
   slider_spinbox::slider_spinbox(QString label, float_property* prop, float min, float max, int decimal_count, QWidget* parent)
