@@ -8,7 +8,7 @@
 #include <noggit/TextureManager.h> // TextureManager, Texture
 #include <noggit/World.h>
 #include <noggit/texture_set.hpp>
-#include <noggit/MapCHunk.h>
+#include <noggit/MapChunk.h>
 
 #include <algorithm>    // std::min
 #include <iostream>     // std::cout
