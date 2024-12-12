@@ -170,7 +170,7 @@ void WMO::finishLoading ()
   if (size > 4)
   {
     std::string path = noggit::mpq::normalized_filename(std::string (reinterpret_cast<char const*>(f.getPointer ())));
-    path = std::regex_replace(path, std::regex("mdx"), "m2");
+    path = misc::replace(path, "mdx", "m2");
 
     if (path.length())
     {
