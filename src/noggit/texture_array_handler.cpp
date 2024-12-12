@@ -50,7 +50,7 @@ namespace noggit
     LogDebug << "Array Count: " << _texture_size_for_array.size() << std::endl;
     std::map<std::pair<int, int>, int> texture_count;
 
-    for (auto& it : _texture_size_for_array)
+    for (auto it : _texture_size_for_array)
     {
       texture_count[it] = 0;
     }
@@ -60,7 +60,7 @@ namespace noggit
       texture_count[_texture_size_for_array[i]] += _texture_count_in_array[i];
     }
 
-    for (auto& it : texture_count)
+    for (auto it : texture_count)
     {
       LogDebug << it.first.first << "x" << it.first.second << " -> " << it.second << std::endl;
     }
@@ -76,7 +76,7 @@ namespace noggit
 
   texture_infos const* texture_array_handler::get_texture_info(std::string const& normalized_filename)
   {
-    auto& it = _textures_infos.find(normalized_filename);
+    auto it = _textures_infos.find(normalized_filename);
 
     if (it != _textures_infos.end())
     {
@@ -94,7 +94,7 @@ namespace noggit
 
   void texture_array_handler::upload_ready_textures()
   {
-    for (auto& it = _textures_to_upload.begin(); it != _textures_to_upload.end();)
+    for (auto it = _textures_to_upload.begin(); it != _textures_to_upload.end();)
     {
       texture_infos* info = *it;
 

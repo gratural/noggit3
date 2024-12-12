@@ -862,7 +862,7 @@ void RibbonEmitter::setup(int anim, int time, int animtime)
   // kill stuff from the end
   float l = 0;
   bool erasemode = false;
-  for (auto& it = segs.begin(); it != segs.end();)
+  for (auto it = segs.begin(); it != segs.end();)
   {
     if (!erasemode)
     {

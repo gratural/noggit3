@@ -13,7 +13,7 @@ namespace noggit
     LogDebug << "Array Count: " << _texture_size_for_array.size() << std::endl;
     std::map<std::pair<int, int>, int> texture_count;
 
-    for (auto& it : _texture_size_for_array)
+    for (auto it : _texture_size_for_array)
     {
       texture_count[it] = 0;
     }
@@ -23,7 +23,7 @@ namespace noggit
       texture_count[_texture_size_for_array[i]] += _texture_count_in_array[i];
     }
 
-    for (auto& it : texture_count)
+    for (auto it : texture_count)
     {
       LogDebug << it.first.first << "x" << it.first.second << " -> " << it.second << std::endl;
     }
@@ -45,7 +45,7 @@ namespace noggit
 
   std::pair<int, int> tileset_array_handler::get_texture_position(std::string const& normalized_filename)
   {
-    auto& it = _texture_positions.find(normalized_filename);
+    auto it = _texture_positions.find(normalized_filename);
 
     if (it != _texture_positions.end())
     {

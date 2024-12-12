@@ -302,7 +302,7 @@ void MPQFile::save_file_to_folder(std::string const& folder)
   save_file(std::filesystem::path(folder) / _filename);
 }
 
-void MPQFile::save_file(std::filesystem::path& path)
+void MPQFile::save_file(std::filesystem::path const& path)
 {
   LogDebug << "Save file to: " << path << std::endl;
 

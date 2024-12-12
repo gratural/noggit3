@@ -92,7 +92,7 @@ public:
 
 
   void save_file_to_folder(std::string const& folder);
-  void save_file(std::filesystem::path& path);
+  void save_file(std::filesystem::path const& path);
   void SaveFile();
 
   static bool exists (std::string const& filename);

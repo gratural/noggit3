@@ -14,7 +14,7 @@
 
 liquid_layer_ubo_data liquid_render::ubo_data(int liquid_id)
 {
-  auto& it = _liquids_ubo_data.find(liquid_id);
+  auto it = _liquids_ubo_data.find(liquid_id);
 
   if (it != _liquids_ubo_data.end())
   {

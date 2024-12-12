@@ -343,7 +343,8 @@ bool Skies::draw( math::matrix_4x4 const& model_view
         model.scale = 0.1f;
         model.recalcExtents();
 
-        model.model->draw(model_view, model, m2_shader, frustum, cull_distance, camera_pos, animtime, draw_particles, false, display_mode::in_3D, texture_handler, opengl_model_state_changer());
+        opengl_model_state_changer model_state_changer;
+        model.model->draw(model_view, model, m2_shader, frustum, cull_distance, camera_pos, animtime, draw_particles, false, display_mode::in_3D, texture_handler, model_state_changer);
       }
     }
     // if it's night, draw the stars
@@ -354,7 +355,8 @@ bool Skies::draw( math::matrix_4x4 const& model_view
       stars.scale = 0.1f;
       stars.recalcExtents();
 
-      stars.model->draw(model_view, stars, m2_shader, frustum, cull_distance, camera_pos, animtime, draw_particles, false, display_mode::in_3D, texture_handler, opengl_model_state_changer());
+      opengl_model_state_changer model_state_changer;
+      stars.model->draw(model_view, stars, m2_shader, frustum, cull_distance, camera_pos, animtime, draw_particles, false, display_mode::in_3D, texture_handler, model_state_changer);
     }
   }
 
