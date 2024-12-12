@@ -79,7 +79,7 @@ void MapView::set_editing_mode (editing_mode mode)
   objectEditor->modelImport->hide();
   objectEditor->rotationEditor->hide();
   TexturePalette->hide();
-  texturingTool->texture_picker->hide();
+  texturingTool->_texture_picker->hide();
   _texture_palette_dock->hide();
 
   _world->reset_selection();
@@ -372,10 +372,10 @@ void MapView::createGUI()
   _keybindings->hide();
   connect(this, &QObject::destroyed, _keybindings, &QObject::deleteLater);
 
-  texturingTool->texture_picker->hide();
-  connect(this, &QObject::destroyed, texturingTool->texture_picker, &QObject::deleteLater);
+  texturingTool->_texture_picker->hide();
+  connect(this, &QObject::destroyed, texturingTool->_texture_picker, &QObject::deleteLater);
 
-  connect( texturingTool->texture_picker
+  connect( texturingTool->_texture_picker
          , &noggit::ui::texture_picker::set_texture
          , [=] (scoped_blp_texture_reference texture)
            {
@@ -384,20 +384,20 @@ void MapView::createGUI()
              noggit::ui::selected_texture::set(std::move(texture));
            }
          );
-  connect(texturingTool->texture_picker, &noggit::ui::texture_picker::shift_left
+  connect(texturingTool->_texture_picker, &noggit::ui::texture_picker::shift_left
     , [=]
     {
       makeCurrent();
       opengl::context::scoped_setter const _(::gl, context());
-      texturingTool->texture_picker->shiftSelectedTextureLeft();
+      texturingTool->_texture_picker->shiftSelectedTextureLeft();
     }
   );
-  connect(texturingTool->texture_picker, &noggit::ui::texture_picker::shift_right
+  connect(texturingTool->_texture_picker, &noggit::ui::texture_picker::shift_right
     , [=]
     {
       makeCurrent();
       opengl::context::scoped_setter const _(::gl, context());
-      texturingTool->texture_picker->shiftSelectedTextureRight();
+      texturingTool->_texture_picker->shiftSelectedTextureRight();
     }
   );
 
@@ -766,7 +766,7 @@ void MapView::createGUI()
     QWidget* widget_list[] =
     {
       TexturePalette,
-      texturingTool->texture_picker,
+      texturingTool->_texture_picker,
       guidetailInfos,
       _cursor_switcher.get(),
       _keybindings,
@@ -1424,7 +1424,7 @@ void MapView::on_exit_prompt()
   objectEditor->modelImport->hide();
   objectEditor->rotationEditor->hide();
   guidetailInfos->hide();
-  texturingTool->texture_picker->hide();
+  texturingTool->_texture_picker->hide();
   TexturePalette->hide();
 }
 
@@ -1816,7 +1816,7 @@ MapView::~MapView()
   // when the uid fix fail the UI isn't created
   if (!_uid_fix_failed)
   {
-    delete texturingTool->texture_picker; // explicitly delete this here to avoid opengl context related crash
+    delete texturingTool->_texture_picker; // explicitly delete this here to avoid opengl context related crash
     delete objectEditor;
     delete texturingTool;
   }
