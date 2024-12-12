@@ -549,7 +549,6 @@ namespace noggit
       _target_info.emplace(_selection_info.value());
     }
 
-    math::vector_2i center = _target_info->center();
     math::vector_2i const& start = _target_info->start;
     math::vector_2i const& size = _target_info->size;
 

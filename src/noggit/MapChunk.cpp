@@ -769,7 +769,7 @@ void MapChunk::update_shader_data ( bool selected_texture_changed
                                   , std::string const& current_texture
                                   , std::map<int, misc::random_color>& area_id_colors
                                   , noggit::tileset_array_handler& tileset_handler
-                                  , bool force_update
+                                  , bool
                                   )
 {
   chunk_shader_data csd;
@@ -905,7 +905,6 @@ void MapChunk::prepare_draw ( const math::vector_3d& camera
 
   if (_need_indice_buffer_update)
   {
-    auto size = _indice_strips[0].size();
     int offset = 0;
 
     for (int i = 0; i < indice_buffer_count; ++i)

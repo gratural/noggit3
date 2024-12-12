@@ -240,11 +240,11 @@ bool WMOInstance::is_visible(math::frustum const& frustum, float const& cull_dis
 }
 
 std::vector<wmo_doodad_instance*> WMOInstance::get_visible_doodads
-  ( math::frustum const& frustum
-  , float const& cull_distance
-  , math::vector_3d const& camera
+  ( math::frustum const&
+  , float const&
+  , math::vector_3d const&
   , bool draw_hidden_models
-  , display_mode display
+  , display_mode
   )
 {
   std::vector<wmo_doodad_instance*> doodads;

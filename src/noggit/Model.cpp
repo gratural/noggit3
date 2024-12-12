@@ -680,8 +680,8 @@ ModelRenderPass::ModelRenderPass(ModelTexUnit const& tex_unit, Model* m)
 {
 }
 
-bool ModelRenderPass::prepare_draw( opengl::scoped::use_program& m2_shader, Model *m, bool animate, int index
-                                  , noggit::texture_array_handler& texture_handler, opengl_model_state_changer& ogl_state
+bool ModelRenderPass::prepare_draw( opengl::scoped::use_program&, Model *m, bool animate, int index
+                                  , noggit::texture_array_handler&, opengl_model_state_changer& ogl_state
                                   )
 {
   if (!render)

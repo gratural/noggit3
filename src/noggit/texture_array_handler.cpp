@@ -106,7 +106,6 @@ namespace noggit
 
         int height = tex->height();
         int width = tex->width();
-        int mipmap_count = tex->layer_count();
         GLuint format = tex->texture_format();
 
         auto spot = find_next_available_spot(width, height, format);

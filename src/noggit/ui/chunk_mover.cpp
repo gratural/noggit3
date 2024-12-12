@@ -104,7 +104,7 @@ namespace noggit::ui
             );
   }
 
-  void chunk_mover_ui::tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world)
+  void chunk_mover_ui::tick(float, math::vector_3d const& cursor_pos, bool, World* world)
   {
     if (_left_mouse_button)
     {

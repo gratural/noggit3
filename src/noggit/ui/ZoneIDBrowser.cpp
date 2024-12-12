@@ -75,7 +75,7 @@ namespace noggit
       }
     }
 
-    void zone_id_browser::tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world)
+    void zone_id_browser::tick(float, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world)
     {
       if (!cursor_under_map && _left_mouse_button)
       {

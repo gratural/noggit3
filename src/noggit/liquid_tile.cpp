@@ -38,15 +38,15 @@ void liquid_tile::readFromFile(MPQFile &theFile, size_t basePos)
 }
 
 void liquid_tile::draw ( math::frustum const& frustum
-                     , const float& cull_distance
-                     , const math::vector_3d& camera
-                     , bool camera_moved
-                     , liquid_render& render
-                     , opengl::scoped::use_program& water_shader
-                     , int animtime
-                     , int layer
-                     , display_mode display
-                     )
+                       , const float& cull_distance
+                       , const math::vector_3d& camera
+                       , bool camera_moved
+                       , liquid_render& render
+                       , opengl::scoped::use_program& water_shader
+                       , int
+                       , int
+                       , display_mode display
+                       )
 {
   if (!_uploaded)
   {
@@ -343,10 +343,10 @@ void liquid_tile::intersect(math::ray const& ray, selection_result* results)
   }
 }
 
-void liquid_tile::update_visibility ( const float& cull_distance
-                                    , const math::frustum& frustum
+void liquid_tile::update_visibility ( const float& // cull_distance
+                                    , const math::frustum& // frustum
                                     , const math::vector_3d& camera
-                                    , display_mode display
+                                    , display_mode // display
                                     )
 {
   if (_need_recalc_extents)

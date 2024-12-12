@@ -667,7 +667,6 @@ bool TextureSet::replace_texture( float xbase
 {
   float dist = misc::getShortestDist(x, z, xbase, zbase, CHUNKSIZE);
   float radius = brush.get_radius();
-  float inner_radius = brush.get_inner_radius();
 
   if (dist > radius)
   {

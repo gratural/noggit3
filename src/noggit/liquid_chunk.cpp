@@ -227,7 +227,7 @@ void liquid_chunk::copy_data(noggit::chunk_data& data) const
   }
 }
 
-void liquid_chunk::override_data(noggit::chunk_data const& data, noggit::chunk_override_params const& params)
+void liquid_chunk::override_data(noggit::chunk_data const& data, noggit::chunk_override_params const&)
 {
   _layers.clear();
 
@@ -243,7 +243,7 @@ void liquid_chunk::override_data(noggit::chunk_data const& data, noggit::chunk_o
   _liquid_tile->require_buffer_regen();
   _liquid_tile->set_has_water();
 }
-void liquid_chunk::set_preview_data(noggit::chunk_data const& data, noggit::chunk_override_params const& params)
+void liquid_chunk::set_preview_data(noggit::chunk_data const& data, noggit::chunk_override_params const&)
 {
   _preview_layers.clear();
 

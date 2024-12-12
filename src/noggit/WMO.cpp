@@ -329,17 +329,17 @@ void WMO::finishLoading ()
 
 
 void WMO::draw_instanced( opengl::scoped::use_program& wmo_shader
-                        , math::matrix_4x4 const& model_view
-                        , math::matrix_4x4 const& projection
+                        , math::matrix_4x4 const& // model_view
+                        , math::matrix_4x4 const& // projection
                         , std::vector<WMOInstance*>& instances
-                        , bool boundingbox
+                        , bool // boundingbox
                         , math::frustum const& frustum
                         , const float& cull_distance
                         , const math::vector_3d& camera
-                        , bool draw_doodads
+                        , bool // draw_doodads
                         , bool draw_fog
-                        , liquid_render& render
-                        , int animtime
+                        , liquid_render& // render
+                        , int // animtime
                         , bool world_has_skies
                         , display_mode display
                         , wmo_group_uniform_data& wmo_uniform_data
@@ -1363,7 +1363,7 @@ void WMOGroup::setup_ubo_data()
   gl.bindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void WMOGroup::draw( opengl::scoped::use_program& wmo_shader
+void WMOGroup::draw( opengl::scoped::use_program&
                    , math::frustum const& // frustum
                    , const float& //cull_distance
                    , const math::vector_3d& //camera
@@ -1371,7 +1371,7 @@ void WMOGroup::draw( opengl::scoped::use_program& wmo_shader
                    , bool // world_has_skies
                    , wmo_group_uniform_data& wmo_uniform_data
                    , int instance_count
-                   , noggit::texture_array_handler& texture_handler
+                   , [[maybe_unused]] noggit::texture_array_handler& texture_handler
                    )
 {
   gl.bindBufferBase(GL_UNIFORM_BUFFER, 0, _ubo);

@@ -700,7 +700,7 @@ namespace noggit
       return QSize(215, height());
     }
 
-    void object_editor::tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world)
+    void object_editor::tick(float, math::vector_3d const& cursor_pos, bool, World* world)
     {
       // reset speed when no movement key is pressed
       if(!_move_x_key && !_move_y_key && !_move_z_key && !_scale_key && !_rot_y_key)

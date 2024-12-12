@@ -146,7 +146,6 @@ void Noggit::loadMPQs()
   for (size_t i(0); i < archiveNames.size(); ++i)
   {
     std::string path((wowpath / "Data" / archiveNames[i]).string());
-    std::string::size_type location(std::string::npos);
 
     path = misc::replace(path, "{locale}", std::string(locale));
 

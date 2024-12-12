@@ -93,7 +93,7 @@ namespace noggit
       setMinimumWidth(sizeHint().width());
     }
 
-    void clearing_tool::tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world)
+    void clearing_tool::tick(float, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world)
     {
       if (cursor_under_map)
       {

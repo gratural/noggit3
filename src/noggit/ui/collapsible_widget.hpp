@@ -20,8 +20,8 @@ namespace noggit::ui
 
     // to avoid using the groupbox's title/checkbox as it's only
     // used to get the border, the title is inside the widget
-    void setTitle(const QString& title) { }
-    void setCheckable(bool checkable) { }
+    void setTitle(const QString&) { }
+    void setCheckable(bool) { }
 
   private:
     void toggle();

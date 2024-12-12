@@ -226,13 +226,13 @@ namespace noggit
                }
              );
       connect( &_hardness, qOverload<float>(&float_property::changed)
-             , [&](float v)
+             , [&](float)
                {
                  update_brush_hardness();
                }
              );
       connect( &_spray_size, qOverload<float>(&float_property::changed)
-             , [&](float v)
+             , [&](float)
                {
                  update_spray_brush();
                }

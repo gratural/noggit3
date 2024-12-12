@@ -135,9 +135,6 @@ private:
 
   GLuint _ubo;
 
-  bool _uploaded = false;
-  bool _vao_is_setup = false;
-
   int _vertex_offset = 0;
   int _index_offset = 0;
 };

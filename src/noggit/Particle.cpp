@@ -264,7 +264,7 @@ void ParticleSystem::draw( math::matrix_4x4 const& model_view
                          , opengl::scoped::use_program& shader
                          , GLuint const& transform_vbo
                          , int instances_count
-                         , noggit::texture_array_handler& texture_handler
+                         , [[maybe_unused]] noggit::texture_array_handler& texture_handler
 )
 {
   if (!_uploaded)
@@ -891,7 +891,7 @@ void RibbonEmitter::setup(int anim, int time, int animtime)
 void RibbonEmitter::draw( opengl::scoped::use_program& shader
                         , GLuint const& transform_vbo
                         , int instances_count
-                        , noggit::texture_array_handler& texture_handler
+                        , [[maybe_unused]] noggit::texture_array_handler& texture_handler
                         )
 {
   if (!_uploaded)

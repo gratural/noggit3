@@ -17,14 +17,17 @@ namespace noggit
     public:
       noggit_tool(QWidget* parent = nullptr) : QWidget(parent) {}
 
-      virtual void tick(float dt, math::vector_3d const& cursor_pos, bool cursor_under_map, World* world) {}
+      virtual void tick([[maybe_unused]] float dt,
+                        [[maybe_unused]] math::vector_3d const& cursor_pos,
+                        [[maybe_unused]] bool cursor_under_map,
+                        World*) {}
 
-      virtual void mouse_move_event(QLineF const& relative_movement) {}
-      virtual void mouse_press_event(QMouseEvent* event);
-      virtual void mouse_release_event(QMouseEvent* event);
-      virtual void wheel_event(QWheelEvent* event) {}
-      virtual void key_release_event(QKeyEvent* event);
-      virtual void key_press_event(QKeyEvent* event);
+      virtual void mouse_move_event([[maybe_unused]] QLineF const& relative_movement) {}
+      virtual void mouse_press_event(QMouseEvent*);
+      virtual void mouse_release_event(QMouseEvent*);
+      virtual void wheel_event(QWheelEvent*) {}
+      virtual void key_release_event(QKeyEvent*);
+      virtual void key_press_event(QKeyEvent*);
 
       void reset_input_states();
       // for tool specific states

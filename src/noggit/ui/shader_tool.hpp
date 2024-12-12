@@ -47,7 +47,6 @@ namespace noggit
       math::vector_4d& _color;
 
       slider_spinbox* _radius_widget;
-      slider_spinbox* _speed_widget;
       QSpinBox* _spin_hue;
       QSpinBox* _spin_saturation;
       QSpinBox* _spin_value;
