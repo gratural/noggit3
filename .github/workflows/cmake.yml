@@ -9,12 +9,15 @@ jobs:
           - platform: ubuntu-20.04
             compiler: g++-9
             compiler_c: gcc-9
+            extra_cmake_args: -GNinja
           - platform: ubuntu-20.04
             compiler: clang++-10
             compiler_c: clang-10
+            extra_cmake_args: -GNinja
           - platform: windows-2019
             compiler: msvc2019 ## == vs 16
             compiler_c: msvc2019
+            extra_cmake_args:
     runs-on: ${{ matrix.platform }}
     name: ${{ matrix.platform }}-${{ matrix.compiler }}
     steps:
@@ -29,6 +32,9 @@ jobs:
     - name: "dependency: clang (linux)"
       run: sudo apt update && sudo apt install clang-10
       if: ${{ matrix.platform == 'ubuntu-20.04' && matrix.compiler == 'clang++-10' }}
+    - name: "dependency: ninja (linux)"
+      run: sudo apt update && sudo apt install ninja-build
+      if: ${{ matrix.platform == 'ubuntu-20.04' }}
 
     - name: "dependency: qt5 (linux)"
       run: sudo apt update && sudo apt install -y qtbase5-dev qt5-default
@@ -48,7 +54,7 @@ jobs:
         cmake --install "${{ runner.workspace }}/stormlib/build" --config RelWithDebInfo
 
     - name: "configure"
-      run: cmake -Wdev -Wdeprecated --warn-uninitialized -B "${{ github.workspace }}/build" -S "${{ github.workspace }}" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_COMPILER=${{ matrix.compiler }} -DCMAKE_PREFIX_PATH="${{ runner.workspace }}/stormlib/install"
+      run: cmake -Wdev -Wdeprecated --warn-uninitialized -B "${{ github.workspace }}/build" -S "${{ github.workspace }}" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_COMPILER=${{ matrix.compiler }} -DCMAKE_PREFIX_PATH="${{ runner.workspace }}/stormlib/install" ${{ matrix.extra_cmake_args }}
     - name: "build"
       run: cmake --build "${{ github.workspace }}/build" --config RelWithDebInfo
     - name: "install"
