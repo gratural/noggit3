@@ -32,6 +32,7 @@ add_noggit_compiler_flag_if_supported (-Werror=parentheses)
 add_noggit_compiler_flag_if_supported (-Werror=shift-sign-overflow)
 add_noggit_compiler_flag_if_supported (-Werror=string-plus-int)
 add_noggit_compiler_flag_if_supported (-Werror=self-assign-field)
+add_noggit_compiler_flag_if_supported (-Werror=unknown-escape-sequence)
 
 # covered by CMAKE_CXX_STANDARD
 add_global_compiler_flag_if_supported (-Wno-c++98-compat)

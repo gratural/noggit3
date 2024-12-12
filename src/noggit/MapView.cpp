@@ -2261,7 +2261,7 @@ void MapView::tick (float dt)
         {
           auto layer(std::get<selected_liquid_layer_type>(lastSelection).layer);
 
-          select_info << "\liquid id:" << layer->liquid_id() << " (\"" << gLiquidTypeDB.getLiquidName(layer->liquid_id()) << "\")\n";
+          select_info << "\nliquid id:" << layer->liquid_id() << " (\"" << gLiquidTypeDB.getLiquidName(layer->liquid_id()) << "\")\n";
 
           if (layer->has_fatigue())
           {
