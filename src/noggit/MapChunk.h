@@ -45,7 +45,7 @@ public:
   static constexpr int max_indices_count_without_lod = 8 * 8 * 4 * 3; // 8x8 squares with 4 triangls
   static constexpr int lod_count = 4; // max 4, last lod level is a single quad for the chunk (which doesn't look good)
   static constexpr int indice_buffer_count = lod_count + 1;
-  static constexpr std::array<int, 5> max_indices_per_lod_level = { 768, 384, 96, 24, 6 };
+  static constexpr std::array<int, 5> max_indices_per_lod_level = {{768, 384, 96, 24, 6}};
 
   static constexpr int total_indices_count_with_lods()
   {
