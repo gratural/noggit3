@@ -197,7 +197,7 @@ namespace misc
 
   math::vector_3d texture_anim_params(std::uint32_t flags)
   {
-    if (!flags & FLAG_ANIMATE)
+    if (!(flags & FLAG_ANIMATE))
     {
       return { 1.f,0.f, 0.f };
     }
