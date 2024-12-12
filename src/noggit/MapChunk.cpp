@@ -619,7 +619,7 @@ void MapChunk::initStrip()
       int start = vertex_offset() + indexNoLoD(y, x);
       int current_index = index_count[0];
 
-      static std::array<int, 12> triangles = { 9,0,17, 9,17,18, 9,18,1, 9,1,0 };
+      static std::array<int, 12> triangles = {{ 9,0,17, 9,17,18, 9,18,1, 9,1,0 }};
 
       for (int i = 0; i < 12; ++i)
       {
