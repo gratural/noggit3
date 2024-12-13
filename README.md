@@ -13,7 +13,6 @@ This project requires CMake to be built. It also requires the
 following libraries:
 
 * OpenGL
-* Boost
 * Qt 5
 
 Further following libraries are required for MySQL GUID Storage builds:
@@ -39,14 +38,6 @@ corresponding versions for other dependencies.
 
 ### CMake ###
 Any recent CMake version >= 3.18 should work. Just take the latest.
-
-### Boost ###
-Install boost to `<boost-install>`. The easiest is to download a pre-built
-package from https://sourceforge.net/projects/boost/files/boost-binaries/.
-
-* Any version from the last years should work, 1.71 is the minumum required version.
-* Be sure to pick the right compiler version!
-* CMake may not support the latest version yet, if you have bad timing, try picking the second newest if configuring fails.
 
 ### Qt5 ###
 Install Qt5 to `<Qt-install>`
@@ -74,11 +65,6 @@ _(Not necessary if disabling `NOGGIT_WITH_SCRIPTING`)_
 * open CMake GUI
 * set `CMAKE_PREFIX_PATH` (path) to `"<Qt-install>"`,
   e.g. `"C:/Qt/5.6/msvc2015"`
-* set `BOOST_ROOT` (path) to `<boost-install>`, e.g. `"C:/local/boost_1_71_0"`
-* (**unlikely to be required:**) move the libraries of Boost from where
-  they are into `BOOST_ROOT/lib` so that CMake finds them automatically or
-  set `BOOST_LIBRARYDIR` to where your lib are (.dll and .lib). Again, this
-  is **highly** unlikely to be required.
 * set `CMAKE_INSTALL_PREFIX` (path) to an empty destination, e.g. 
   `"C:/Users/blurb/Documents/noggitinstall`
 * set `LUA_INCLUDE_DIR` to `<Lua-install>/src`
@@ -106,7 +92,7 @@ These instructions assume a working directory `<Linux-Build>`, for example `/hom
 On **Ubuntu** you can install the building requirements using:
 
 ```bash
-sudo apt install freeglut3-dev libboost-all-dev qt5-default libsdl2-dev libbz2-dev
+sudo apt install freeglut3-dev qt5-default libsdl2-dev libbz2-dev
 ```
 
 ### LuaJIT ###
