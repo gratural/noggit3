@@ -153,7 +153,7 @@ void Noggit::loadMPQs()
     {
       for (char j = '2'; j <= '9'; j++)
       {
-        std::string file = misc::replace(path, "{number}", std::to_string(j));
+        std::string file = misc::replace(path, "{number}", std::string(1, j));
 
         if (std::filesystem::exists(file))
         {
@@ -165,7 +165,7 @@ void Noggit::loadMPQs()
     {
       for (char c = 'a'; c <= 'z'; c++)
       {
-        std::string file = misc::replace(path, "{character}", std::to_string(c));
+        std::string file = misc::replace(path, "{character}", std::string(1, c));
 
         if (std::filesystem::exists(file))
         {
