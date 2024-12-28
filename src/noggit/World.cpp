@@ -2180,6 +2180,18 @@ void World::setHoleADT(math::vector_3d const& pos, bool hole)
   for_all_chunks_on_tile(pos, [&](MapChunk* chunk) { chunk->setHole(pos, true, hole); });
 }
 
+void World::set_shadow(math::vector_3d const& pos, float radius, bool add)
+{
+  for_all_chunks_in_range
+  ( pos, radius
+    , [&](MapChunk* chunk)
+    {
+      chunk->set_shadow(pos, radius, add);
+      return true;
+    }
+  );
+}
+
 
 template<typename Fun>
   void World::for_all_chunks_on_tile (math::vector_3d const& pos, Fun&& fun)

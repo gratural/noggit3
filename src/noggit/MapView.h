@@ -43,6 +43,7 @@ namespace noggit
     class help;
     class minimap_widget;
     class shader_tool;
+    class shadow_editor;
     class terrain_tool;
     class texture_picker;
     class texturing_tool;
@@ -333,6 +334,9 @@ private:
   QDockWidget* _clearing_tool_dock;
   noggit::ui::chunk_mover_ui* _chunk_mover_ui;
   QDockWidget* _chunk_mover_dock;
+
+  noggit::ui::shadow_editor* _shadow_tool;
+  QDockWidget* _shadow_tool_dock;
 
   noggit::ui::noggit_tool* _current_tool = nullptr;
 };

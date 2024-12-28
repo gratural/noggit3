@@ -272,6 +272,7 @@ set ( noggit_ui_sources
       src/noggit/ui/noggit_tool.cpp
       src/noggit/ui/ObjectEditor.cpp
       src/noggit/ui/RotationEditor.cpp
+      src/noggit/ui/shadow_editor.cpp
       src/noggit/ui/slider_spinbox.cpp
       src/noggit/ui/TexturePicker.cpp
       src/noggit/ui/texture_swapper.cpp
@@ -388,6 +389,7 @@ set ( noggit_ui_headers
       src/noggit/ui/noggit_tool.hpp
       src/noggit/ui/ObjectEditor.h
       src/noggit/ui/RotationEditor.h
+      src/noggit/ui/shadow_editor.hpp
       src/noggit/ui/slider_spinbox.hpp
       src/noggit/ui/TexturePicker.h
       src/noggit/ui/texture_swapper.hpp

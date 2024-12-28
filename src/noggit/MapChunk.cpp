@@ -1489,6 +1489,51 @@ void MapChunk::clear_shadows()
   _chunk_shadow.reset();
 }
 
+void MapChunk::set_shadow(math::vector_3d const& pos, float radius, bool add)
+{
+  if (misc::getShortestDist(pos.x, pos.z, xbase, zbase, CHUNKSIZE) > radius)
+  {
+    return;
+  }
+
+  if (!_chunk_shadow)
+  {
+    _chunk_shadow = std::make_unique<chunk_shadow>();
+  }
+
+  math::vector_3d p(xbase, 0.f, zbase);
+
+  for (int ix = 0; ix < 64; ++ix)
+  {
+    p.z = zbase;
+
+    for (int iz = 0; iz < 64; ++iz)
+    {
+      if (misc::getShortestDist(pos, p, TEXDETAILSIZE) <= radius)
+      {
+        std::uint64_t& value = _chunk_shadow.get()->data[iz];
+        std::uint64_t flag = std::uint64_t(1) << ix;
+
+        if (add)
+        {
+          value |= flag;
+        }
+        else
+        {
+          value &= ~flag;
+        }
+      }
+
+      p.z += TEXDETAILSIZE;
+    }
+
+    p.x += TEXDETAILSIZE;
+  }
+
+  texture_set_changed();
+  texture_set->require_update(); // shadows are tied with the alphamap
+}
+
 bool MapChunk::isHole(int i, int j) const
 {
   if (_preview_data)

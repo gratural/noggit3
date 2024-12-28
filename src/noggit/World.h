@@ -285,6 +285,8 @@ public:
   void setHole(math::vector_3d const& pos, bool big, bool hole);
   void setHoleADT(math::vector_3d const& pos, bool hole);
 
+  void set_shadow(math::vector_3d const& pos, float radius, bool add);
+
   ModelInstance* addM2 ( std::string const& filename
              , math::vector_3d newPos
              , float scale, math::degrees::vec3 rotation

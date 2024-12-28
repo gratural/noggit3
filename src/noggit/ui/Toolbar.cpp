@@ -24,6 +24,7 @@ namespace noggit
 #endif
       add_tool_icon(editing_mode::clearing, tr("Clearing Tool"), font_awesome::eraser);
       add_tool_icon(editing_mode::chunk_mover, tr("Chunk Mover"), font_awesome::arrowsalt);
+      add_tool_icon(editing_mode::shadows, tr("Shadows Editor"), font_awesome::cloudsun);
     }
 
     void toolbar::add_tool_icon(editing_mode mode, const QString& name, const font_awesome::icons& icon)

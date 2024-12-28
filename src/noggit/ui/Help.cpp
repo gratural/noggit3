@@ -318,6 +318,14 @@ namespace noggit
       generate_hotkey_row({ font_noggit::t }, "\a - Toggle preview", chunk_mover_layout);
       generate_hotkey_row({ font_noggit::space, font_noggit::mmb }, "\a+\a - Change height offset", chunk_mover_layout);
 
+
+      auto shadow_widget(new QWidget(this));
+      auto shadow_layout(new QFormLayout(shadow_widget));
+
+      generate_hotkey_row({ font_noggit::shift, font_noggit::lmb }, "\a+\a - Add shadows", shadow_layout);
+      generate_hotkey_row({ font_noggit::ctrl, font_noggit::lmb }, "\a+\a - Remove shadows", shadow_layout);
+      generate_hotkey_row({ font_noggit::alt, font_noggit::lmb_drag }, "\a+\a - Change brush size", shadow_layout);
+
       layout->addWidget(tabs);
       tabs->addTab(base_widget, "Base");
       tabs->addTab(ground_widget, "Terrain");
@@ -328,6 +336,7 @@ namespace noggit
       tabs->addTab(flag_widget, "Flags/Hole/Area");
       tabs->addTab(clearing_widget, "Clearing");
       tabs->addTab(chunk_mover_widget, "Chunk Mover");
+      tabs->addTab(shadow_widget, "Shadows");
     }
 
 

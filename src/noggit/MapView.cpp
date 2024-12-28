@@ -25,6 +25,7 @@
 #include <noggit/ui/ModelImport.h>
 #include <noggit/ui/ObjectEditor.h>
 #include <noggit/ui/RotationEditor.h>
+#include <noggit/ui/shadow_editor.hpp>
 #include <noggit/ui/TexturePicker.h>
 #include <noggit/ui/TexturingGUI.h>
 #include <noggit/ui/Toolbar.h> // noggit::ui::toolbar
@@ -152,6 +153,10 @@ void MapView::setToolPropertyWidgetVisibility(editing_mode mode)
   case editing_mode::chunk_mover:
     _chunk_mover_dock->setVisible(!ui_hidden);
     _current_tool = _chunk_mover_ui;
+    break;
+  case editing_mode::shadows:
+    _shadow_tool_dock->setVisible(!ui_hidden);
+    _current_tool = _shadow_tool;
     break;
   }
 }
@@ -300,6 +305,12 @@ void MapView::createGUI()
   _chunk_mover_ui = new noggit::ui::chunk_mover_ui(&_chunk_mover, _chunk_mover_dock);
   _chunk_mover_dock->setWidget(_chunk_mover_ui);
   _tool_properties_docks.insert(_chunk_mover_dock);
+
+  // shadow tool
+  _shadow_tool_dock = new QDockWidget("Shadow Tool", this);
+  _shadow_tool = new noggit::ui::shadow_editor(_shadow_tool_dock);
+  _shadow_tool_dock->setWidget(_shadow_tool);
+  _tool_properties_docks.insert(_shadow_tool_dock);
 
   for (auto widget : _tool_properties_docks)
   {
@@ -2502,6 +2513,9 @@ void MapView::draw_map()
     break;
   case editing_mode::chunk_mover:
     radius = _chunk_mover_ui->radius();
+    break;
+  case editing_mode::shadows:
+    radius = _shadow_tool->radius();
     break;
   }
 

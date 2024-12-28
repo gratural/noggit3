@@ -83,6 +83,7 @@ enum class editing_mode
 #endif
   clearing,
   chunk_mover,
+  shadows,
 };
 
 enum class water_opacity : int

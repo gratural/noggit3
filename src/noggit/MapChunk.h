@@ -211,6 +211,7 @@ public:
   void clear_texture_flags();
 
   void clear_shadows();
+  void set_shadow(math::vector_3d const& pos, float radius, bool add);
 
   //! \todo implement Action stack for these
   bool isHole(int i, int j) const;
