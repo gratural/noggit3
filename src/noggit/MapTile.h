@@ -132,10 +132,13 @@ public:
   void need_chunk_data_update() { _need_chunk_data_update = true; }
 
   bool is_visible() const { return _is_visible; }
+
+  std::array<math::vector_3d, 2> const& extents() const { return _extents; }
+  std::vector<math::vector_3d> const& intersect_points() const { return _intersect_points; }
 private:
   bool _need_chunk_data_update = true;
 
-  std::array<math::vector_3d, 2> extents;
+  std::array<math::vector_3d, 2> _extents;
   std::vector<math::vector_3d> _intersect_points;
 
   bool _need_recalc_extents = true;

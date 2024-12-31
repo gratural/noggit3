@@ -456,7 +456,7 @@ void MapTile::intersect (math::ray const& ray, selection_result* results, bool i
     recalc_extents();
   }
 
-  if (!ray.intersect_bounds(extents[0], extents[1]))
+  if (!ray.intersect_bounds(_extents[0], _extents[1]))
   {
     return;
   }
@@ -1119,15 +1119,15 @@ void MapTile::upload()
 
 void MapTile::recalc_extents()
 {
-  extents[0] = { xbase, std::numeric_limits<float>::max(), zbase };
-  extents[1] = { xbase + TILESIZE, std::numeric_limits<float>::min(), zbase + TILESIZE};
+  _extents[0] = { xbase, std::numeric_limits<float>::max(), zbase };
+  _extents[1] = { xbase + TILESIZE, std::numeric_limits<float>::min(), zbase + TILESIZE};
 
   for (int z = 0; z < 16; ++z)
   {
     for (int x = 0; x < 16; ++x)
     {
-      extents[0].y = std::min(extents[0].y, mChunks[z][x]->vmin.y);
-      extents[1].y = std::max(extents[1].y, mChunks[z][x]->vmax.y);
+      _extents[0].y = std::min(_extents[0].y, mChunks[z][x]->vmin.y);
+      _extents[1].y = std::max(_extents[1].y, mChunks[z][x]->vmax.y);
     }
   }
 
@@ -1136,12 +1136,12 @@ void MapTile::recalc_extents()
     Water.need_recalc_extents();
   }
 
-  extents[0].y = std::min(extents[0].y, Water.min_height());
-  extents[1].y = std::max(extents[1].y, Water.max_height());
+  _extents[0].y = std::min(_extents[0].y, Water.min_height());
+  _extents[1].y = std::max(_extents[1].y, Water.max_height());
 
 
   _intersect_points.clear();
-  _intersect_points = misc::intersection_points(extents[0], extents[1]);
+  _intersect_points = misc::intersection_points(_extents[0], _extents[1]);
 
   _need_recalc_extents = false;
   _need_visibility_update = true;
@@ -1156,8 +1156,8 @@ void MapTile::update_visibility ( const float& cull_distance
   static const float adt_radius = std::sqrt (TILESIZE * TILESIZE / 2.0f);
 
   float dist = display == display_mode::in_3D
-             ? (camera - (extents[0] + extents[1]) * 0.5).length() - adt_radius // todo: improve when height diff > adt radius
-             : std::abs(camera.y - extents[1].y);
+             ? (camera - (_extents[0] + _extents[1]) * 0.5).length() - adt_radius // todo: improve when height diff > adt radius
+             : std::abs(camera.y - _extents[1].y);
 
 
   bool old_value = _is_visible;
