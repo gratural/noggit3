@@ -158,6 +158,40 @@ namespace opengl
     private:
       deferred_upload_vertex_arrays<count> _impl;
     };
+
+    template<std::size_t count>
+      class deferred_upload_framebuffers
+    {
+    public:
+      deferred_upload_framebuffers() = default;
+      ~deferred_upload_framebuffers();
+      deferred_upload_framebuffers(deferred_upload_framebuffers const&) = delete;
+      deferred_upload_framebuffers(deferred_upload_framebuffers&&) = delete;
+      deferred_upload_framebuffers& operator= (deferred_upload_framebuffers const&) = delete;
+      deferred_upload_framebuffers& operator= (deferred_upload_framebuffers&&) = delete;
+
+      void upload();
+      bool buffer_generated() const;
+      GLuint const& operator[] (std::size_t i) const;
+
+    private:
+      bool _buffer_generated = false;
+      GLuint _framebuffers[count];
+    };
+
+    class framebuffer_binder
+    {
+    public:
+      framebuffer_binder(GLuint framebuffer);
+      ~framebuffer_binder();
+      framebuffer_binder(framebuffer_binder const&) = delete;
+      framebuffer_binder(framebuffer_binder&&) = delete;
+      framebuffer_binder& operator= (framebuffer_binder const&) = delete;
+      framebuffer_binder& operator= (framebuffer_binder&&) = delete;
+
+    private:
+      GLint _old;
+    };
   }
 }
 

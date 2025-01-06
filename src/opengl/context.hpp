@@ -193,8 +193,11 @@ namespace opengl
     void polygonOffset (GLfloat factor, GLfloat units);
 
     void genFramebuffers (GLsizei n, GLuint *ids);
+    void deleteFramebuffers (GLsizei n, GLuint *ids);
     void bindFramebuffer (GLenum target, GLuint framebuffer);
     void framebufferTexture2D (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+
+    void drawBuffer(GLenum mode);
 
     void genRenderbuffers (GLsizei n, GLuint *renderbuffers);
     void bindRenderbuffer (GLenum target, GLuint renderbuffer);

@@ -821,6 +821,11 @@ namespace opengl
     verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glGenFramebuffers (n, ids);
   }
+  void context::deleteFramebuffers(GLsizei n, GLuint *ids)
+  {
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
+    return _current_context->functions()->glDeleteFramebuffers (n, ids);
+  }
   void context::bindFramebuffer (GLenum target, GLuint framebuffer)
   {
     verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
@@ -830,6 +835,12 @@ namespace opengl
   {
     verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
     return _current_context->functions()->glFramebufferTexture2D (target, attachment, textarget, texture, level);
+  }
+
+  void context::drawBuffer(GLenum mode)
+  {
+    verify_context_and_check_for_gl_errors const _ (_current_context, __func__);
+    glDrawBuffer(mode);
   }
 
   void context::genRenderbuffers (GLsizei n, GLuint *ids)

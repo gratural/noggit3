@@ -199,5 +199,43 @@ namespace opengl
     {
       return _impl[i];
     }
+
+    template<std::size_t count>
+      bool deferred_upload_framebuffers<count>::buffer_generated() const
+    {
+      return _buffer_generated;
+    }
+
+    template<std::size_t count>
+      void deferred_upload_framebuffers<count>::upload()
+    {
+      gl.genFramebuffers(count, _framebuffers);
+      _buffer_generated = true;
+    }
+
+    template<std::size_t count>
+      deferred_upload_framebuffers<count>::~deferred_upload_framebuffers()
+    {
+      if (_buffer_generated)
+      {
+        gl.deleteFramebuffers(count, _framebuffers);
+      }
+    }
+
+    template<std::size_t count>
+      GLuint const& deferred_upload_framebuffers<count>::operator[] (std::size_t i) const
+    {
+      return _framebuffers[i];
+    }
+
+    inline framebuffer_binder::framebuffer_binder(GLuint framebuffer)
+    {
+      gl.getIntegerv(GL_FRAMEBUFFER_BINDING, &_old);
+      gl.bindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    }
+    inline framebuffer_binder::~framebuffer_binder()
+    {
+      gl.bindFramebuffer(GL_FRAMEBUFFER, _old);
+    }
   }
 }

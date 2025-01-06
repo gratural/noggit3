@@ -251,6 +251,12 @@ namespace opengl
       scoped::buffer_binder<GL_ARRAY_BUFFER> const bind (buffer);
       gl.vertexAttribIPointer (location, size, type, stride, data);
     }
+    void use_program::attrib_int(vao_binder const&, std::string const& name, array_buffer_is_already_bound, GLsizei size, GLenum type, GLsizei stride, const GLvoid* data)
+    {
+      GLuint const location (attrib_location (name));
+      gl.enableVertexAttribArray (location);
+      gl.vertexAttribIPointer (location, size, type, stride, data);
+    }
 
     void use_program::attrib_divisor(vao_binder const&, std::string const& name, GLuint divisor, GLsizei range)
     {

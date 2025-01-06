@@ -21,6 +21,8 @@ namespace opengl
 
     virtual void bind();
 
+    void attach_to_framebuffer(GLenum attachment, int level);
+
     static void set_active_texture (size_t num = 0);
     static size_t current_active_texture;
 

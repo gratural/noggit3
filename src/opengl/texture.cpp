@@ -42,6 +42,16 @@ namespace opengl
     gl.bindTexture (GL_TEXTURE_2D, _id);
   }
 
+  void texture::attach_to_framebuffer(GLenum attachment, int level)
+  {
+    if (_id == 0)
+    {
+      gl.genTextures(1, &_id);
+    }
+
+    gl.framebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, _id, 0);
+  }
+
   size_t texture::current_active_texture = -1;
 
   void texture::set_active_texture (size_t num)
