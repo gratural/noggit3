@@ -126,6 +126,11 @@ void main()
     vec3 env = tex_2.rgb * tex.rgb;
     out_color = vec4(lighting(tex.rgb) + env, 1.);
   }
+  else if(shader == 4) // Opaque
+  {
+    vec3 env = tex.rgb;
+    out_color = vec4(lighting(tex.rgb) + env, 1.);
+  }
   else if(shader == 5) // EnvMetal
   {
     vec3 env = tex_2.rgb * tex.rgb * tex.a;
@@ -134,11 +139,11 @@ void main()
   else if(shader == 6) // TwoLayerDiffuse
   {
     vec3 layer2 = mix(tex.rgb, tex_2.rgb, tex_2.a);
-    out_color = vec4(lighting(mix(layer2, tex.rgb, vertex_color.a)), 1.);
+    out_color = vec4(lighting(mix(layer2, tex.rgb, vertex_color.a)), tex.a);
   }
   else // default shader, used for shader_id 0,1,2,4 (Diffuse, Specular, Metal, Opaque)
   {
-    out_color = vec4(lighting(tex.rgb), 1.);
+    out_color = vec4(lighting(tex.rgb), tex.a);
   }
 
   if(fog && (dist_from_camera >= fog_end * fog_start))

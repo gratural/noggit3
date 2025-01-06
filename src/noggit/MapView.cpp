@@ -2534,52 +2534,55 @@ void MapView::draw_map()
 
   math::frustum frustum(model_view(debug_cam).transposed() * projection().transposed());
 
-  _world->draw ( model_view().transposed()
-               , projection().transposed()
-               , frustum
-               , _cursor_pos
-               , terrainMode == editing_mode::mccv ? shader_color : cursor_color
-               , cursor_type.get()
-               , use_square_brush
-               , radius
-               , use_liquid_intersect
-               , texturingTool->show_unpaintable_chunks() && terrainMode == editing_mode::paint
-               , noggit::ui::selected_texture::texture ? noggit::ui::selected_texture::texture.value()->filename : ""
-               , _draw_contour.get()
-               , inner_radius
-               , ref_pos
-               , angle
-               , orientation
-               , use_ref_pos
-               , angled_mode
-               , terrainMode == editing_mode::flags
-               , terrainMode == editing_mode::areaid
-               , terrainMode
-               , debug_cam ? _debug_cam.position : _camera.position
-               , debug_cam ? false : _camera_moved_since_last_draw
-               , _draw_mfbo.get()
-               , _draw_wireframe.get()
-               , _draw_lines.get()
-               , _draw_terrain.get()
-               , _draw_wmo.get()
-               , _draw_water.get()
-               , _draw_wmo_doodads.get()
-               , _draw_models.get()
-               , _draw_model_animations.get()
-               , _draw_hole_lines.get() || terrainMode == editing_mode::holes
-               , _draw_models_with_box.get()
-               , _draw_hidden_models.get()
-               , _draw_sky.get()
-               , _draw_skybox.get()
-               , _draw_shadows.get()
-               , _draw_vertex_colors.get()
-               , _use_dbc_lighting_data.get()
-               , _area_id_colors
-               , _draw_fog.get()
-               , terrainTool->_edit_type
-               , _display_all_water_layers.get() ? -1 : _displayed_water_layer.get()
-               , _display_mode
-               );
+
+  _world->draw( model_view().transposed()
+              , projection().transposed()
+              , frustum
+              , _cursor_pos
+              , terrainMode == editing_mode::mccv ? shader_color : cursor_color
+              , cursor_type.get()
+              , use_square_brush
+              , radius
+              , use_liquid_intersect
+              , texturingTool->show_unpaintable_chunks() && terrainMode == editing_mode::paint
+              , noggit::ui::selected_texture::texture ? noggit::ui::selected_texture::texture.value()->filename : ""
+              , _draw_contour.get()
+              , inner_radius
+              , ref_pos
+              , angle
+              , orientation
+              , use_ref_pos
+              , angled_mode
+              , terrainMode == editing_mode::flags
+              , terrainMode == editing_mode::areaid
+              , terrainMode
+              , debug_cam ? _debug_cam.position : _camera.position
+              , debug_cam ? false : _camera_moved_since_last_draw
+              , _draw_mfbo.get()
+              , _draw_wireframe.get()
+              , _draw_lines.get()
+              , _draw_terrain.get()
+              , _draw_wmo.get()
+              , _draw_water.get()
+              , _draw_wmo_doodads.get()
+              , _draw_models.get()
+              , _draw_model_animations.get()
+              , _draw_hole_lines.get() || terrainMode == editing_mode::holes
+              , _draw_models_with_box.get()
+              , _draw_hidden_models.get()
+              , _draw_sky.get()
+              , _draw_skybox.get()
+              , _draw_shadows.get()
+              , _draw_vertex_colors.get()
+              , _use_dbc_lighting_data.get()
+              , _area_id_colors
+              , _draw_fog.get()
+              , terrainTool->_edit_type
+              , _display_all_water_layers.get() ? -1 : _displayed_water_layer.get()
+              , _display_mode
+              );
+
+
 
   // reset after each world::draw call
   _camera_moved_since_last_draw = false;

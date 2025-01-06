@@ -1735,6 +1735,77 @@ void Model::draw_ribbons( opengl::scoped::use_program& ribbons_shader
   }
 }
 
+void Model::draw_depth( std::vector<ModelInstance*> instances
+                      , opengl::scoped::use_program& depth_shader
+                      , noggit::texture_array_handler& texture_handler
+                      , opengl_model_state_changer& ogl_state
+                      )
+{
+  if (!finishedLoading() || loading_failed() || !_finished_upload)
+  {
+    return;
+  }
+
+  // wait for the textures to load before rendering the model
+  // must be called after the upload is done
+  if (!check_texture_upload_status())
+  {
+    return;
+  }
+
+  opengl::scoped::vao_binder const _ (_depth_vao);
+
+  std::vector<math::matrix_4x4> transform_matrix;
+  int model_instance_count = 0;
+  {
+    transform_matrix.reserve(instances.size());
+
+    for (ModelInstance* mi : instances)
+    {
+      transform_matrix.push_back(mi->transform_matrix_transposed());
+    }
+
+    model_instance_count = transform_matrix.size();
+
+    opengl::scoped::buffer_binder<GL_ARRAY_BUFFER> const transform_binder(_depth_transform_buffer);
+    gl.bufferData(GL_ARRAY_BUFFER, model_instance_count * sizeof(::math::matrix_4x4), transform_matrix.data(), GL_STATIC_DRAW);
+  }
+
+  {
+    {
+      opengl::scoped::buffer_binder<GL_ARRAY_BUFFER> const binder (_vertices_buffer);
+      depth_shader.attrib(_, "position", opengl::array_buffer_is_already_bound{}, 3, GL_FLOAT, GL_FALSE, sizeof(ModelVertex), (void*)offsetof(ModelVertex, position));
+      depth_shader.attrib(_, "texcoord1", opengl::array_buffer_is_already_bound{}, 2, GL_FLOAT, GL_FALSE, sizeof(ModelVertex), (void*)offsetof(ModelVertex, texcoords[0]));
+      depth_shader.attrib(_, "texcoord2", opengl::array_buffer_is_already_bound{}, 2, GL_FLOAT, GL_FALSE, sizeof(ModelVertex), (void*)offsetof(ModelVertex, texcoords[1]));
+    }
+
+    {
+      opengl::scoped::buffer_binder<GL_ARRAY_BUFFER> const transform_binder (_depth_transform_buffer);
+      depth_shader.attrib(_, "transform", opengl::array_buffer_is_already_bound{}, static_cast<math::matrix_4x4*> (nullptr), 1);
+    }
+  }
+
+  gl.bindBufferBase(GL_UNIFORM_BUFFER, 0, _ubo);
+
+  int index = 0;
+
+  for (ModelRenderPass& p : _render_passes)
+  {
+    if (p.prepare_draw(depth_shader, this, false, index, texture_handler, ogl_state))
+    {
+      M2Blend blend_mode = static_cast<M2Blend>(_render_flags[p.renderflag_index].blend);
+
+      if (blend_mode == M2Blend::Opaque || blend_mode == M2Blend::Alpha_Key)
+      {
+        depth_shader.uniform("index", index);
+        gl.drawElementsInstanced(GL_TRIANGLES, p.index_count, model_instance_count, _indices, sizeof(_indices[0]) * p.index_start);
+      }
+
+      index++;
+    }
+  }
+}
+
 void Model::draw_box (opengl::scoped::use_program& m2_box_shader, std::size_t box_count)
 {
   static std::vector<uint16_t> const indices ({5, 7, 3, 2, 0, 1, 3, 1, 5, 4, 0, 4, 6, 2, 6, 7});

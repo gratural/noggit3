@@ -1534,6 +1534,33 @@ void MapChunk::set_shadow(math::vector_3d const& pos, float radius, bool add)
   texture_set->require_update(); // shadows are tied with the alphamap
 }
 
+void MapChunk::set_shadows(std::vector<std::uint8_t> const& tile_shadow_map, int threshold)
+{
+  _chunk_shadow = std::make_unique<chunk_shadow>();
+
+  int start_x = px * 64;
+  int start_z = py * 64;
+
+  for (int ix = 0; ix < 64; ++ix)
+  {
+    for (int iz = 0; iz < 64; ++iz)
+    {
+      // the data is flipped on the z axis
+      int id = (1023 - (start_z + iz)) * 1024 + start_x + ix;
+
+      if (tile_shadow_map[id] >= threshold)
+      {
+        std::uint64_t& value = _chunk_shadow.get()->data[iz];
+        std::uint64_t flag = std::uint64_t(1) << ix;
+        value |= flag;
+      }
+    }
+  }
+
+  texture_set_changed();
+  texture_set->require_update(); // shadows are tied with the alphamap
+}
+
 bool MapChunk::isHole(int i, int j) const
 {
   if (_preview_data)

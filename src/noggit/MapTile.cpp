@@ -444,6 +444,22 @@ void MapTile::draw ( math::frustum const& frustum
   gl.multiDrawElements(GL_TRIANGLES, _indices_count.data(), GL_UNSIGNED_SHORT, _indices_offsets.data(), 256);
 }
 
+void MapTile::draw_shadows(opengl::scoped::use_program& shadow_shader)
+{
+  if (!finished)
+  {
+    return;
+  }
+
+  opengl::scoped::vao_binder const _ (_shadow_vao);
+  gl.bindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indices_vbo);
+
+  shadow_shader.attrib(_, "position", _vertices_vbo, 3, GL_FLOAT, GL_FALSE, sizeof(chunk_vertex), static_cast<char*>(0) + offsetof(chunk_vertex, position));
+  shadow_shader.attrib(_, "normal", _vertices_vbo, 3, GL_FLOAT, GL_FALSE, sizeof(chunk_vertex), static_cast<char*>(0) + offsetof(chunk_vertex, normal));
+
+  gl.multiDrawElements(GL_TRIANGLES, _indices_count.data(), GL_UNSIGNED_SHORT, _indices_offsets.data(), 256);
+}
+
 void MapTile::intersect (math::ray const& ray, selection_result* results, bool ignore_terrain_holes)
 {
   if (!finished)
@@ -1023,6 +1039,17 @@ void MapTile::CropWater()
     for (int x = 0; x < 16; ++x)
     {
       Water.CropMiniChunk(x, z, mChunks[z][x].get());
+    }
+  }
+}
+
+void MapTile::set_shadows(std::vector<std::uint8_t> const& shadow_map, int threshold)
+{
+  for (int y = 0; y < 16; ++y)
+  {
+    for (int x = 0; x < 16; ++x)
+    {
+      mChunks[y][x]->set_shadows(shadow_map, threshold);
     }
   }
 }

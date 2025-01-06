@@ -30,5 +30,11 @@
       <file alias="cursor_fs">../src/glsl/cursor_frag.glsl</file>
       <file alias="horizon_vs">../src/glsl/horizon_vert.glsl</file>
       <file alias="horizon_fs">../src/glsl/horizon_frag.glsl</file>
+      <file alias="m2_depth_vs">../src/glsl/m2_depth_vert.glsl</file>
+      <file alias="m2_depth_fs">../src/glsl/m2_depth_frag.glsl</file>
+      <file alias="wmo_depth_vs">../src/glsl/wmo_depth_vert.glsl</file>
+      <file alias="wmo_depth_fs">../src/glsl/wmo_depth_frag.glsl</file>
+      <file alias="shadow_vs">../src/glsl/shadow_vert.glsl</file>
+      <file alias="shadow_fs">../src/glsl/shadow_frag.glsl</file>
     </qresource>
 </RCC>

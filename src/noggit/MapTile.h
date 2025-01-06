@@ -69,6 +69,7 @@ public:
             , display_mode display
             , noggit::tileset_array_handler& tileset_handler
             );
+  void draw_shadows(opengl::scoped::use_program& shadow_shader);
   void intersect (math::ray const& ray, selection_result* results, bool ignore_terrain_holes);
   void intersect_liquids (math::ray const&, selection_result*);
 
@@ -89,6 +90,8 @@ public:
   bool GetVertex(float x, float z, math::vector_3d *V);
 
 	void CropWater();
+
+  void set_shadows(std::vector<std::uint8_t> const& shadow_map, int threshold);
 
   void saveTile(World* world);
 
@@ -171,8 +174,9 @@ private:
   opengl::scoped::deferred_upload_buffers<1> _ubo;
   GLuint const& _chunks_data_ubo = _ubo[0];
 
-  opengl::scoped::deferred_upload_vertex_arrays<1> _vertex_array;
+  opengl::scoped::deferred_upload_vertex_arrays<2> _vertex_array;
   GLuint const& _vao = _vertex_array[0];
+  GLuint const& _shadow_vao = _vertex_array[1];
   opengl::scoped::deferred_upload_buffers<2> _vertex_buffers;
   GLuint const& _vertices_vbo = _vertex_buffers[0];
   GLuint const& _indices_vbo = _vertex_buffers[1];

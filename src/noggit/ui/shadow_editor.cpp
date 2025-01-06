@@ -5,7 +5,8 @@
 #include <noggit/World.h>
 
 
-#include <QtWidgets/QFormLayout>
+#include <QFormLayout>
+#include <QGroupBox>
 #include <QKeyEvent>
 
 
@@ -14,10 +15,22 @@ namespace noggit::ui
   shadow_editor::shadow_editor(QWidget* parent)
     : noggit_tool(parent)
     , _radius_property(10.f)
+    , _pitch_property(47.f)
+    , _threshold_property(128.f)
   {
     auto layout(new QFormLayout(this));
 
-    layout->addWidget(new slider_spinbox("Radius", &_radius_property, 0.f, 100.f, 2, this));
+    QGroupBox* brush_group = new QGroupBox("Brush", this);
+    auto brush_layout(new QFormLayout(brush_group));
+    brush_layout->addWidget(new slider_spinbox("Radius", &_radius_property, 0.f, 100.f, 2, this));
+
+    QGroupBox* generation_group = new QGroupBox("Auto Generation", this);
+    auto generation_layout(new QFormLayout(generation_group));
+    generation_layout->addWidget(new slider_spinbox("Sun Pitch", &_pitch_property, 1.f, 90.f, 0, this));
+    generation_layout->addWidget(new slider_spinbox("Shadow Threshold", &_threshold_property, 0.f, 256.f, 0, this));
+
+    layout->addRow(brush_group);
+    layout->addRow(generation_group);
   }
 
 
@@ -33,6 +46,11 @@ namespace noggit::ui
       {
         world->set_shadow(cursor_pos, _radius_property.get(), false);
       }
+    }
+
+    if (!cursor_under_map && _middle_mouse_button)
+    {
+      world->update_legacy_shadow_for_tile_at(cursor_pos, _pitch_property.get(), static_cast<int>(std::round(_threshold_property.get())));
     }
   }
 

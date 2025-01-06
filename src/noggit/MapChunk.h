@@ -212,6 +212,7 @@ public:
 
   void clear_shadows();
   void set_shadow(math::vector_3d const& pos, float radius, bool add);
+  void set_shadows(std::vector<std::uint8_t> const& tile_shadow_map, int threshold);
 
   //! \todo implement Action stack for these
   bool isHole(int i, int j) const;

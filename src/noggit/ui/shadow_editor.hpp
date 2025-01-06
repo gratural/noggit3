@@ -22,5 +22,7 @@ namespace noggit::ui
 
   private:
     float_property _radius_property;
+    float_property _pitch_property;
+    float_property _threshold_property;
   };
 }

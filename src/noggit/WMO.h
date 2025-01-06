@@ -82,6 +82,9 @@ public:
            , int instance_count
            , noggit::texture_array_handler& texture_handler
            );
+  void draw_depth( int instance_count
+                 , noggit::texture_array_handler& texture_handler
+                 );
 
   void setupFog (bool draw_fog, std::function<void (bool)> setup_fog);
 
@@ -194,6 +197,10 @@ public:
                       , noggit::texture_array_handler& texture_handler
                       , bool update_transform_matrix_buffer
                       );
+  void draw_depth ( opengl::scoped::use_program& depth_shader
+                  , std::vector<WMOInstance*>& instances
+                  , noggit::texture_array_handler& texture_handler
+                  );
 
   void draw_boxes_instanced(opengl::scoped::use_program& wmo_box_shader);
 
@@ -269,8 +276,8 @@ private:
 
   int _instance_visible = 0;
 
-  opengl::scoped::deferred_upload_buffers<6> _buffers;
-  opengl::scoped::deferred_upload_vertex_arrays<2> _vertex_arrays;
+  opengl::scoped::deferred_upload_buffers<7> _buffers;
+  opengl::scoped::deferred_upload_vertex_arrays<3> _vertex_arrays;
 
   GLuint const& _vao = _vertex_arrays[0];
 
@@ -282,6 +289,9 @@ private:
   GLuint const& _bbox_vao = _vertex_arrays[1];
   GLuint const& _bbox_vertices = _buffers[4];
   GLuint const& _bbox_indices = _buffers[5];
+
+  GLuint const& _depth_transform_buffer = _buffers[6];
+  GLuint const& _depth_vao = _vertex_arrays[2];
 };
 
 class WMOManager

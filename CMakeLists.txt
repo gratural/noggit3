@@ -21,7 +21,7 @@ add_noggit_compiler_flag_if_supported (-Werror=reorder)
 add_noggit_compiler_flag_if_supported (/we5038)
 add_noggit_compiler_flag_if_supported (-Werror=conditional-uninitialized)
 add_noggit_compiler_flag_if_supported (-Werror=unused)
-add_noggit_compiler_flag_if_supported (/weC4189)
+add_noggit_compiler_flag_if_supported (/we4189)
 add_noggit_compiler_flag_if_supported (-Werror=unused-parameter)
 add_noggit_compiler_flag_if_supported (-Werror=unused-private-field)
 add_noggit_compiler_flag_if_supported (-Werror=missing-variable-declarations)
@@ -494,6 +494,12 @@ set ( shaders
       src/glsl/cursor_frag.glsl
       src/glsl/horizon_vert.glsl
       src/glsl/horizon_frag.glsl
+      src/glsl/m2_depth_vert.glsl
+      src/glsl/m2_depth_frag.glsl
+      src/glsl/wmo_depth_vert.glsl
+      src/glsl/wmo_depth_frag.glsl
+      src/glsl/shadow_vert.glsl
+      src/glsl/shadow_frag.glsl
     )
 
 IF(WIN32)

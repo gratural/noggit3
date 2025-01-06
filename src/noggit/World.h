@@ -21,6 +21,7 @@
 #include <noggit/world_model_instances_storage.hpp>
 #include <opengl/primitives.hpp>
 #include <opengl/shader.fwd.hpp>
+#include <opengl/texture.hpp>
 
 #include <map>
 #include <optional>
@@ -147,6 +148,13 @@ public:
             , int water_layer
             , display_mode display
             );
+
+  void update_legacy_shadow_for_tile_at(math::vector_3d const& pos, float pitch, int threshold);
+
+private:
+  void update_legacy_shadows(MapTile* adt, float pitch, int threshold);
+
+public:
 
   unsigned int getAreaID (math::vector_3d const&);
   void setAreaID(math::vector_3d const& pos, int id, bool adt);
@@ -435,7 +443,7 @@ private:
 
   float _view_distance;
 
-  std::unique_ptr<opengl::program> _mcnk_program;;
+  std::unique_ptr<opengl::program> _mcnk_program;
   std::unique_ptr<opengl::program> _mfbo_program;
   std::unique_ptr<opengl::program> _m2_program;
   std::unique_ptr<opengl::program> _m2_instanced_program;
@@ -444,9 +452,20 @@ private:
   std::unique_ptr<opengl::program> _m2_box_program;
   std::unique_ptr<opengl::program> _wmo_program;
 
+  std::unique_ptr<opengl::program> _wmo_depth_program;
+  std::unique_ptr<opengl::program> _m2_depth_program;
+  std::unique_ptr<opengl::program> _shadow_program;
+
   noggit::cursor_render _cursor_render;
   opengl::primitives::sphere _sphere_render;
   opengl::primitives::square _square_render;
 
   std::optional<liquid_render> _liquid_render = std::nullopt;
+
+  opengl::scoped::deferred_upload_framebuffers<2> _framebuffers;
+  GLuint const& _depth_framebuffer = _framebuffers[0];
+  GLuint const& _shadow_framebuffer = _framebuffers[1];
+
+  opengl::texture _depth_texture;
+  opengl::texture _shadow_texture;
 };

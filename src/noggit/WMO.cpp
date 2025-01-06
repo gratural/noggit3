@@ -457,6 +457,66 @@ void WMO::draw_instanced( opengl::scoped::use_program& wmo_shader
     }
   }
 }
+void WMO::draw_depth( opengl::scoped::use_program& depth_shader
+                    , std::vector<WMOInstance*>& instances
+                    , noggit::texture_array_handler& texture_handler
+                    )
+{
+  if (!finishedLoading() || loading_failed() || instances.size() == 0)
+  {
+    return;
+  }
+
+  std::vector<math::matrix_4x4> transform_matrix;
+  int instance_visible = 0;
+
+  {
+    transform_matrix.reserve(instances.size());
+
+    for (WMOInstance* mi : instances)
+    {
+      transform_matrix.push_back(mi->transform_matrix_transposed());
+    }
+
+    instance_visible = transform_matrix.size();
+
+    opengl::scoped::buffer_binder<GL_ARRAY_BUFFER> const transform_binder(_depth_transform_buffer);
+    gl.bufferData(GL_ARRAY_BUFFER, instance_visible * sizeof(::math::matrix_4x4), transform_matrix.data(), GL_STATIC_DRAW);
+  }
+
+  if (instance_visible == 0)
+  {
+    return;
+  }
+
+  {
+    opengl::scoped::vao_binder const _ (_depth_vao);
+
+    {
+      opengl::scoped::buffer_binder<GL_ARRAY_BUFFER> const binder(_vertices_buffer);
+
+      depth_shader.attrib(_, "position", opengl::array_buffer_is_already_bound{}, 3, GL_FLOAT, GL_FALSE, sizeof(wmo_vertex), (void*)offsetof(wmo_vertex, position));
+      depth_shader.attrib(_, "uv1", opengl::array_buffer_is_already_bound{}, 2, GL_FLOAT, GL_FALSE, sizeof(wmo_vertex), (void*)offsetof(wmo_vertex, uv1));
+      depth_shader.attrib_int(_, "id", opengl::array_buffer_is_already_bound{}, 1, GL_INT, sizeof(wmo_vertex), (void*)offsetof(wmo_vertex, index));
+    }
+
+    {
+      opengl::scoped::buffer_binder<GL_ARRAY_BUFFER> const transform_binder(_depth_transform_buffer);
+      depth_shader.attrib(_, "transform", opengl::array_buffer_is_already_bound{}, static_cast<math::matrix_4x4*> (nullptr), 1);
+    }
+
+    gl.bindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indices_buffer);
+  }
+
+  opengl::scoped::vao_binder const _ (_depth_vao);
+
+  for (auto& group : groups)
+  {
+    group.draw_depth( instance_visible
+                    , texture_handler
+                    );
+  }
+}
 
 void WMO::draw_boxes_instanced(opengl::scoped::use_program& wmo_box_shader)
 {
@@ -1439,6 +1499,39 @@ void WMOGroup::draw( opengl::scoped::use_program&
     {
       texture_handler.bind_layer(wmo->_textures_infos[mat.texture2]->pos_in_array->first, 1);
     }
+#endif
+
+    gl.drawElementsInstanced(GL_TRIANGLES, batch.index_count, instance_count, GL_UNSIGNED_INT, opengl::index_buffer_is_already_bound{}, sizeof(std::uint32_t) * (batch.index_start + _index_offset));
+  }
+}
+
+
+void WMOGroup::draw_depth( int instance_count
+                         , [[maybe_unused]] noggit::texture_array_handler& texture_handler
+                         )
+{
+  gl.bindBufferBase(GL_UNIFORM_BUFFER, 0, _ubo);
+
+#ifndef USE_BINDLESS_TEXTURES
+  int batch_index = 0;
+#endif
+
+  for(wmo_render_batch& batch : _render_batches)
+  {
+    // skip transparent batches
+    if (batch.blend_mode != 0 && batch.blend_mode != 1)
+    {
+#ifndef USE_BINDLESS_TEXTURES
+      batch_index++;
+#endif
+      continue;
+    }
+
+
+#ifndef USE_BINDLESS_TEXTURES
+    WMOMaterial const& mat(wmo->materials.at(_batches[batch_index++].texture));
+
+    texture_handler.bind_layer(wmo->_textures_infos[mat.texture1]->pos_in_array->first, 0);
 #endif
 
     gl.drawElementsInstanced(GL_TRIANGLES, batch.index_count, instance_count, GL_UNSIGNED_INT, opengl::index_buffer_is_already_bound{}, sizeof(std::uint32_t) * (batch.index_start + _index_offset));

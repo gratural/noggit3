@@ -25,6 +25,10 @@
 #include <opengl/shader.hpp>
 
 #include <QtWidgets/QMessageBox>
+#include <QtGui/QOffscreenSurface>
+#include <QtGui/QOpenGLFramebufferObjectFormat>
+#include <QtGui/QPixmap>
+#include <QtOpenGL/QGLPixelBuffer>
 
 #include <algorithm>
 #include <cassert>
@@ -1634,6 +1638,230 @@ void World::draw ( math::matrix_4x4 const& model_view
       tile->drawMFBO(mfbo_shader);
     }
   }
+}
+
+void World::update_legacy_shadow_for_tile_at(math::vector_3d const& pos, float pitch, int threshold)
+{
+  for_tile_at(pos, [&](MapTile* tile) { update_legacy_shadows(tile, pitch, threshold); });
+}
+
+#include <math/projection.hpp>
+
+void World::update_legacy_shadows(MapTile* tile, float pitch, int threshold)
+{
+  if(!_m2_depth_program)
+  {
+    _m2_depth_program.reset
+      ( new opengl::program
+          { { GL_VERTEX_SHADER,   opengl::shader::src_from_qrc("m2_depth_vs") }
+        #ifdef USE_BINDLESS_TEXTURES
+          , { GL_FRAGMENT_SHADER, opengl::shader::src_from_qrc("m2_depth_fs", {"use_bindless"}) }
+        #else
+          , { GL_FRAGMENT_SHADER, opengl::shader::src_from_qrc("m2_depth_fs") }
+        #endif
+          }
+      );
+  }
+  if(!_wmo_depth_program)
+  {
+    _wmo_depth_program.reset
+      ( new opengl::program
+          { { GL_VERTEX_SHADER,   opengl::shader::src_from_qrc("wmo_depth_vs") }
+        #ifdef USE_BINDLESS_TEXTURES
+          , { GL_FRAGMENT_SHADER, opengl::shader::src_from_qrc("wmo_depth_fs", {"use_bindless"}) }
+        #else
+          , { GL_FRAGMENT_SHADER, opengl::shader::src_from_qrc("wmo_depth_fs") }
+        #endif
+          }
+      );
+  }
+  if (!_shadow_program)
+  {
+    _shadow_program.reset
+      ( new opengl::program
+        { { GL_VERTEX_SHADER,   opengl::shader::src_from_qrc("shadow_vs") }
+        , { GL_FRAGMENT_SHADER, opengl::shader::src_from_qrc("shadow_fs") }
+        }
+      );
+  }
+
+  int depth_texture_size = 2048;
+
+  if (!_framebuffers.buffer_generated())
+  {
+    _framebuffers.upload();
+
+    {
+      opengl::scoped::framebuffer_binder _ (_depth_framebuffer);
+
+      gl.drawBuffer(GL_NONE);
+      gl.readBuffer(GL_NONE);
+
+      _depth_texture.bind();
+      gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+      gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+      gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+
+      _depth_texture.attach_to_framebuffer(GL_DEPTH_ATTACHMENT, 0);
+    }
+
+    {
+      opengl::scoped::framebuffer_binder _ (_shadow_framebuffer);
+
+      _shadow_texture.bind();
+      gl.texImage2D(GL_TEXTURE_2D, 0, GL_RED, 1024, 1024, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
+      gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+      gl.texParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+      _shadow_texture.attach_to_framebuffer(GL_COLOR_ATTACHMENT0, 0);
+    }
+  }
+
+  auto const& extents = tile->extents();
+  math::vector_3d center = (extents[0] + extents[1]) * 0.5f;
+  center.y = extents[1].y;
+
+  math::matrix_4x4 light_rotation = math::matrix_4x4(math::matrix_4x4::rotation_yzx, math::degrees::vec3(math::degrees(0), math::degrees(-45.f), math::degrees(pitch)));
+  math::vector_3d light_forward = (light_rotation * math::vector_3d(1.f, 0.f, 0.f)).normalized();
+  math::vector_3d light_up = (light_rotation * math::vector_3d(0.f, 1.f, 0.f)).normalized();
+
+  math::vector_3d sun_position = center - (light_forward * 1000.f);
+
+  math::matrix_4x4 depth_view = math::look_at(sun_position, center, light_up).transposed();
+  math::matrix_4x4 depth_view_inverted = depth_view.inverted();
+
+  math::vector_4d terrain_box(std::numeric_limits<float>::max(), std::numeric_limits<float>::lowest(), std::numeric_limits<float>::max(), std::numeric_limits<float>::lowest());
+  float far_z = std::numeric_limits<float>::lowest();
+
+  for (auto& point : tile->intersect_points())
+  {
+    math::vector_3d p = depth_view_inverted * (point - center);
+    terrain_box.x = std::min(p.x, terrain_box.x);
+    terrain_box.y = std::max(p.x, terrain_box.y);
+    terrain_box.z = std::min(p.y, terrain_box.z);
+    terrain_box.w = std::max(p.y, terrain_box.w);
+
+    float dist = (point - sun_position).length();
+
+    far_z = std::max(dist, far_z);
+  }
+
+  math::matrix_4x4 depth_proj = math::ortho(terrain_box.x, terrain_box.y, terrain_box.z, terrain_box.w, 100.f, far_z).transposed();
+
+
+
+  // depth test
+  {
+    opengl::scoped::framebuffer_binder _ (_depth_framebuffer);
+
+    opengl::texture::set_active_texture(2);
+
+
+    _depth_texture.bind();
+    gl.texImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, depth_texture_size, depth_texture_size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+    gl.viewport(0, 0, depth_texture_size, depth_texture_size);
+    gl.clear(GL_DEPTH_BUFFER_BIT);
+
+    opengl_model_state_changer ogl_state;
+
+    // models
+    {
+      opengl::scoped::bool_setter<GL_CULL_FACE, GL_FALSE> cull;
+      opengl::scoped::bool_setter<GL_DEPTH_TEST, GL_TRUE> depth;
+      opengl::scoped::depth_mask_setter<GL_TRUE> const depth_mask;
+
+      opengl::scoped::use_program depth_shader{ *_m2_depth_program.get() };
+
+      depth_shader.uniform("view_proj", depth_view * depth_proj);
+
+#ifndef USE_BINDLESS_TEXTURES
+      depth_shader.uniform("array_0", 0);
+      depth_shader.uniform("array_1", 1);
+#endif
+
+      for (auto& it : _models_by_filename_with_wmo_doodads)
+      {
+        it.second[0]->model->draw_depth(it.second, depth_shader, _model_texture_handler, ogl_state);
+      }
+    }
+
+    // wmos
+    {
+      opengl::scoped::use_program depth_shader{ *_wmo_depth_program.get() };
+
+      // make sure the depth and culling states are right, m2s can change those
+      opengl::scoped::bool_setter<GL_CULL_FACE, GL_FALSE> const cull;
+      opengl::scoped::bool_setter<GL_DEPTH_TEST, GL_TRUE> depth;
+      opengl::scoped::depth_mask_setter<GL_TRUE> const depth_mask;
+
+      depth_shader.uniform("view_proj", depth_view * depth_proj);
+
+#ifndef USE_BINDLESS_TEXTURES
+      depth_shader.uniform("array_0", 0);
+#endif
+
+      for (auto& it : _wmos_by_filename)
+      {
+        it.second[0]->wmo->draw_depth(depth_shader, it.second, _model_texture_handler);
+      }
+    }
+  }
+
+  // shadows
+  {
+    opengl::scoped::framebuffer_binder _ (_shadow_framebuffer);
+
+    opengl::texture::set_active_texture(3);
+
+    gl.viewport(0, 0, 1024, 1024);
+    gl.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    math::vector_3d shadow_eye_pos = center + math::vector_3d(0.f, extents[1].y, 0.f);
+    math::matrix_4x4 shadow_view = math::look_at(shadow_eye_pos, center, math::vector_3d(0.f, 0.f, -1.f)).transposed();
+    math::matrix_4x4 shadow_view_inv = shadow_view.inverted();
+
+    math::vector_4d shadow_box(std::numeric_limits<float>::max(), std::numeric_limits<float>::lowest(), std::numeric_limits<float>::max(), std::numeric_limits<float>::lowest());
+    float shadow_far_z = std::numeric_limits<float>::lowest();
+
+    for (auto& point : tile->intersect_points())
+    {
+      math::vector_3d p = shadow_view_inv * (point - center);
+      shadow_box.x = std::min(p.x, shadow_box.x);
+      shadow_box.y = std::max(p.x, shadow_box.y);
+      shadow_box.z = std::min(p.y, shadow_box.z);
+      shadow_box.w = std::max(p.y, shadow_box.w);
+
+      float dist = (point - sun_position).length();
+
+      shadow_far_z = std::max(dist, shadow_far_z);
+    }
+
+
+    math::matrix_4x4 shadow_proj = math::ortho(shadow_box.x, shadow_box.y, shadow_box.z, shadow_box.w, -1.f, shadow_far_z).transposed();
+
+    {
+      opengl::scoped::use_program shadow_shader{ *_shadow_program.get() };
+      shadow_shader.uniform("depth_texture", 2);
+      shadow_shader.uniform("view_proj", shadow_view * shadow_proj);
+      shadow_shader.uniform("light_view_proj", depth_view * depth_proj);
+      shadow_shader.uniform("light_dir", light_forward);
+
+      tile->draw_shadows(shadow_shader);
+    }
+  }
+
+
+  opengl::texture::set_active_texture(3);
+  _shadow_texture.bind();
+  std::vector<std::uint8_t> shadow_data(1024 * 1024);
+  glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_UNSIGNED_BYTE, shadow_data.data());
+
+  tile->set_shadows(shadow_data, threshold);
 }
 
 selection_result World::intersect ( math::matrix_4x4 const& model_view

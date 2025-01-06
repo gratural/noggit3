@@ -325,6 +325,7 @@ namespace noggit
       generate_hotkey_row({ font_noggit::shift, font_noggit::lmb }, "\a+\a - Add shadows", shadow_layout);
       generate_hotkey_row({ font_noggit::ctrl, font_noggit::lmb }, "\a+\a - Remove shadows", shadow_layout);
       generate_hotkey_row({ font_noggit::alt, font_noggit::lmb_drag }, "\a+\a - Change brush size", shadow_layout);
+      generate_hotkey_row({ font_noggit::mmb }, "\a - Update shadows (adt under cursor)", shadow_layout);
 
       layout->addWidget(tabs);
       tabs->addTab(base_widget, "Base");

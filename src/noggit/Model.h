@@ -304,6 +304,12 @@ public:
                    , noggit::texture_array_handler& texture_handler
                    );
 
+  void draw_depth( std::vector<ModelInstance*> instances
+                 , opengl::scoped::use_program& depth_shader
+                 , noggit::texture_array_handler& texture_handler
+                 , opengl_model_state_changer& ogl_state
+                 );
+
   void draw_box (opengl::scoped::use_program& m2_box_shader, std::size_t box_count);
 
   std::vector<float> intersect (math::matrix_4x4 const& model_view, math::ray const&, int animtime);
@@ -384,8 +390,8 @@ private:
   std::vector<math::vector_3d> _vertex_box_points;
 
   // buffers;
-  opengl::scoped::deferred_upload_buffers<4> _buffers;
-  opengl::scoped::deferred_upload_vertex_arrays<2> _vertex_arrays;
+  opengl::scoped::deferred_upload_buffers<5> _buffers;
+  opengl::scoped::deferred_upload_vertex_arrays<3> _vertex_arrays;
 
   GLuint const& _vao = _vertex_arrays[0];
   GLuint const& _transform_buffer = _buffers[0];
@@ -394,6 +400,9 @@ private:
 
   GLuint const& _box_vao = _vertex_arrays[1];
   GLuint const& _box_vbo = _buffers[3];
+
+  GLuint const& _depth_vao = _vertex_arrays[2];
+  GLuint const& _depth_transform_buffer = _buffers[4];
 
   // ===============================
   // Geometry
