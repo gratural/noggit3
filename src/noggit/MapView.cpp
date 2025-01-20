@@ -2160,15 +2160,18 @@ void MapView::tick (float dt)
       {
       case eEntry_Model:
         {
-        auto instance(std::get<selected_model_type>(lastSelection));
+          auto instance(std::get<selected_model_type>(lastSelection));
+          auto const& pos = instance->position();
+          auto const& rot = instance->rotation();
+
           select_info << "filename: " << instance->model->filename
                       << "\nunique ID: " << instance->uid
-                      << "\nposition X/Y/Z: " << instance->pos.x << " / " << instance->pos.y << " / " << instance->pos.z
-                      << "\nrotation X/Y/Z: " << instance->dir.x << " / " << instance->dir.y << " / " << instance->dir.z
-                      << "\nscale: " << instance->scale
+                      << "\nposition X/Y/Z: " << pos.x << " / " << pos.y << " / " << pos.z
+                      << "\nrotation X/Y/Z: " << rot.x << " / " << rot << " / " << rot.z
+                      << "\nscale: " << instance->scale()
 
-                      << "\nServer-side  position  X:  " << (ZEROPOINT - instance->pos.z) << "     Y:  " << (ZEROPOINT - instance->pos.x) << "     Z:  " << instance->pos.y
-                      << "\nServer-side  orientation:  " << fabs(2 * math::constants::pi - math::constants::pi / 180.0 * (float(instance->dir.y) < 0 ? fabs(float(instance->dir.y)) + 180.0 : fabs(float(instance->dir.y) - 180.0)))
+                      << "\nServer-side  position  X:  " << (ZEROPOINT - pos.z) << "     Y:  " << (ZEROPOINT - pos.x) << "     Z:  " << pos.y
+                      << "\nServer-side  orientation:  " << fabs(2 * math::constants::pi - math::constants::pi / 180.0 * (float(rot.y) < 0 ? fabs(float(rot.y)) + 180.0 : fabs(float(rot.y) - 180.0)))
 
                       << "\ntextures Used: " << instance->model->header.nTextures
                       << "\nsize category: " << instance->size_cat;
@@ -2187,15 +2190,18 @@ void MapView::tick (float dt)
         }
       case eEntry_WMO:
         {
-        auto instance(std::get<selected_wmo_type>(lastSelection));
+          auto instance(std::get<selected_wmo_type>(lastSelection));
+          auto const& pos = instance->position();
+          auto const& rot = instance->rotation();
+
           select_info << "filename: " << instance->wmo->filename
                       << "\nunique ID: " << instance->mUniqueID
-                      << "\nposition X/Y/Z: " << instance->pos.x << " / " << instance->pos.y << " / " << instance->pos.z
-                      << "\nrotation X/Y/Z: " << instance->dir.x << " / " << instance->dir.y << " / " << instance->dir.z
+                      << "\nposition X/Y/Z: " << pos.x << " / " << pos.y << " / " << pos.z
+                      << "\nrotation X/Y/Z: " << rot.x << " / " << rot.y << " / " << rot.z
                       << "\ndoodad set: " << instance->doodadset()
 
-                      << "\nServer-side   position  X:  " << (ZEROPOINT - instance->pos.z) << "     Y:  " << (ZEROPOINT - instance->pos.x) << "     Z:  " << instance->pos.y
-                      << "\nServer-side  orientation:  " << fabs(2 * math::constants::pi - math::constants::pi / 180.0 * (float(instance->dir.y) < 0 ? fabs(float(instance->dir.y)) + 180.0 : fabs(float(instance->dir.y) - 180.0)))
+                      << "\nServer-side   position  X:  " << (ZEROPOINT - pos.z) << "     Y:  " << (ZEROPOINT - pos.x) << "     Z:  " << pos.y
+                      << "\nServer-side  orientation:  " << fabs(2 * math::constants::pi - math::constants::pi / 180.0 * (float(dir.y) < 0 ? fabs(float(dir.y)) + 180.0 : fabs(float(dir.y) - 180.0)))
 
                       << "\ntextures used: " << instance->wmo->textures.size();
 
@@ -2387,8 +2393,8 @@ void MapView::doSelection (bool selectTerrainOnly, bool intersect_liquids)
       _world->add_to_selection(hit);
     }
 
-    _cursor_pos = hit.index() == eEntry_Model ? std::get<selected_model_type>(hit)->pos
-      : hit.index() == eEntry_WMO ? std::get<selected_wmo_type>(hit)->pos
+    _cursor_pos = hit.index() == eEntry_Model ? std::get<selected_model_type>(hit)->position()
+      : hit.index() == eEntry_WMO ? std::get<selected_wmo_type>(hit)->position()
       : hit.index() == eEntry_MapChunk ? std::get<selected_chunk_type>(hit).position
       : hit.index() == eEntry_LiquidLayer ? std::get<selected_liquid_layer_type>(hit).position
       : throw std::logic_error("bad variant");

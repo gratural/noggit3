@@ -402,8 +402,8 @@ namespace noggit
         }
 
         math::vector_3d model_pos = selection.index() == eEntry_Model
-          ? std::get<selected_model_type>(selection)->pos
-          : std::get<selected_wmo_type>(selection)->pos
+          ? std::get<selected_model_type>(selection)->position()
+          : std::get<selected_wmo_type>(selection)->position()
           ;
 
         switch (pasteMode)
@@ -415,8 +415,8 @@ namespace noggit
           if (last_entry)
           {
             math::vector_3d last_entry_pos = last_entry->index() == eEntry_Model
-              ? std::get<selected_model_type>(last_entry.value())->pos
-              : std::get<selected_wmo_type>(last_entry.value())->pos
+              ? std::get<selected_model_type>(last_entry.value())->position()
+              : std::get<selected_wmo_type>(last_entry.value())->position()
               ;
 
             pos = last_entry_pos + model_pos;
@@ -442,8 +442,8 @@ namespace noggit
           if (_copy_model_stats)
           {
             // copy rot size from original model. Dirty but woring
-            scale = std::get<selected_model_type>(selection)->scale;
-            rotation = std::get<selected_model_type>(selection)->dir;
+            scale = std::get<selected_model_type>(selection)->scale();
+            rotation = std::get<selected_model_type>(selection)->rotation();
           }
 
           world->addM2( std::get<selected_model_type>(selection)->model->filename
@@ -459,7 +459,7 @@ namespace noggit
           if (_copy_model_stats)
           {
             // copy rot from original model. Dirty but working
-            rotation = std::get<selected_wmo_type>(selection)->dir;
+            rotation = std::get<selected_wmo_type>(selection)->rotation();
           }
 
           world->addWMO(std::get<selected_wmo_type>(selection)->wmo->filename, pos, rotation);
@@ -588,9 +588,9 @@ namespace noggit
           auto original = std::get<selected_model_type>(selection);
           auto clone = new ModelInstance(original->model->filename);
 
-          clone->scale = original->scale;
-          clone->dir = original->dir;
-          clone->pos = pivot ? original->pos - pivot.value() : math::vector_3d();
+          clone->set_scale(original->scale());
+          clone->set_position(pivot ? original->position() - pivot.value() : math::vector_3d());
+          clone->set_rotation(original->rotation());
 
           selected_model.push_back(clone);
           _model_instance_created.push_back(clone);
@@ -599,8 +599,8 @@ namespace noggit
         {
           auto original = std::get<selected_wmo_type>(selection);
           auto clone = new WMOInstance(original->wmo->filename);
-          clone->dir = original->dir;
-          clone->pos = pivot ? original->pos - pivot.value() : math::vector_3d();
+          clone->set_position(pivot ? original->position() - pivot.value() : math::vector_3d());
+          clone->set_rotation(original->rotation());
 
           selected_model.push_back(clone);
           _model_instance_created.push_back(clone);

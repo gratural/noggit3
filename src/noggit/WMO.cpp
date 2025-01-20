@@ -617,8 +617,8 @@ bool WMO::draw_skybox ( math::matrix_4x4 const& model_view
     if (camera_pos.is_inside_of(extent.first, extent.second))
     {
       ModelInstance sky(skybox.value()->filename);
-      sky.pos = camera_pos;
-      sky.scale = 2.f;
+      sky.set_position(camera_pos);
+      sky.set_scale(2.f);
       sky.recalcExtents();
 
       opengl_model_state_changer model_state_changer;
@@ -1105,7 +1105,7 @@ void WMOGroup::load()
       for (unsigned int j = 0; j < wmo->lights.size(); j++)
       {
         WMOLight& l = wmo->lights[j];
-        ::math::vector_3d dir = l.pos - mi.pos;
+        ::math::vector_3d dir = l.pos - mi.position();
         float ll = dir.length_squared ();
         if (ll < lenmin)
         {

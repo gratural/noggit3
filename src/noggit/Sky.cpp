@@ -339,8 +339,8 @@ bool Skies::draw( math::matrix_4x4 const& model_view
       {
         auto& model = sky.skybox.value();
         model.model->trans = sky.weight;
-        model.pos = camera_pos;
-        model.scale = 0.1f;
+        model.set_position(camera_pos);
+        model.set_scale(0.1f);
         model.recalcExtents();
 
         opengl_model_state_changer model_state_changer;
@@ -351,8 +351,8 @@ bool Skies::draw( math::matrix_4x4 const& model_view
     if (light_stats.nightIntensity > 0)
     {
       stars.model->trans = light_stats.nightIntensity;
-      stars.pos = camera_pos;
-      stars.scale = 0.1f;
+      stars.set_position(camera_pos);
+      stars.set_scale(0.1f);
       stars.recalcExtents();
 
       opengl_model_state_changer model_state_changer;

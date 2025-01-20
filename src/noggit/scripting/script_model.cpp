@@ -41,55 +41,48 @@ namespace noggit
 
     math::vector_3d model::get_pos()
     {
-      return visit_variant (_impl, [] (auto x) { return x->pos; });
+      return visit_variant (_impl, [] (auto x) { return x->position(); });
     }
 
     void model::set_pos(math::vector_3d& pos)
     {
       return visit_variant ( _impl
-                         , [&, this] (ModelInstance * as_m2) {
-                            this->world()->updateTilesModel(as_m2, model_update::remove);
-                            as_m2->pos = pos;
-                            as_m2->recalcExtents();
-                            this->world()->updateTilesModel(as_m2, model_update::add);
-                         }
-                         , [&, this] (WMOInstance * as_wmo) {
-                           this->world()->updateTilesWMO(as_wmo, model_update::remove);
-                           as_wmo->pos = pos;
-                           as_wmo->recalcExtents();
-                           this->world()->updateTilesWMO(as_wmo, model_update::add);
-                         }
-      );
+                           , [&, this] (ModelInstance * as_m2)
+                             {
+                               as_m2->update_position(pos, this->world());
+                             }
+                           , [&, this] (WMOInstance * as_wmo)
+                             {
+                               as_wmo->update_position(pos, this->world());
+                             }
+                           );
     }
 
     math::vector_3d model::get_rot()
     {
-      return math::vector_3d {visit_variant (_impl, [] (auto x) { return x->dir; })};
+      return math::vector_3d {visit_variant (_impl, [] (auto x) { return x->rotation(); })};
     }
 
     void model::set_rot(math::vector_3d& rot)
     {
       math::degrees::vec3 dir = math::degrees::vec3{ rot };
       return visit_variant ( _impl
-                         , [dir, this] (ModelInstance * as_m2) {
-                            this->world()->updateTilesModel(as_m2, model_update::remove);
-                            as_m2->dir = dir;
-                            as_m2->recalcExtents();
-                            this->world()->updateTilesModel(as_m2, model_update::add);
-                         }
-                         , [dir, this] (WMOInstance * as_wmo) {
-                           this->world()->updateTilesWMO(as_wmo, model_update::remove);
-                           as_wmo->dir = dir;
-                           as_wmo->recalcExtents();
-                           this->world()->updateTilesWMO(as_wmo, model_update::add);
-                         });
+                           , [dir, this] (ModelInstance * as_m2)
+                             {
+                               as_m2->update_rotation(dir, this->world());
+                             }
+                           , [dir, this] (WMOInstance * as_wmo)
+                             {
+                               as_wmo->update_rotation(dir, this->world());
+                             }
+                           );
     }
 
     float model::get_scale()
     {
       return visit_variant ( _impl
                          , [] (ModelInstance const* as_m2) {
-                             return as_m2->scale;
+                             return as_m2->scale();
                            }
                          , [] (WMOInstance const*) {
                              return 1.0f;
@@ -100,14 +93,12 @@ namespace noggit
     void model::set_scale(float scale)
     {
       return visit_variant ( _impl
-                         , [scale, this] (ModelInstance * as_m2) {
-                            this->world()->updateTilesModel(as_m2, model_update::remove);
-                            as_m2->scale = scale;
-                            as_m2->recalcExtents();
-                            this->world()->updateTilesModel(as_m2, model_update::add);
-                         }
-                         , [] (WMOInstance *) {}
-                         );
+                           , [scale, this] (ModelInstance * as_m2)
+                             {
+                               as_m2->update_scale(scale, this->world());
+                             }
+                           , [] (WMOInstance *) {}
+                           );
     }
 
     unsigned model::get_uid()
@@ -177,16 +168,21 @@ namespace noggit
       , std::vector<model> & vec
     )
     {
-      world->for_each_m2_instance([&](ModelInstance& mod) {
-        if (mod.pos.x >= min.x && mod.pos.x <= max.x
-          && mod.pos.z >= min.z && mod.pos.z <= max.z)
+      world->for_each_m2_instance([&](ModelInstance& mod)
+      {
+        math::vector_3d const& pos = mod.position();
+
+        if (pos.x >= min.x && pos.x <= max.x
+          && pos.z >= min.z && pos.z <= max.z)
         {
           vec.push_back(model(ctx, &mod));
         }
       });
-      world->for_each_wmo_instance([&](WMOInstance& mod) {
-        if (mod.pos.x >= min.x && mod.pos.x <= max.x
-          && mod.pos.z >= min.z && mod.pos.z <= max.z)
+      world->for_each_wmo_instance([&](WMOInstance& mod)
+      {
+        math::vector_3d const& pos = mod.position();
+        if (pos.x >= min.x && pos.x <= max.x
+          && pos.z >= min.z && pos.z <= max.z)
         {
           vec.push_back(model(ctx, &mod));
         }

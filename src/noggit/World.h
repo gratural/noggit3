@@ -13,6 +13,7 @@
 #include <noggit/WMO.h> // WMOManager
 #include <noggit/map_horizon.h>
 #include <noggit/map_index.hpp>
+#include <noggit/moveable_object.hpp>
 #include <noggit/tile_index.hpp>
 #include <noggit/texture_array_handler.hpp>
 #include <noggit/tileset_array_handler.hpp>

@@ -111,7 +111,7 @@ namespace noggit
 
     for (auto it = _m2s.begin(); it != _m2s.end(); ++it)
     {
-      math::vector_3d const& inst_position = it->second.pos;
+      math::vector_3d const& inst_position = it->second.position();
       math::vector_3d pos_shifted = inst_position - chunk_origin;
 
       if (misc::float_in_between(pos_shifted.x, 0.f, CHUNKSIZE) && misc::float_in_between(pos_shifted.z, 0.f, CHUNKSIZE))
@@ -121,7 +121,7 @@ namespace noggit
     }
     for (auto it = _wmos.begin(); it != _wmos.end(); ++it)
     {
-      math::vector_3d const& inst_position = it->second.pos;
+      math::vector_3d const& inst_position = it->second.position();
       math::vector_3d pos_shifted = inst_position - chunk_origin;
 
       if (misc::float_in_between(pos_shifted.x, 0.f, CHUNKSIZE) && misc::float_in_between(pos_shifted.z, 0.f, CHUNKSIZE))
@@ -139,7 +139,7 @@ namespace noggit
 
     for (auto it = _m2s.begin(); it != _m2s.end(); ++it)
     {
-      math::vector_3d const& inst_position = it->second.pos;
+      math::vector_3d const& inst_position = it->second.position();
       math::vector_3d pos_shifted = inst_position - chunk_origin;
 
       if (misc::float_in_between(pos_shifted.x, 0.f, CHUNKSIZE) && misc::float_in_between(pos_shifted.z, 0.f, CHUNKSIZE))
@@ -149,7 +149,7 @@ namespace noggit
     }
     for (auto it = _wmos.begin(); it != _wmos.end(); ++it)
     {
-      math::vector_3d const& inst_position = it->second.pos;
+      math::vector_3d const& inst_position = it->second.position();
       math::vector_3d pos_shifted = inst_position - chunk_origin;
 
       if (misc::float_in_between(pos_shifted.x, 0.f, CHUNKSIZE) && misc::float_in_between(pos_shifted.z, 0.f, CHUNKSIZE))
@@ -171,7 +171,7 @@ namespace noggit
     {
       for (auto it = _m2s.begin(); it != _m2s.end(); ++it)
       {
-        float dist = (math::vector_2d(it->second.pos.x, it->second.pos.z) - orig).length();
+        float dist = (math::vector_2d(it->second.position().x, it->second.position().z) - orig).length();
 
         // in range for sure
         if (dist < radius)
@@ -181,7 +181,7 @@ namespace noggit
         // maybe in range
         else if (dist < radius + MAPCHUNK_RADIUS)
         {
-          MapChunk* chunk = _world->get_chunk_at(it->second.pos);
+          MapChunk* chunk = _world->get_chunk_at(it->second.position());
           if (chunk && misc::getShortestDist(pos.x, pos.z, chunk->xbase, chunk->zbase, CHUNKSIZE) <= radius)
           {
             instances_to_remove.push_back(&it->second);
@@ -193,7 +193,8 @@ namespace noggit
     {
       for (auto it = _wmos.begin(); it != _wmos.end(); ++it)
       {
-        float dist = (math::vector_2d(it->second.pos.x, it->second.pos.z) - orig).length();
+        math::vector_3d const& wmo_pos = it->second.position();
+        float dist = (math::vector_2d(wmo_pos.x, wmo_pos.z) - orig).length();
 
         // in range for sure
         if (dist < radius)
@@ -203,7 +204,7 @@ namespace noggit
         // maybe in range
         else if (dist < radius + MAPCHUNK_RADIUS)
         {
-          MapChunk* chunk = _world->get_chunk_at(it->second.pos);
+          MapChunk* chunk = _world->get_chunk_at(wmo_pos);
           if (chunk && misc::getShortestDist(pos.x, pos.z, chunk->xbase, chunk->zbase, CHUNKSIZE) <= radius)
           {
             instances_to_remove.push_back(&it->second);
@@ -223,7 +224,7 @@ namespace noggit
     {
       for (auto it = _m2s.begin(); it != _m2s.end(); ++it)
       {
-        if (tile_index(it->second.pos) == tile)
+        if (tile_index(it->second.position()) == tile)
         {
           instances_to_remove.push_back(&it->second);
         }
@@ -233,7 +234,7 @@ namespace noggit
     {
       for (auto it = _wmos.begin(); it != _wmos.end(); ++it)
       {
-        if (tile_index(it->second.pos) == tile)
+        if (tile_index(it->second.position()) == tile)
         {
           instances_to_remove.push_back(&it->second);
         }

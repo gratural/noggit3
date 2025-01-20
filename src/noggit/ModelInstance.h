@@ -7,6 +7,7 @@
 #include <noggit/MPQ.h> // MPQFile
 #include <noggit/MapHeaders.h> // ENTRY_MDDF
 #include <noggit/ModelManager.h>
+#include <noggit/moveable_object.hpp>
 #include <noggit/Selection.h>
 #include <noggit/tile_index.hpp>
 #include <noggit/tool_enums.hpp>
@@ -16,7 +17,7 @@ namespace math { class frustum; }
 class Model;
 class WMOInstance;
 
-class ModelInstance
+class ModelInstance : public noggit::moveable_object
 {
 public:
   constexpr static float min_scale() { return 1.f / 1024.f; };
@@ -24,14 +25,10 @@ public:
 
   scoped_model_reference model;
 
-  math::vector_3d pos;
-  math::degrees::vec3 dir;
   math::vector_3d light_color = { 1.f, 1.f, 1.f };
 
   //! \todo  Get this out and do somehow else.
   unsigned int uid;
-
-  float scale = 1.f;
 
   // used when flag 0x8 is set in wdt
   // longest side of an AABB transformed model's bounding box from the M2 header
@@ -44,12 +41,10 @@ public:
   ModelInstance& operator= (ModelInstance const& other) = default;
 
   ModelInstance (ModelInstance&& other)
-    : model (std::move (other.model))
-    , pos (other.pos)
-    , dir (other.dir)
+    : noggit::moveable_object(std::move(other))
+    , model (std::move (other.model))
     , light_color (other.light_color)
     , uid (other.uid)
-    , scale (other.scale)
     , size_cat (other.size_cat)
     , _need_recalc_extents(other._need_recalc_extents)
     , _extents(other._extents)
@@ -59,12 +54,11 @@ public:
   }
   ModelInstance& operator= (ModelInstance&& other)
   {
+    noggit::moveable_object::operator=(std::move(other));
+
     std::swap (model, other.model);
-    std::swap (pos, other.pos);
-    std::swap (dir, other.dir);
     std::swap (light_color, other.light_color);
     std::swap (uid, other.uid);
-    std::swap (scale, other.scale);
     std::swap (size_cat, other.size_cat);
     std::swap (_need_recalc_extents, other._need_recalc_extents);
     std::swap (_extents, other._extents);
@@ -72,6 +66,9 @@ public:
     std::swap(_transform_mat_inverted, other._transform_mat_inverted);
     return *this;
   }
+
+  virtual void before_move(World* world) override;
+  virtual void after_move(World* world) override;
 
   bool is_a_duplicate_of(ModelInstance const& other);
 
@@ -95,7 +92,7 @@ public:
   bool is_visible(math::frustum const& frustum, const float& cull_distance, const math::vector_3d& camera, display_mode display);
   bool is_visible() const { return _is_visible; }
 
-  virtual math::vector_3d get_pos() const { return pos; }
+  virtual math::vector_3d get_pos() const { return position(); }
 
   bool recalcExtents();
   bool need_recalc_extents() const { return _need_recalc_extents; }

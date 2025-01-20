@@ -221,6 +221,7 @@ set ( noggit_root_sources
       src/noggit/Model.cpp
       src/noggit/ModelInstance.cpp
       src/noggit/ModelManager.cpp
+      src/noggit/moveable_object.cpp
       src/noggit/Particle.cpp
       src/noggit/Sky.cpp
       src/noggit/TextureManager.cpp
@@ -333,6 +334,7 @@ set ( noggit_root_headers
       src/noggit/ModelHeaders.h
       src/noggit/ModelInstance.h
       src/noggit/ModelManager.h
+      src/noggit/moveable_object.hpp
       src/noggit/Particle.h
       src/noggit/Selection.h
       src/noggit/Sky.h

@@ -48,8 +48,8 @@ namespace noggit
             WMOInstance* wmo_instance = std::get<selected_wmo_type>(model_selection);
 
             noggit::model_placement_data smd;
-            smd.position = wmo_instance->pos - model_offset;
-            smd.rotation = wmo_instance->dir;
+            smd.position = wmo_instance->position() - model_offset;
+            smd.rotation = wmo_instance->rotation();
             smd.name = wmo_instance->wmo->filename;
             smd.wmo = true;
 
@@ -60,9 +60,9 @@ namespace noggit
             ModelInstance* model_instance = std::get<selected_model_type>(model_selection);
 
             noggit::model_placement_data smd;
-            smd.position = model_instance->pos - model_offset;
-            smd.rotation = model_instance->dir;
-            smd.scale = model_instance->scale;
+            smd.position = model_instance->position() - model_offset;
+            smd.rotation = model_instance->rotation();
+            smd.scale = model_instance->scale();
             smd.name = model_instance->model->filename;
 
             models.push_back(smd);

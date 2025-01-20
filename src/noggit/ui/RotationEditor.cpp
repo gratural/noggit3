@@ -225,25 +225,29 @@ namespace noggit
           if (selection.index() == eEntry_Model)
           {
             auto model = std::get<selected_model_type>(selection);
-            _position_x->setValue(model->pos.x);
-            _position_y->setValue(model->pos.y);
-            _position_z->setValue(model->pos.z);
-            _rotation_x->setValue(model->dir.x._);
-            _rotation_y->setValue(model->dir.y._);
-            _rotation_z->setValue(model->dir.z._);
-            _scale->setValue(model->scale);
+            math::vector_3d const& pos = model->position();
+            math::degrees::vec3 const& dir = model->rotation();
+            _position_x->setValue(pos.x);
+            _position_y->setValue(pos.y);
+            _position_z->setValue(pos.z);
+            _rotation_x->setValue(dir.x._);
+            _rotation_y->setValue(dir.y._);
+            _rotation_z->setValue(dir.z._);
+            _scale->setValue(model->scale());
 
             _scale->setEnabled(true);
           }
           else // we know it's a wmo
           {
             auto wmo = std::get<selected_wmo_type>(selection);
-            _position_x->setValue(wmo->pos.x);
-            _position_y->setValue(wmo->pos.y);
-            _position_z->setValue(wmo->pos.z);
-            _rotation_x->setValue(wmo->dir.x._);
-            _rotation_y->setValue(wmo->dir.y._);
-            _rotation_z->setValue(wmo->dir.z._);
+            math::vector_3d const& pos = wmo->position();
+            math::degrees::vec3 const& dir = wmo->rotation();
+            _position_x->setValue(pos.x);
+            _position_y->setValue(pos.y);
+            _position_z->setValue(pos.z);
+            _rotation_x->setValue(dir.x._);
+            _rotation_y->setValue(dir.y._);
+            _rotation_z->setValue(dir.z._);
 
             _scale->setValue(1.f);
             _scale->setEnabled(false);

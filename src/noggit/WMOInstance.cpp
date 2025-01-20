@@ -6,14 +6,14 @@
 #include <noggit/Misc.h> // checkinside
 #include <noggit/ModelInstance.h>
 #include <noggit/WMO.h> // WMO
+#include <noggit/World.h>
 #include <noggit/WMOInstance.h>
 #include <opengl/primitives.hpp>
 #include <opengl/scoped.hpp>
 
 WMOInstance::WMOInstance(std::string const& filename, ENTRY_MODF const* d)
-  : wmo(filename)
-  , pos(math::vector_3d(d->pos[0], d->pos[1], d->pos[2]))
-  , dir(math::degrees(d->rot[0]), math::degrees(d->rot[1]), math::degrees(d->rot[2]))
+  : noggit::moveable_object(d)
+  , wmo(filename)
   , mUniqueID(d->uniqueID), mFlags(d->flags)
   , mUnknown(d->unknown), mNameset(d->nameSet)
   , _doodadset(d->doodadSet)
@@ -26,9 +26,8 @@ WMOInstance::WMOInstance(std::string const& filename, ENTRY_MODF const* d)
 }
 
 WMOInstance::WMOInstance(std::string const& filename)
-  : wmo(filename)
-  , pos(math::vector_3d(0.0f, 0.0f, 0.0f))
-  , dir(math::degrees::vec3(0_deg, 0_deg, 0_deg))
+  : noggit::moveable_object(math::vector_3d(0.f, 0.f, 0.f), math::degrees::vec3())
+  , wmo(filename)
   , mUniqueID(0)
   , mFlags(0)
   , mUnknown(0)
@@ -38,17 +37,29 @@ WMOInstance::WMOInstance(std::string const& filename)
   change_doodadset(_doodadset);
 }
 
+void WMOInstance::before_move(World* world)
+{
+  world->updateTilesWMO(this, model_update::remove);
+}
+void WMOInstance::after_move(World* world)
+{
+  recalcExtents();
+  world->updateTilesWMO(this, model_update::add);
+}
+
 bool WMOInstance::is_a_duplicate_of(WMOInstance const& other)
 {
   return wmo->filename == other.wmo->filename
-      && misc::vec3d_equals(pos, other.pos)
-      && misc::deg_vec3d_equals(dir, other.dir);
+      && misc::vec3d_equals(position(), other.position())
+      && misc::deg_vec3d_equals(rotation(), other.rotation());
 }
 
 
 void WMOInstance::update_transform_matrix()
 {
-  math::matrix_4x4 mat( math::matrix_4x4(math::matrix_4x4::translation, pos)
+  auto const& dir = rotation();
+
+  math::matrix_4x4 mat( math::matrix_4x4(math::matrix_4x4::translation, position())
                       * math::matrix_4x4
                         ( math::matrix_4x4::rotation_yzx
                         , { -dir.z
@@ -189,7 +200,7 @@ void WMOInstance::update_doodads()
 
 void WMOInstance::resetDirection()
 {
-  dir = math::degrees::vec3(0.0_deg, dir.y, 0.0_deg);
+  set_rotation(math::degrees::vec3(0.0_deg, rotation().y, 0.0_deg));
   recalcExtents();
 }
 

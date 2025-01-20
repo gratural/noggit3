@@ -4,6 +4,7 @@
 
 #include <math/ray.hpp>
 #include <math/vector_3d.hpp> // math::vector_3d
+#include <noggit/moveable_object.hpp>
 #include <noggit/WMO.h>
 
 #include <cstdint>
@@ -12,14 +13,13 @@
 class MPQFile;
 struct ENTRY_MODF;
 
-class WMOInstance
+class WMOInstance : public noggit::moveable_object
 {
 public:
   scoped_wmo_reference wmo;
-  math::vector_3d pos;
   math::vector_3d  extents[2];
   std::map<int, std::pair<math::vector_3d, math::vector_3d>> group_extents;
-  math::degrees::vec3  dir;
+
   unsigned int mUniqueID;
   uint16_t mFlags;
   uint16_t mUnknown;
@@ -56,10 +56,9 @@ public:
   WMOInstance& operator=(WMOInstance const& other) = default;
 
   WMOInstance (WMOInstance&& other)
-    : wmo (std::move (other.wmo))
-    , pos (other.pos)
+    : noggit::moveable_object(other)
+    , wmo (std::move (other.wmo))
     , group_extents(other.group_extents)
-    , dir (other.dir)
     , mUniqueID (other.mUniqueID)
     , mFlags (other.mFlags)
     , mUnknown (other.mUnknown)
@@ -78,11 +77,11 @@ public:
 
   WMOInstance& operator= (WMOInstance&& other)
   {
+    noggit::moveable_object::operator=(std::move(other));
+
     std::swap(wmo, other.wmo);
-    std::swap(pos, other.pos);
     std::swap(extents, other.extents);
     std::swap(group_extents, other.group_extents);
-    std::swap(dir, other.dir);
     std::swap(mUniqueID, other.mUniqueID);
     std::swap(mFlags, other.mFlags);
     std::swap(mUnknown, other.mUnknown);
@@ -97,11 +96,9 @@ public:
     std::swap(_aabb_center, other._aabb_center);
     return *this;
   }
-  /*
-  bool operator==(WMOInstance&& other) const
-  {
-      return this->mUniqueID == other.mUniqueID;
-  }*/
+
+  virtual void before_move(World* world) override;
+  virtual void after_move(World* world) override;
 
   bool is_a_duplicate_of(WMOInstance const& other);
 

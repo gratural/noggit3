@@ -7,26 +7,22 @@
 #include <noggit/Model.h> // Model, etc.
 #include <noggit/ModelInstance.h>
 #include <noggit/WMOInstance.h>
+#include <noggit/World.h>
 #include <opengl/primitives.hpp>
 #include <opengl/scoped.hpp>
 #include <opengl/shader.hpp>
 
 ModelInstance::ModelInstance(std::string const& filename)
-  : model (filename)
+  : noggit::moveable_object(math::vector_3d(0.f, 0.f, 0.f), math::degrees::vec3(), 1.f)
+  , model (filename)
 {
 }
 
 ModelInstance::ModelInstance(std::string const& filename, ENTRY_MDDF const*d)
-  : model (filename)
+  : noggit::moveable_object(d)
+  , model (filename)
 {
 	uid = d->uniqueID;
-	pos = math::vector_3d(d->pos[0], d->pos[1], d->pos[2]);
-	dir = math::degrees::vec3( math::degrees(d->rot[0])
-                           , math::degrees(d->rot[1])
-                           , math::degrees(d->rot[2])
-                           );
-	// scale factor - divide by 1024. blizzard devs must be on crack, why not just use a float?
-	scale = d->scale / 1024.0f;
 
   if (model->finishedLoading())
   {
@@ -38,12 +34,22 @@ ModelInstance::ModelInstance(std::string const& filename, ENTRY_MDDF const*d)
   }
 }
 
+void ModelInstance::before_move(World* world)
+{
+  world->updateTilesModel(this, model_update::remove);
+}
+void ModelInstance::after_move(World* world)
+{
+  recalcExtents();
+  world->updateTilesModel(this, model_update::add);
+}
+
 bool ModelInstance::is_a_duplicate_of(ModelInstance const& other)
 {
   return model->filename == other.model->filename
-      && misc::vec3d_equals(pos, other.pos)
-      && misc::deg_vec3d_equals(dir, other.dir)
-      && misc::float_equals(scale, other.scale);
+      && misc::vec3d_equals(position(), other.position())
+      && misc::deg_vec3d_equals(rotation(), other.rotation())
+      && misc::float_equals(scale(), other.scale());
 }
 
 void ModelInstance::draw_box ( math::matrix_4x4 const& model_view
@@ -94,14 +100,16 @@ void ModelInstance::draw_box ( math::matrix_4x4 const& model_view
 
 void ModelInstance::update_transform_matrix()
 {
-  math::matrix_4x4 mat (math::matrix_4x4 (math::matrix_4x4::translation, pos)
+  auto& rot = rotation();
+
+  math::matrix_4x4 mat (math::matrix_4x4 (math::matrix_4x4::translation, position())
           * math::matrix_4x4 (math::matrix_4x4::rotation_yzx
-                              , { -dir.z
-                              , dir.y - 90.0_deg
-                              , dir.x
+                              , { -rot.z
+                              , rot.y - 90.0_deg
+                              , rot.x
                               }
           )
-          * math::matrix_4x4 (math::matrix_4x4::scale, scale)
+          * math::matrix_4x4 (math::matrix_4x4::scale, scale())
           );
 
   _transform_mat_inverted = mat.inverted();
@@ -128,14 +136,18 @@ void ModelInstance::intersect ( math::matrix_4x4 const& model_view
   {
     //! \todo why is only sc important? these are relative to subray,
     //! so should be inverted by model_matrix?
-    results->emplace_back (result * scale, selected_model_type (this));
+    results->emplace_back (result * scale(), selected_model_type(this));
   }
 }
 
-void ModelInstance::resetDirection(){
+void ModelInstance::resetDirection()
+{
+  auto dir = rotation();
+
   dir.x = 0_deg;
-  //dir.y=0; only reset incline
   dir.z = 0_deg;
+
+  set_rotation(dir);
 }
 
 bool ModelInstance::isInsideRect(math::vector_3d rect[2]) const
@@ -160,11 +172,11 @@ bool ModelInstance::is_visible( math::frustum const& frustum
 
   if (display == display_mode::in_3D)
   {
-    dist = (get_pos() - camera).length() - model->rad * scale;
+    dist = (get_pos() - camera).length() - model->rad * scale();
   }
   else
   {
-    dist = std::abs(get_pos().y - camera.y) - model->rad * scale;
+    dist = std::abs(get_pos().y - camera.y) - model->rad * scale();
   }
 
   if (dist >= cull_distance)
@@ -185,7 +197,7 @@ bool ModelInstance::is_visible( math::frustum const& frustum
     return false;
   }
 
-  _is_visible = frustum.intersectsSphere(get_pos(), model->rad * scale);
+  _is_visible = frustum.intersectsSphere(get_pos(), model->rad * scale());
 
   return _is_visible;
 }
@@ -200,7 +212,7 @@ bool ModelInstance::recalcExtents()
 
   if (model->loading_failed())
   {
-    _extents[0] = _extents[1] = pos;
+    _extents[0] = _extents[1] = position();
     _need_recalc_extents = false;
     return true;
   }
@@ -258,12 +270,14 @@ wmo_doodad_instance::wmo_doodad_instance(std::string const& filename, MPQFile* f
   float ff[4];
 
   f->read(ff, 12);
-  pos = math::vector_3d(ff[0], ff[2], -ff[1]);
+  set_position(math::vector_3d(ff[0], ff[2], -ff[1]));
 
   f->read(ff, 16);
   doodad_orientation = math::quaternion (-ff[0], -ff[2], ff[1], ff[3]);
 
+  float scale;
   f->read(&scale, 4);
+  set_scale(scale);
 
   union
   {
@@ -287,13 +301,13 @@ bool wmo_doodad_instance::update_transform_matrix_wmo(WMOInstance* wmo)
     return false;
   }
 
-  world_pos = wmo->transform_matrix() * pos;
+  world_pos = wmo->transform_matrix() * position();
 
   math::matrix_4x4 m2_mat
   (
-    math::matrix_4x4(math::matrix_4x4::translation, pos)
+    math::matrix_4x4(math::matrix_4x4::translation, position())
     * math::matrix_4x4 (math::matrix_4x4::rotation, doodad_orientation)
-    * math::matrix_4x4 (math::matrix_4x4::scale, scale)
+    * math::matrix_4x4 (math::matrix_4x4::scale, scale())
   );
 
   math::matrix_4x4 mat

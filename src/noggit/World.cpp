@@ -124,12 +124,12 @@ void World::update_selection_pivot()
     {
       if (entry.index() == eEntry_Model)
       {
-        pivot += std::get<selected_model_type>(entry)->pos;
+        pivot += std::get<selected_model_type>(entry)->position();
         model_count++;
       }
       else if (entry.index() == eEntry_WMO)
       {
-        pivot += std::get<selected_wmo_type>(entry)->pos;
+        pivot += std::get<selected_wmo_type>(entry)->position();
         model_count++;
       }
     }
@@ -290,58 +290,54 @@ void World::delete_selected_models()
 
 void World::raise_models_terrain_brush(math::vector_3d const& pos, float change, float radius, int BrushType, float inner_radius, bool follow_normals)
 {
-  std::vector<math::vector_3d*> model_positions;
-  std::vector<math::degrees::vec3*> model_rotations;
+  std::vector<noggit::moveable_object*> models;
 
   need_model_updates = true;
 
   _model_instance_storage.for_each_m2_instance([&](ModelInstance& model_instance)
   {
-    if((model_instance.pos  - pos).length() < radius)
+    if((model_instance.position() - pos).length() < radius)
     {
-      model_positions.push_back(&model_instance.pos);
-      model_rotations.push_back(&model_instance.dir);
-      model_instance.require_extents_recalc();
+      models.push_back(&model_instance);
     }
   });
 
   _model_instance_storage.for_each_wmo_instance([&](WMOInstance& wmo_instance)
   {
-    if ((wmo_instance.pos - pos).length() < radius)
+    if ((wmo_instance.position() - pos).length() < radius)
     {
-      model_positions.push_back(&wmo_instance.pos);
-      model_rotations.push_back(&wmo_instance.dir);
-
-      wmo_instance.require_extents_recalc();
+      models.push_back(&wmo_instance);
     }
   });
 
-  for (int i = 0; i < model_positions.size(); ++i)
+  for (noggit::moveable_object* model : models)
   {
-    math::vector_3d& p = *model_positions[i];
+    math::vector_3d model_pos = model->position();
 
-    float dist = (p - pos).length();
+    float dist = (model_pos - pos).length();
 
     if (follow_normals)
     {
-      math::degrees::vec3& rot = *model_rotations[i];
+      math::degrees::vec3 rot = model->rotation();
 
       // todo: add smooth selection
-      auto normal = get_terrain_normal(p, true);
+      auto normal = get_terrain_normal(model_pos, true);
 
       if (normal)
       {
         rot.x = normal->x;
         //rot.y = normal->y;
         rot.z = normal->z;
+
+        model->update_rotation(rot, this);
       }
     }
 
     if (BrushType == eTerrainType_Quadra)
     {
-      if ((std::abs(p.x - pos.x) < std::abs(radius / 2)) && (std::abs(p.z - pos.z) < std::abs(radius / 2)))
+      if ((std::abs(model_pos.x - pos.x) < std::abs(radius / 2)) && (std::abs(model_pos.z - pos.z) < std::abs(radius / 2)))
       {
-        p.y += change * (1.0f - dist * inner_radius / radius);
+        model_pos.y += change * (1.0f - dist * inner_radius / radius);
       }
     }
     else
@@ -349,28 +345,32 @@ void World::raise_models_terrain_brush(math::vector_3d const& pos, float change,
       switch (BrushType)
       {
       case eTerrainType_Flat:
-        p.y += change;
+        model_pos.y += change;
         break;
       case eTerrainType_Linear:
-        p.y += change * (1.0f - dist * (1.0f - inner_radius) / radius);
+        model_pos.y += change * (1.0f - dist * (1.0f - inner_radius) / radius);
         break;
       case eTerrainType_Smooth:
-        p.y += change / (1.0f + dist / radius);
+        model_pos.y += change / (1.0f + dist / radius);
         break;
       case eTerrainType_Polynom:
-        p.y += change * ((dist / radius) * (dist / radius) + dist / radius + 1.0f);
+        model_pos.y += change * ((dist / radius) * (dist / radius) + dist / radius + 1.0f);
         break;
       case eTerrainType_Trigo:
-        p.y += change * cos(dist / radius);
+        model_pos.y += change * cos(dist / radius);
         break;
       case eTerrainType_Gaussian:
-        p.y += dist < radius* inner_radius ? change * std::exp(-(std::pow(radius * inner_radius / radius, 2) / (2 * std::pow(0.39f, 2)))) : change * std::exp(-(std::pow(dist / radius, 2) / (2 * std::pow(0.39f, 2))));
+        model_pos.y += dist < radius * inner_radius ? change * std::exp(-(std::pow(radius * inner_radius / radius, 2) / (2 * std::pow(0.39f, 2)))) : change * std::exp(-(std::pow(dist / radius, 2) / (2 * std::pow(0.39f, 2))));
         break;
       default:
         LogError << "Invalid terrain edit type (" << BrushType << ")" << std::endl;
         break;
       }
     }
+
+    // todo: only trigger extents recalcs for this
+    // as changing the height won't change which chunks the model spans
+    model->update_position(model_pos, this);
   }
 }
 
@@ -379,18 +379,23 @@ void World::snap_selected_models_to_the_ground()
   for (auto& entry : _current_selection)
   {
     auto type = entry.index();
-    if (type == eEntry_MapChunk)
+
+    if (type != eEntry_Model && type != eEntry_WMO)
     {
       continue;
     }
 
-    bool entry_is_m2 = type == eEntry_Model;
+    noggit::moveable_object* model;
+    if (type == eEntry_Model)
+    {
+      model = std::get<selected_model_type>(entry);
+    }
+    else
+    {
+      model = std::get<selected_wmo_type>(entry);
+    }
 
-    math::vector_3d& pos = entry_is_m2
-      ? std::get<selected_model_type>(entry)->pos
-      : std::get<selected_wmo_type>(entry)->pos
-      ;
-
+    math::vector_3d pos = model->position();
     std::optional<float> height = get_exact_height_at(pos);
 
     // this should never happen
@@ -400,19 +405,9 @@ void World::snap_selected_models_to_the_ground()
       continue;
     }
 
-    // the ground can only be intersected once
     pos.y = height.value();
 
-    if (entry_is_m2)
-    {
-      std::get<selected_model_type>(entry)->recalcExtents();
-    }
-    else
-    {
-      std::get<selected_wmo_type>(entry)->recalcExtents();
-    }
-
-    updateTilesEntry(entry, model_update::add);
+    model->update_position(pos, this);
   }
 
   update_selection_pivot();
@@ -426,7 +421,7 @@ void World::scale_selected_models(float v, m2_scaling_type type)
     {
       ModelInstance* mi = std::get<selected_model_type>(entry);
 
-      float scale = mi->scale;
+      float scale = mi->scale();
 
       switch (type)
       {
@@ -442,15 +437,12 @@ void World::scale_selected_models(float v, m2_scaling_type type)
       }
 
       // if the change is too small, do nothing
-      if (std::abs(scale - mi->scale) < ModelInstance::min_scale())
+      if (std::abs(scale - mi->scale()) < ModelInstance::min_scale())
       {
         continue;
       }
 
-      updateTilesModel(mi, model_update::remove);
-      mi->scale = std::min(ModelInstance::max_scale(), std::max(ModelInstance::min_scale(), scale));
-      mi->recalcExtents();
-      updateTilesModel(mi, model_update::add);
+      mi->update_scale(std::min(ModelInstance::max_scale(), std::max(ModelInstance::min_scale(), scale)), this);
     }
   }
 }
@@ -460,34 +452,16 @@ void World::move_selected_models(float dx, float dy, float dz)
   for (auto& entry : _current_selection)
   {
     auto type = entry.index();
-    if (type == eEntry_MapChunk)
+
+    if (type == eEntry_Model)
     {
-      continue;
+      std::get<selected_model_type>(entry)->move(dx, dy, dz, this);
+    }
+    else if (type == eEntry_WMO)
+    {
+      std::get<selected_wmo_type>(entry)->move(dx, dy, dz, this);
     }
 
-    bool entry_is_m2 = type == eEntry_Model;
-
-    math::vector_3d& pos = entry_is_m2
-      ? std::get<selected_model_type>(entry)->pos
-      : std::get<selected_wmo_type>(entry)->pos
-      ;
-
-    updateTilesEntry(entry, model_update::remove);
-
-    pos.x += dx;
-    pos.y += dy;
-    pos.z += dz;
-
-    if (entry_is_m2)
-    {
-      std::get<selected_model_type>(entry)->recalcExtents();
-    }
-    else
-    {
-      std::get<selected_wmo_type>(entry)->recalcExtents();
-    }
-
-    updateTilesEntry(entry, model_update::add);
   }
 
   update_selection_pivot();
@@ -515,29 +489,15 @@ void World::set_selected_models_pos(math::vector_3d const& pos, bool change_heig
   for (auto& entry : _current_selection)
   {
     auto type = entry.index();
-    if (type == eEntry_MapChunk)
+
+    if (type == eEntry_Model)
     {
-      continue;
+      std::get<selected_model_type>(entry)->update_position(pos, this);
     }
-
-    bool entry_is_m2 = type == eEntry_Model;
-
-    updateTilesEntry(entry, model_update::remove);
-
-    if (entry_is_m2)
+    else if (type == eEntry_WMO)
     {
-      ModelInstance* mi = std::get<selected_model_type>(entry);
-      mi->pos = pos;
-      mi->recalcExtents();
+      std::get<selected_wmo_type>(entry)->update_position(pos, this);
     }
-    else
-    {
-      WMOInstance* wi = std::get<selected_wmo_type>(entry);
-      wi->pos = pos;
-      wi->recalcExtents();
-    }
-
-    updateTilesEntry(entry, model_update::add);
   }
 
   update_selection_pivot();
@@ -551,45 +511,36 @@ void World::rotate_selected_models(math::degrees rx, math::degrees ry, math::deg
   for (auto& entry : _current_selection)
   {
     auto type = entry.index();
-    if (type == eEntry_MapChunk)
+
+    if (type != eEntry_Model && type != eEntry_WMO)
     {
       continue;
     }
 
-    bool entry_is_m2 = type == eEntry_Model;
-
-    updateTilesEntry(entry, model_update::remove);
-
-    if (use_pivot && has_multi_select)
+    noggit::moveable_object* model;
+    if (type == eEntry_Model)
     {
-      math::vector_3d& pos = entry_is_m2
-        ? std::get<selected_model_type>(entry)->pos
-        : std::get<selected_wmo_type>(entry)->pos
-        ;
-
-      math::vector_3d diff_pos = pos - _multi_select_pivot.value();
-      math::vector_3d rot_result = math::matrix_4x4(math::matrix_4x4::rotation_xyz, {rx, ry, rz}) * diff_pos;
-
-      pos += rot_result - diff_pos;
-    }
-
-    math::degrees::vec3& dir = entry_is_m2
-        ? std::get<selected_model_type>(entry)->dir
-        : std::get<selected_wmo_type>(entry)->dir
-        ;
-
-    dir += dir_change;
-
-    if (entry_is_m2)
-    {
-      std::get<selected_model_type>(entry)->recalcExtents();
+      model = std::get<selected_model_type>(entry);
     }
     else
     {
-      std::get<selected_wmo_type>(entry)->recalcExtents();
+      model = std::get<selected_wmo_type>(entry);
     }
 
-    updateTilesEntry(entry, model_update::add);
+    math::vector_3d pos = model->position();
+    math::degrees::vec3 dir = model->rotation();
+
+    if (use_pivot && has_multi_select)
+    {
+      math::vector_3d diff_pos = pos - _multi_select_pivot.value();
+      math::vector_3d rot_result = math::matrix_4x4(math::matrix_4x4::rotation_xyz, {rx, ry, rz}) * diff_pos;
+
+      model->move(rot_result - diff_pos, this);
+    }
+
+    dir += dir_change;
+
+    model->update_rotation(dir, this);
   }
 }
 
@@ -598,19 +549,24 @@ void World::rotate_selected_models_randomly(float minX, float maxX, float minY, 
   for (auto& entry : _current_selection)
   {
     auto type = entry.index();
-    if (type == eEntry_MapChunk)
+
+    if (type != eEntry_Model && type != eEntry_WMO)
     {
       continue;
     }
 
-    bool entry_is_m2 = type == eEntry_Model;
+    noggit::moveable_object* model;
+    if (type == eEntry_Model)
+    {
+      model = std::get<selected_model_type>(entry);
+    }
+    else
+    {
+      model = std::get<selected_wmo_type>(entry);
+    }
 
-    updateTilesEntry(entry, model_update::remove);
+    math::degrees::vec3 dir = model->rotation();
 
-    math::degrees::vec3& dir = entry_is_m2
-      ? std::get<selected_model_type>(entry)->dir
-      : std::get<selected_wmo_type>(entry)->dir
-      ;
     float rx = misc::randfloat(minX, maxX);
     float ry = misc::randfloat(minY, maxY);
     float rz = misc::randfloat(minZ, maxZ);
@@ -623,16 +579,7 @@ void World::rotate_selected_models_randomly(float minX, float maxX, float minY, 
 
     dir = finalRotation.ToEulerAngles();
 
-    if (entry_is_m2)
-    {
-      std::get<selected_model_type>(entry)->recalcExtents();
-    }
-    else
-    {
-      std::get<selected_wmo_type>(entry)->recalcExtents();
-    }
-
-    updateTilesEntry(entry, model_update::add);
+    model->update_rotation(dir, this);
   }
 }
 
@@ -643,32 +590,15 @@ void World::set_selected_models_rotation(math::degrees rx, math::degrees ry, mat
   for (auto& entry : _current_selection)
   {
     auto type = entry.index();
-    if (type == eEntry_MapChunk)
+
+    if (type == eEntry_Model)
     {
-      continue;
+      std::get<selected_model_type>(entry)->update_rotation(new_dir, this);
     }
-
-    bool entry_is_m2 = type == eEntry_Model;
-
-    updateTilesEntry(entry, model_update::remove);
-
-    math::degrees::vec3& dir = entry_is_m2
-      ? std::get<selected_model_type>(entry)->dir
-      : std::get<selected_wmo_type>(entry)->dir
-      ;
-
-    dir = new_dir;
-
-    if (entry_is_m2)
+    else if (type == eEntry_WMO)
     {
-      std::get<selected_model_type>(entry)->recalcExtents();
+      std::get<selected_wmo_type>(entry)->update_rotation(new_dir, this);
     }
-    else
-    {
-      std::get<selected_wmo_type>(entry)->recalcExtents();
-    }
-
-    updateTilesEntry(entry, model_update::add);
   }
 }
 
@@ -700,43 +630,35 @@ void World::rotate_selected_models_to_ground_normal(bool smoothNormals)
   for (auto& entry : _current_selection)
   {
     auto type = entry.index();
-    if (type == eEntry_MapChunk)
+
+    if (type != eEntry_Model && type != eEntry_WMO)
     {
       continue;
     }
 
-    bool entry_is_m2 = type == eEntry_Model;
+    noggit::moveable_object* model;
+    if (type == eEntry_Model)
+    {
+      model = std::get<selected_model_type>(entry);
+    }
+    else
+    {
+      model = std::get<selected_wmo_type>(entry);
+    }
 
-    updateTilesEntry(entry, model_update::remove);
+    math::vector_3d pos = model->position();
+    math::degrees::vec3 dir = model->rotation();
 
-    math::vector_3d rayPos = entry_is_m2
-      ? std::get<selected_model_type>(entry)->pos
-      : std::get<selected_wmo_type>(entry)->pos
-      ;
 
-    math::degrees::vec3& dir = entry_is_m2
-      ? std::get<selected_model_type>(entry)->dir
-      : std::get<selected_wmo_type>(entry)->dir
-      ;
-
-    auto normal_vector = get_terrain_normal(rayPos, smoothNormals);
+    auto normal_vector = get_terrain_normal(pos, smoothNormals);
 
     if (normal_vector)
     {
       dir.x = normal_vector->x;
       dir.z = normal_vector->z;
 
-      if (entry_is_m2)
-      {
-        std::get<selected_model_type>(entry)->recalcExtents();
-      }
-      else
-      {
-        std::get<selected_wmo_type>(entry)->recalcExtents();
-      }
+      model->update_rotation(dir, this);
     }
-
-    updateTilesEntry(entry, model_update::add);
   }
 }
 
@@ -2603,9 +2525,6 @@ ModelInstance* World::addM2 ( std::string const& filename
   ModelInstance model_instance = ModelInstance(filename);
 
   model_instance.uid = mapIndex.newGUID();
-  model_instance.pos = newPos;
-  model_instance.scale = scale;
-  model_instance.dir = rotation;
 
   if (paste_params)
   {
@@ -2613,24 +2532,28 @@ ModelInstance* World::addM2 ( std::string const& filename
     {
       float min = paste_params->minRotation;
       float max = paste_params->maxRotation;
-      model_instance.dir.y += math::degrees(misc::randfloat(min, max));
+      rotation.y += math::degrees(misc::randfloat(min, max));
     }
 
     if (NoggitSettings.value("model/random_tilt", false).toBool())
     {
       float min = paste_params->minTilt;
       float max = paste_params->maxTilt;
-      model_instance.dir.x += math::degrees(misc::randfloat(min, max));
-      model_instance.dir.z += math::degrees(misc::randfloat(min, max));
+      rotation.x += math::degrees(misc::randfloat(min, max));
+      rotation.z += math::degrees(misc::randfloat(min, max));
     }
 
     if (NoggitSettings.value("model/random_size", false).toBool())
     {
       float min = paste_params->minScale;
       float max = paste_params->maxScale;
-      model_instance.scale = misc::randfloat(min, max);
+      scale = misc::randfloat(min, max);
     }
   }
+
+  model_instance.set_position(newPos);
+  model_instance.set_scale(scale);
+  model_instance.set_rotation(rotation);
 
   // to ensure the tiles are updated correctly
   model_instance.model->wait_until_loaded();
@@ -2653,8 +2576,8 @@ WMOInstance* World::addWMO ( std::string const& filename
   WMOInstance wmo_instance(filename);
 
   wmo_instance.mUniqueID = mapIndex.newGUID();
-  wmo_instance.pos = newPos;
-  wmo_instance.dir = rotation;
+  wmo_instance.set_position(newPos);
+  wmo_instance.set_rotation(rotation);
 
   // to ensure the tiles are updated correctly
   wmo_instance.wmo->wait_until_loaded();
