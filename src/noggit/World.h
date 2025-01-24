@@ -5,6 +5,7 @@
 #include <math/frustum.hpp>
 #include <math/trig.hpp>
 #include <noggit/cursor_render.hpp>
+#include <noggit/gizmo.hpp>
 #include <noggit/map_chunk_headers.hpp>
 #include <noggit/Misc.h>
 #include <noggit/Model.h> // ModelManager
@@ -182,6 +183,7 @@ private:
   void update_selection_pivot();
 public:
 
+  noggit::gizmo gizmo;
   std::optional<math::vector_3d> const& multi_select_pivot() const { return _multi_select_pivot; }
 
   // Selection related methods.
@@ -444,6 +446,7 @@ private:
 
   float _view_distance;
 
+  std::unique_ptr<opengl::program> _gizmo_program;
   std::unique_ptr<opengl::program> _mcnk_program;
   std::unique_ptr<opengl::program> _mfbo_program;
   std::unique_ptr<opengl::program> _m2_program;

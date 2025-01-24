@@ -159,6 +159,9 @@ void MapView::setToolPropertyWidgetVisibility(editing_mode mode)
     _current_tool = _shadow_tool;
     break;
   }
+
+  // always unlink when changing tool
+  _world->gizmo.unlink();
 }
 
 void MapView::ResetSelectedObjectRotation()
@@ -1879,6 +1882,8 @@ void MapView::tick (float dt)
     update_cursor_pos();
   }
 
+  _world->gizmo.move_camera(_camera.position, _camera.yaw(), _camera.pitch());
+
   bool underMap = _world->isUnderMap(_cursor_pos);
 
   if (terrainMode == editing_mode::object)
@@ -2802,6 +2807,12 @@ void MapView::mouseMoveEvent (QMouseEvent* event)
     updown = (relative_movement.dy() / YSENS);
   }
 
+  if (_world->gizmo.is_moving())
+  {
+    _world->gizmo.handle_mouse_move(relative_movement.dx() / XSENS, relative_movement.dy() / YSENS, _world.get());
+    _rotation_editor_need_update = true;
+  }
+
   if (_current_tool)
   {
     _current_tool->mouse_move_event(relative_movement);
@@ -2867,7 +2878,42 @@ void MapView::mousePressEvent(QMouseEvent* event)
 
   if (leftMouse)
   {
-    doSelection(false, terrainMode == editing_mode::water && guiWater->use_liquids_intersect());
+    // todo: overhaul selection system !
+    bool gizmo_hit = false;
+    bool gizmo_linked = _world->gizmo.is_linked();
+
+    if (!_world->gizmo.is_moving() && gizmo_linked)
+    {
+      _world->gizmo.deselect_group();
+      std::vector<noggit::gizmo_intersect_data> gizmo_intersects;
+      _world->gizmo.intersect(intersect_ray(), gizmo_intersects);
+
+      if (!gizmo_intersects.empty())
+      {
+        std::sort(gizmo_intersects.begin()
+          , gizmo_intersects.end()
+          , [](noggit::gizmo_intersect_data const& lhs, noggit::gizmo_intersect_data const& rhs)
+          {
+            return lhs.distance < rhs.distance;
+          }
+        );
+
+        noggit::gizmo_intersect_data const& hit = gizmo_intersects.front();
+
+        hit.gizmo->select_group(hit.group);
+        _world->gizmo.begin_move();
+
+        _cursor_pos = hit.position;
+        gizmo_hit = true;
+
+        _rotation_editor_need_update = true;
+      }
+    }
+
+    if (!gizmo_hit)
+    {
+      doSelection(false, terrainMode == editing_mode::water && guiWater->use_liquids_intersect());
+    }
   }
   else if (rightMouse)
   {
@@ -2898,6 +2944,8 @@ void MapView::mouseReleaseEvent (QMouseEvent* event)
   {
   case Qt::LeftButton:
     leftMouse = false;
+
+    _world->gizmo.end_move();
 
     if (_display_mode == display_mode::in_2D)
     {

@@ -2,7 +2,8 @@
 
 #include <noggit/moveable_object.hpp>
 
-#include <noggit/MapHeaders.h> // ENTRY_MDDF
+#include <noggit/gizmo.hpp>
+#include <noggit/MapHeaders.h>
 #include <noggit/World.h>
 
 namespace noggit
@@ -67,6 +68,7 @@ namespace noggit
   void moveable_object::set_position(math::vector_3d const& pos)
   {
     _position = pos;
+    update_gizmo_if_linked();
   }
   void moveable_object::set_rotation(math::degrees::vec3 const& rotation)
   {
@@ -84,9 +86,17 @@ namespace noggit
   {
     move(math::vector_3d(dx, dy, dz), world);
   }
+
   void moveable_object::move(math::vector_3d const& pos_dt, World* world)
   {
     update_position(_position + pos_dt, world);
+  }
+
+  void moveable_object::rotate(math::degrees::vec3 const& rotation, World* world)
+  {
+    before_move(world);
+    set_rotation(_rotation + rotation);
+    after_move(world);
   }
 
   void moveable_object::update_position(math::vector_3d const& pos, World* world)
@@ -108,5 +118,21 @@ namespace noggit
     before_move(world);
     set_scale(scale);
     after_move(world);
+  }
+
+  void moveable_object::link_to_gizmo(noggit::gizmo* gizmo)
+  {
+    _linked_gizmo = gizmo;
+  }
+  void moveable_object::update_gizmo_if_linked()
+  {
+    if (_linked_gizmo)
+    {
+      _linked_gizmo.value()->object_has_moved();
+    }
+  }
+  void moveable_object::unlink_from_gizmo()
+  {
+    _linked_gizmo.reset();
   }
 }

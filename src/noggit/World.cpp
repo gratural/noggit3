@@ -225,6 +225,7 @@ void World::set_current_selection(selection_type entry)
   _current_selection.clear();
   _current_selection.push_back(entry);
   _multi_select_pivot = std::nullopt;
+  gizmo.unlink();
 
   _selected_model_count = entry.index() == eEntry_MapChunk || entry.index() == eEntry_LiquidLayer ? 0 : 1;
 }
@@ -234,6 +235,22 @@ void World::add_to_selection(selection_type entry)
   if (entry.index() != eEntry_MapChunk && entry.index() != eEntry_LiquidLayer)
   {
     _selected_model_count++;
+
+    if (_selected_model_count == 1)
+    {
+      if (entry.index() == eEntry_Model)
+      {
+        gizmo.link_to(std::get<selected_model_type>(entry));
+      }
+      else if (entry.index() == eEntry_WMO)
+      {
+        gizmo.link_to(std::get<selected_wmo_type>(entry));
+      }
+    }
+    else
+    {
+      gizmo.unlink();
+    }
   }
 
   _current_selection.push_back(entry);
@@ -261,12 +278,14 @@ void World::remove_from_selection(std::uint32_t uid)
   {
     if (it->index() == eEntry_Model && std::get<selected_model_type>(*it)->uid == uid)
     {
+      _selected_model_count--;
       _current_selection.erase(it);
       update_selection_pivot();
       return;
     }
     else if (it->index() == eEntry_WMO && std::get<selected_wmo_type>(*it)->mUniqueID == uid)
     {
+      _selected_model_count--;
       _current_selection.erase(it);
       update_selection_pivot();
       return;
@@ -279,6 +298,7 @@ void World::reset_selection()
   _current_selection.clear();
   _multi_select_pivot = std::nullopt;
   _selected_model_count = 0;
+  gizmo.unlink();
 }
 
 void World::delete_selected_models()
@@ -791,6 +811,16 @@ void World::draw ( math::matrix_4x4 const& model_view
   math::matrix_4x4 const mvp(model_view * projection);
 
   cursor_mode cursor = static_cast<cursor_mode>(cursor_type);
+
+  if (!_gizmo_program)
+  {
+    _gizmo_program.reset
+      ( new opengl::program
+        { { GL_VERTEX_SHADER,   opengl::shader::src_from_qrc("gizmo_vs") }
+        , { GL_FRAGMENT_SHADER, opengl::shader::src_from_qrc("gizmo_fs") }
+        }
+      );
+  }
 
   if (!_m2_program)
   {
@@ -1471,6 +1501,22 @@ void World::draw ( math::matrix_4x4 const& model_view
     _sphere_render.draw(mvp, _multi_select_pivot.value(), cursor_color, std::min(2.f, std::max(0.15f, dist * 0.02f)));
   }
 
+  if(gizmo.is_linked())
+  {
+    opengl::scoped::use_program gizmo_shader{ *_gizmo_program.get() };
+
+    gizmo_shader.uniform("model_view_projection", mvp);
+    {
+      gizmo_shader.uniform("alpha", 1.f);
+      gizmo.draw(gizmo_shader);
+    }
+    {
+      opengl::scoped::bool_setter<GL_DEPTH_TEST, GL_FALSE> const disable_depth_test;
+      gizmo_shader.uniform("alpha", 0.5f);
+      gizmo.draw(gizmo_shader);
+    }
+  }
+
   if (draw_water)
   {
     opengl::scoped::use_program water_shader{ _liquid_render->shader_program() };
@@ -1542,8 +1588,6 @@ void World::draw ( math::matrix_4x4 const& model_view
     gl.bindVertexArray(0);
     gl.bindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
-
-
 
   // draw last because of the transparency
   if (draw_mfbo)

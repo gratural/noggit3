@@ -232,6 +232,7 @@ set ( noggit_root_sources
       src/noggit/application.cpp
       src/noggit/camera.cpp
       src/noggit/error_handling.cpp
+      src/noggit/gizmo.cpp
       src/noggit/liquid_chunk.cpp
       src/noggit/liquid_layer.cpp
       src/noggit/liquid_render.cpp
@@ -321,6 +322,7 @@ set ( noggit_root_headers
       src/noggit/cursor_render.hpp
       src/noggit/DBC.h
       src/noggit/DBCFile.h
+      src/noggit/gizmo.hpp
       src/noggit/Log.h
       src/noggit/MPQ.h
       src/noggit/map_enums.hpp
@@ -502,6 +504,8 @@ set ( shaders
       src/glsl/wmo_depth_frag.glsl
       src/glsl/shadow_vert.glsl
       src/glsl/shadow_frag.glsl
+      src/glsl/gizmo_vert.glsl
+      src/glsl/gizmo_frag.glsl
     )
 
 IF(WIN32)

@@ -52,6 +52,12 @@ namespace misc
     return value >= min && value < max;
   }
 
+  // return 1 if v > 0, -1 if v < 0, 0 otherwise
+  inline int sign(float v)
+  {
+    return v > 0.f ? 1 : (v < 0.f ? -1 : 0);
+  }
+
   bool vec3d_equals(math::vector_3d const& v1, math::vector_3d const& v2);
   bool deg_vec3d_equals(math::degrees::vec3 const& v1, math::degrees::vec3 const& v2);
 

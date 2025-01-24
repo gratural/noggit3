@@ -5,12 +5,16 @@
 #include <math/vector_3d.hpp>
 #include <math/trig.hpp>
 
+#include <optional>
+
 class World;
 struct ENTRY_MDDF;
 struct ENTRY_MODF;
 
 namespace noggit
 {
+  class gizmo;
+
   class moveable_object
   {
   public:
@@ -34,6 +38,7 @@ namespace noggit
 
     void move(float dx, float dy, float dz, World* world);
     void move(math::vector_3d const& pos_dt, World* world);
+    void rotate(math::degrees::vec3 const& rotation, World* world);
     void update_position(math::vector_3d const& pos, World* world);
     void update_rotation(math::degrees::vec3 const& rotation, World* world);
     void update_scale(float scale, World* world);
@@ -44,7 +49,13 @@ namespace noggit
 
     bool can_scale() const { return _can_scale; }
 
+    void link_to_gizmo(noggit::gizmo* gizmo);
+    void update_gizmo_if_linked();
+    void unlink_from_gizmo();
+
   private:
+    std::optional<noggit::gizmo*> _linked_gizmo;
+
     math::vector_3d _position;
     math::degrees::vec3 _rotation;
     float _scale;

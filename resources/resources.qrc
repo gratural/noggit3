@@ -36,5 +36,7 @@
       <file alias="wmo_depth_fs">../src/glsl/wmo_depth_frag.glsl</file>
       <file alias="shadow_vs">../src/glsl/shadow_vert.glsl</file>
       <file alias="shadow_fs">../src/glsl/shadow_frag.glsl</file>
+      <file alias="gizmo_vs">../src/glsl/gizmo_vert.glsl</file>
+      <file alias="gizmo_fs">../src/glsl/gizmo_frag.glsl</file>
     </qresource>
 </RCC>
