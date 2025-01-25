@@ -72,6 +72,10 @@ namespace noggit
   }
   void moveable_object::set_rotation(math::degrees::vec3 const& rotation)
   {
+    _rotation = math::quaternion(rotation);
+  }
+  void moveable_object::set_rotation(math::quaternion const& rotation)
+  {
     _rotation = rotation;
   }
   void moveable_object::set_scale(float scale)
@@ -92,10 +96,21 @@ namespace noggit
     update_position(_position + pos_dt, world);
   }
 
-  void moveable_object::rotate(math::degrees::vec3 const& rotation, World* world)
+  void moveable_object::rotate(math::degrees::vec3 const& rotation, World* world, bool local)
   {
     before_move(world);
-    set_rotation(_rotation + rotation);
+
+    math::quaternion q = math::quaternion(rotation);
+
+    if (local)
+    {
+      set_rotation(_rotation % q);
+    }
+    else
+    {
+      set_rotation(q % _rotation);
+    }
+
     after_move(world);
   }
 

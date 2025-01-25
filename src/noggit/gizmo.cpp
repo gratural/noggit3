@@ -199,7 +199,7 @@ namespace noggit
 
       if (rotate)
       {
-        _linked_object.value()->rotate(rot, world);
+        _linked_object.value()->rotate(rot, world, false);
       }
       else
       {

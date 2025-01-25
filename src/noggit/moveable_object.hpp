@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <math/matrix_4x4.hpp>
+#include <math/quaternion.hpp>
 #include <math/vector_3d.hpp>
 #include <math/trig.hpp>
 
@@ -34,17 +36,19 @@ namespace noggit
 
     void set_position(math::vector_3d const& pos);
     void set_rotation(math::degrees::vec3 const& rotation);
+    void set_rotation(math::quaternion const& rotation);
     void set_scale(float scale);
 
     void move(float dx, float dy, float dz, World* world);
     void move(math::vector_3d const& pos_dt, World* world);
-    void rotate(math::degrees::vec3 const& rotation, World* world);
+    void rotate(math::degrees::vec3 const& rotation, World* world, bool local);
     void update_position(math::vector_3d const& pos, World* world);
     void update_rotation(math::degrees::vec3 const& rotation, World* world);
     void update_scale(float scale, World* world);
 
     math::vector_3d const& position() const { return _position; }
-    math::degrees::vec3 const& rotation() const { return _rotation; }
+    math::degrees::vec3 rotation() const { return _rotation.ToEulerAngles(); }
+    math::quaternion const& quaternion() const { return _rotation; }
     float scale() const { return _scale; }
 
     bool can_scale() const { return _can_scale; }
@@ -57,7 +61,7 @@ namespace noggit
     std::optional<noggit::gizmo*> _linked_gizmo;
 
     math::vector_3d _position;
-    math::degrees::vec3 _rotation;
+    math::quaternion _rotation;
     float _scale;
     bool _can_scale;
   };
