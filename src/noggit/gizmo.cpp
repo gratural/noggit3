@@ -13,15 +13,15 @@ namespace noggit
 {
   gizmo::gizmo()
   {
-    float p1 = 2.f;
+    float p1 = 2.f, p2 = 1.75f;
     float center_cube_size = 0.2f;
     float s1 = 3.f, s2 = 0.0525f, s3 = 0.05f, s4 = 1.f; // axis boxes dimensions
-    float hb_s1 = 3.25f, hb_s2 = 0.5f, hb_s3 = 0.06f, hb_s4 = 1.2f; // axis hitbox dimensions
+    float hb_s1 = 3.f, hb_s2 = 0.5f, hb_s3 = 0.06f, hb_s4 = 1.2f; // axis hitbox dimensions
     float circle_radius = 4.f;
 
     math::vector_3d cube_size(center_cube_size, center_cube_size, center_cube_size);
 
-    create_cuboid(math::vector_3d(0.f, 0.f, 0.f), cube_size, cube_size * 1.5f, math::vector_3d(1.f, 1.f, 1.f), gizmo_move_type::xyz);
+    create_cuboid(math::vector_3d(0.f, 0.f, 0.f), cube_size, cube_size * 2.f, math::vector_3d(1.f, 1.f, 1.f), gizmo_move_type::xyz);
 
     math::vector_3d red(1.f, 0.f, 0.f);
     math::vector_3d green(0.f, 1.f, 0.f);
@@ -38,9 +38,9 @@ namespace noggit
     {
       for (int j = -1; j <= 1; j += 2)
       {
-        create_cuboid(math::vector_3d(i * p1, j * p1, 0.f), math::vector_3d(s4, s4, s3), math::vector_3d(hb_s4, hb_s4, hb_s3), math::vector_3d(1.f, 0.75f, 0.f), gizmo_move_type::xy);
-        create_cuboid(math::vector_3d(0.f, i * p1, j * p1), math::vector_3d(s3, s4, s4), math::vector_3d(hb_s3, hb_s4, hb_s4), math::vector_3d(0.f, 1.f, 0.5f), gizmo_move_type::yz);
-        create_cuboid(math::vector_3d(i * p1, 0.f, j * p1), math::vector_3d(s4, s3, s4), math::vector_3d(hb_s4, hb_s3, hb_s4), math::vector_3d(0.5f, 0.f, 1.f), gizmo_move_type::zx);
+        create_cuboid(math::vector_3d(i * p2, j * p2, 0.f), math::vector_3d(s4, s4, s3), math::vector_3d(hb_s4, hb_s4, hb_s3), math::vector_3d(1.f, 0.75f, 0.f), gizmo_move_type::xy);
+        create_cuboid(math::vector_3d(0.f, i * p2, j * p2), math::vector_3d(s3, s4, s4), math::vector_3d(hb_s3, hb_s4, hb_s4), math::vector_3d(0.f, 1.f, 0.5f), gizmo_move_type::yz);
+        create_cuboid(math::vector_3d(i * p2, 0.f, j * p2), math::vector_3d(s4, s3, s4), math::vector_3d(hb_s4, hb_s3, hb_s4), math::vector_3d(0.5f, 0.f, 1.f), gizmo_move_type::zx);
       }
     }
 
@@ -521,10 +521,9 @@ namespace noggit
 
     add_quad(0, 1, 2, 3);
 
-
     int segments = 45;
     float thickness = 0.05f;
-    float thickness_hb = 0.5f;
+    float thickness_hb = 0.4f;
     float angle = (0.5f * math::constants::pi / segments);
 
     math::matrix_4x4 rotation(math::matrix_4x4::rotation_xyz, math::degrees::vec3(math::radians(angle * up.x), math::radians(angle * up.y), math::radians(angle * up.z)));
@@ -588,9 +587,6 @@ namespace noggit
     data.zone_z = misc::sign(middle.z);
 
     _indices_group_data.push_back(data);
-
-
-
 
     add_quad(3, 2, 1, 0);
   }
