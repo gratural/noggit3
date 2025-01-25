@@ -225,6 +225,8 @@ namespace noggit
       _linked_object.value()->unlink_from_gizmo();
       _linked_object.reset();
     }
+
+    _need_uniform_update = true;
   }
 
   void gizmo::unlink()
