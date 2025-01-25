@@ -591,8 +591,8 @@ void World::rotate_selected_models_randomly(float minX, float maxX, float minY, 
     float ry = misc::randfloat(minY, maxY);
     float rz = misc::randfloat(minZ, maxZ);
 
-    math::quaternion baseRotation = math::quaternion(math::radians(math::degrees(dir.z)), math::radians(math::degrees(-dir.y)), math::radians(math::degrees(dir.x)));
-    math::quaternion newRotation = math::quaternion(math::radians(math::degrees(rx)), math::radians(math::degrees(ry)), math::radians(math::degrees(rz)));
+    math::quaternion baseRotation = math::quaternion(dir);
+    math::quaternion newRotation = math::quaternion(math::degrees(rx), math::degrees(ry), math::degrees(rz));
 
     math::quaternion finalRotation = baseRotation % newRotation;
     finalRotation.normalize();

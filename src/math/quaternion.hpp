@@ -37,23 +37,27 @@ namespace math
     // heading = rotation around y
     // attitude = rotation around z
     // bank = rotation around x
-    quaternion(math::radians bank, math::radians heading, math::radians attitude) : vector_4d()
+    quaternion(math::radians attitude, math::radians heading, math::radians bank) : vector_4d()
     {
-      heading._ *= 0.5;
+      heading._ *= -0.5;
       attitude._ *= 0.5;
       bank._ *= 0.5;
-      double c1 = cos(heading );
-      double s1 = sin(heading );
+      double c1 = cos(heading);
+      double s1 = sin(heading);
       double c2 = cos(attitude);
-      double s2 = sin(attitude );
-      double c3 = cos(bank );
-      double s3 = sin(bank );
+      double s2 = sin(attitude);
+      double c3 = cos(bank);
+      double s3 = sin(bank);
       double c1c2 = c1 * c2;
       double s1s2 = s1 * s2;
       w = static_cast<float>(c1c2 * c3 - s1s2 * s3);
       x = static_cast<float>(c1c2 * s3 + s1s2 * c3);
       y = static_cast<float>(s1 * c2 * c3 + c1 * s2 * s3);
       z = static_cast<float>(c1 * s2 * c3 - s1 * c2 * s3);
+    }
+    quaternion(degrees::vec3 euler_angles) : quaternion(euler_angles.x, euler_angles.y, euler_angles.z)
+    {
+
     }
 
     quaternion operator% (const quaternion& q2) const
