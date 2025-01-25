@@ -104,6 +104,12 @@ namespace noggit
 
     for (gizmo_indice_group_data const& data : _indices_group_data)
     {
+      // only intersect visible groups
+      if(!data.currently_visible)
+      {
+        continue;
+      }
+
       for (int i = data.start; i < data.start + data.count; i += 3)
       {
         if ( auto distance = ray.intersect_triangle ( _hitbox_vertices[_indices[i + 0]].position * _scale + pos
