@@ -210,6 +210,11 @@ namespace noggit
 
   void gizmo::link_to(noggit::moveable_object* obj)
   {
+    if (_linked_object)
+    {
+      unlink();
+    }
+
     if (obj)
     {
       _linked_object.emplace(obj);
@@ -220,6 +225,16 @@ namespace noggit
       _linked_object.value()->unlink_from_gizmo();
       _linked_object.reset();
     }
+  }
+
+  void gizmo::unlink()
+  {
+    if (_linked_object)
+    {
+      _linked_object.value()->unlink_from_gizmo();
+    }
+
+    _linked_object.reset();
   }
 
   std::optional<math::vector_3d> gizmo::position() const

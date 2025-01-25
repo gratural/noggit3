@@ -82,7 +82,7 @@ namespace noggit
 
     bool is_linked() const { return _linked_object.has_value(); }
     void link_to(noggit::moveable_object* obj);
-    void unlink() { _linked_object.reset(); }
+    void unlink();
 
     std::optional<math::vector_3d> position() const;
 
