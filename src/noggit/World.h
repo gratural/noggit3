@@ -15,6 +15,7 @@
 #include <noggit/map_horizon.h>
 #include <noggit/map_index.hpp>
 #include <noggit/moveable_object.hpp>
+#include <noggit/moveable_object_group.hpp>
 #include <noggit/tile_index.hpp>
 #include <noggit/texture_array_handler.hpp>
 #include <noggit/tileset_array_handler.hpp>
@@ -178,13 +179,12 @@ public:
 private:
   // Information about the currently selected model / WMO / triangle.
   std::vector<selection_type> _current_selection;
-  std::optional<math::vector_3d> _multi_select_pivot;
+  noggit::moveable_object_group _grouped_models;
   int _selected_model_count = 0;
-  void update_selection_pivot();
 public:
 
   noggit::gizmo gizmo;
-  std::optional<math::vector_3d> const& multi_select_pivot() const { return _multi_select_pivot; }
+  std::optional<math::vector_3d> const& multi_select_pivot() const { return _grouped_models.pivot(); }
 
   // Selection related methods.
   bool is_selected(selection_type selection) const;

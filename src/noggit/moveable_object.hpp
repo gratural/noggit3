@@ -40,11 +40,11 @@ namespace noggit
     void set_scale(float scale);
 
     void move(float dx, float dy, float dz, World* world);
-    void move(math::vector_3d const& pos_dt, World* world);
-    void rotate(math::degrees::vec3 const& rotation, World* world, bool local);
-    void update_position(math::vector_3d const& pos, World* world);
-    void update_rotation(math::degrees::vec3 const& rotation, World* world);
-    void update_scale(float scale, World* world);
+    virtual void move(math::vector_3d const& pos_dt, World* world);
+    virtual void rotate(math::degrees::vec3 const& rotation, World* world, bool local);
+    virtual void update_position(math::vector_3d const& pos, World* world);
+    virtual void update_rotation(math::degrees::vec3 const& rotation, World* world);
+    virtual void update_scale(float scale, World* world);
 
     math::vector_3d const& position() const { return _position; }
     math::degrees::vec3 rotation() const { return _rotation.ToEulerAngles(); }

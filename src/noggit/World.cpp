@@ -108,38 +108,10 @@ World::World(const std::string& name, int map_id)
   , skies(nullptr)
   , outdoorLightStats(OutdoorLightStats())
   , _current_selection()
+  , _grouped_models()
   , _view_distance(NoggitSettings.value ("view_distance", 1000.f).toFloat() + TILE_RADIUS) // add adt radius to make sure tiles aren't culled too soon, todo: improve adt culling to prevent that from happening
 {
   LogDebug << "Loading world \"" << name << "\"." << std::endl;
-}
-
-void World::update_selection_pivot()
-{
-  if (has_multiple_model_selected())
-  {
-    math::vector_3d pivot;
-    int model_count = 0;
-
-    for (auto const& entry : _current_selection)
-    {
-      if (entry.index() == eEntry_Model)
-      {
-        pivot += std::get<selected_model_type>(entry)->position();
-        model_count++;
-      }
-      else if (entry.index() == eEntry_WMO)
-      {
-        pivot += std::get<selected_wmo_type>(entry)->position();
-        model_count++;
-      }
-    }
-
-    _multi_select_pivot = pivot / static_cast<float>(model_count);
-  }
-  else
-  {
-    _multi_select_pivot = std::nullopt;
-  }
 }
 
 bool World::is_selected(selection_type selection) const
@@ -222,9 +194,9 @@ std::optional<selection_type> World::get_last_selected_model() const
 
 void World::set_current_selection(selection_type entry)
 {
+  _grouped_models.reset();
   _current_selection.clear();
   _current_selection.push_back(entry);
-  _multi_select_pivot = std::nullopt;
   gizmo.unlink();
 
   _selected_model_count = entry.index() == eEntry_MapChunk || entry.index() == eEntry_LiquidLayer ? 0 : 1;
@@ -236,25 +208,19 @@ void World::add_to_selection(selection_type entry)
   {
     _selected_model_count++;
 
-    if (_selected_model_count == 1)
+    gizmo.link_to(&_grouped_models);
+
+    if (entry.index() == eEntry_Model)
     {
-      if (entry.index() == eEntry_Model)
-      {
-        gizmo.link_to(std::get<selected_model_type>(entry));
-      }
-      else if (entry.index() == eEntry_WMO)
-      {
-        gizmo.link_to(std::get<selected_wmo_type>(entry));
-      }
+      _grouped_models.add_object(std::get<selected_model_type>(entry));
     }
-    else
+    else if (entry.index() == eEntry_WMO)
     {
-      gizmo.unlink();
+      _grouped_models.add_object(std::get<selected_wmo_type>(entry));
     }
   }
 
   _current_selection.push_back(entry);
-  update_selection_pivot();
 }
 
 void World::remove_from_selection(selection_type entry)
@@ -262,13 +228,19 @@ void World::remove_from_selection(selection_type entry)
   std::vector<selection_type>::iterator position = std::find(_current_selection.begin(), _current_selection.end(), entry);
   if (position != _current_selection.end())
   {
-    if (entry.index() != eEntry_MapChunk && entry.index() != eEntry_LiquidLayer)
+    if (entry.index() == eEntry_Model)
     {
       _selected_model_count--;
+      _grouped_models.remove_object(std::get<selected_model_type>(*position));
+    }
+    else if (entry.index() == eEntry_WMO)
+    {
+      _selected_model_count--;
+      _grouped_models.remove_object(std::get<selected_wmo_type>(*position));
     }
 
+
     _current_selection.erase(position);
-    update_selection_pivot();
   }
 }
 
@@ -280,14 +252,17 @@ void World::remove_from_selection(std::uint32_t uid)
     {
       _selected_model_count--;
       _current_selection.erase(it);
-      update_selection_pivot();
+
+      _grouped_models.remove_object(std::get<selected_model_type>(*it));
+
       return;
     }
     else if (it->index() == eEntry_WMO && std::get<selected_wmo_type>(*it)->mUniqueID == uid)
     {
       _selected_model_count--;
       _current_selection.erase(it);
-      update_selection_pivot();
+
+      _grouped_models.remove_object(std::get<selected_wmo_type>(*it));
       return;
     }
   }
@@ -296,7 +271,7 @@ void World::remove_from_selection(std::uint32_t uid)
 void World::reset_selection()
 {
   _current_selection.clear();
-  _multi_select_pivot = std::nullopt;
+  _grouped_models.reset();
   _selected_model_count = 0;
   gizmo.unlink();
 }
@@ -430,7 +405,7 @@ void World::snap_selected_models_to_the_ground()
     model->update_position(pos, this);
   }
 
-  update_selection_pivot();
+  _grouped_models.update_center();
 }
 
 void World::scale_selected_models(float v, m2_scaling_type type)
@@ -469,22 +444,7 @@ void World::scale_selected_models(float v, m2_scaling_type type)
 
 void World::move_selected_models(float dx, float dy, float dz)
 {
-  for (auto& entry : _current_selection)
-  {
-    auto type = entry.index();
-
-    if (type == eEntry_Model)
-    {
-      std::get<selected_model_type>(entry)->move(dx, dy, dz, this);
-    }
-    else if (type == eEntry_WMO)
-    {
-      std::get<selected_wmo_type>(entry)->move(dx, dy, dz, this);
-    }
-
-  }
-
-  update_selection_pivot();
+  _grouped_models.move(dx, dy, dz, this);
 }
 
 void World::set_selected_models_pos(math::vector_3d const& pos, bool change_height)
@@ -492,7 +452,7 @@ void World::set_selected_models_pos(math::vector_3d const& pos, bool change_heig
   // move models relative to the pivot when several are selected
   if (has_multiple_model_selected())
   {
-    math::vector_3d diff = pos - _multi_select_pivot.value();
+    math::vector_3d diff = pos - _grouped_models.pivot().value();
 
     if (change_height)
     {
@@ -520,7 +480,7 @@ void World::set_selected_models_pos(math::vector_3d const& pos, bool change_heig
     }
   }
 
-  update_selection_pivot();
+  _grouped_models.update_center();
 }
 
 void World::rotate_selected_models(math::degrees rx, math::degrees ry, math::degrees rz, bool use_pivot)
@@ -552,7 +512,7 @@ void World::rotate_selected_models(math::degrees rx, math::degrees ry, math::deg
 
     if (use_pivot && has_multi_select)
     {
-      math::vector_3d diff_pos = pos - _multi_select_pivot.value();
+      math::vector_3d diff_pos = pos - _grouped_models.pivot().value();
       math::vector_3d rot_result = math::matrix_4x4(math::matrix_4x4::rotation_xyz, {rx, ry, rz}) * diff_pos;
 
       model->move(rot_result - diff_pos, this);
@@ -1491,14 +1451,6 @@ void World::draw ( math::matrix_4x4 const& model_view
         _square_render.draw(mvp, pos, radius, math::degrees(0.f), math::degrees(0.f), color);
       }
     }
-  }
-
-  if (terrainMode == editing_mode::object && has_multiple_model_selected())
-  {
-    opengl::scoped::bool_setter<GL_DEPTH_TEST, GL_FALSE> const disable_depth_test;
-
-    float dist = (camera_pos - _multi_select_pivot.value()).length();
-    _sphere_render.draw(mvp, _multi_select_pivot.value(), cursor_color, std::min(2.f, std::max(0.15f, dist * 0.02f)));
   }
 
   if(gizmo.is_linked())
