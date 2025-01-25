@@ -165,6 +165,7 @@ namespace noggit
       case gizmo_move_type::x:
         move = math::vector_3d(dt_y, 0.f, dt_x);
         math::rotate(0.f, 0.f, &move.x, &move.z, -_camera_yaw);
+        move.z = 0.f;
         break;
       case gizmo_move_type::y:
         move = math::vector_3d(0.f, dt_y, 0.f);
@@ -172,6 +173,7 @@ namespace noggit
       case gizmo_move_type::z:
         move = math::vector_3d(dt_y, 0.f, dt_x);
         math::rotate(0.f, 0.f, &move.x, &move.z, -_camera_yaw);
+        move.x = 0.f;
         break;
       case gizmo_move_type::xy:
         move = math::vector_3d(0.f, dt_y, dt_x);
