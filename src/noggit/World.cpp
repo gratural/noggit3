@@ -1457,7 +1457,7 @@ void World::draw ( math::matrix_4x4 const& model_view
   {
     opengl::scoped::use_program gizmo_shader{ *_gizmo_program.get() };
 
-    gizmo_shader.uniform("model_view_projection", mvp);
+    gizmo_shader.uniform("view_projection", mvp);
     {
       gizmo_shader.uniform("alpha", 1.f);
       gizmo.draw(gizmo_shader);

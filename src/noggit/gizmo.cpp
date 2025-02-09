@@ -12,6 +12,9 @@
 namespace noggit
 {
   gizmo::gizmo()
+    : _rotation_matrix(math::matrix_4x4::unit)
+    , _model_matrix(math::matrix_4x4::unit)
+    , _model_matrix_inv(math::matrix_4x4::unit)
   {
     float p1 = 2.f, p2 = 1.75f;
     float center_cube_size = 0.2f;
@@ -65,7 +68,7 @@ namespace noggit
   {
     if (is_linked())
     {
-      _need_uniform_update = true;
+      update_model_matrix();
       _need_indices_update = true;
 
       math::vector_3d pos = position().value();
@@ -84,6 +87,7 @@ namespace noggit
     {
       math::vector_3d pos = position().value();
       _scale = std::max((_camera_position - pos).length(), 2.5f) / 20.f;
+      update_model_matrix();
     }
     else
     {
@@ -100,8 +104,6 @@ namespace noggit
 
     // todo: add some bounding box check
 
-    math::vector_3d pos = position().value();
-
     for (gizmo_indice_group_data const& data : _indices_group_data)
     {
       // only intersect visible groups
@@ -110,15 +112,34 @@ namespace noggit
         continue;
       }
 
-      for (int i = data.start; i < data.start + data.count; i += 3)
+      if (_local_space)
       {
-        if ( auto distance = ray.intersect_triangle ( _hitbox_vertices[_indices[i + 0]].position * _scale + pos
-                                                    , _hitbox_vertices[_indices[i + 1]].position * _scale + pos
-                                                    , _hitbox_vertices[_indices[i + 2]].position * _scale + pos
-                                                    )
-           )
+        for (int i = data.start; i < data.start + data.count; i += 3)
         {
-          results.emplace_back(*distance, ray.position(*distance), this, data);
+          if ( auto distance = ray.intersect_triangle ( _rotated_hitbox_vertices[_indices[i + 0]].position
+                                                      , _rotated_hitbox_vertices[_indices[i + 1]].position
+                                                      , _rotated_hitbox_vertices[_indices[i + 2]].position
+                                                      )
+             )
+          {
+            results.emplace_back(*distance, ray.position(*distance), this, data);
+          }
+        }
+      }
+      else
+      {
+        math::vector_3d pos = position().value();
+
+        for (int i = data.start; i < data.start + data.count; i += 3)
+        {
+          if ( auto distance = ray.intersect_triangle ( _hitbox_vertices[_indices[i + 0]].position * _scale + pos
+                                                      , _hitbox_vertices[_indices[i + 1]].position * _scale + pos
+                                                      , _hitbox_vertices[_indices[i + 2]].position * _scale + pos
+                                                      )
+             )
+          {
+            results.emplace_back(*distance, ray.position(*distance), this, data);
+          }
         }
       }
     }
@@ -160,11 +181,21 @@ namespace noggit
       math::degrees::vec3 rot;
       bool rotate = false;
 
+      math::degrees model_r_y = _linked_object.value()->rotation().y;
+      math::degrees angle = -_camera_yaw;
+
+      // counter the local rotation so movements aren't flipped
+      // depending on the orientation of the model
+      if (_local_space)
+      {
+        angle = angle + model_r_y;
+      }
+
       switch (group.move_type)
       {
       case gizmo_move_type::x:
         move = math::vector_3d(dt_y, 0.f, dt_x);
-        math::rotate(0.f, 0.f, &move.x, &move.z, -_camera_yaw);
+        math::rotate(0.f, 0.f, &move.x, &move.z, angle);
         move.z = 0.f;
         break;
       case gizmo_move_type::y:
@@ -172,45 +203,53 @@ namespace noggit
         break;
       case gizmo_move_type::z:
         move = math::vector_3d(dt_y, 0.f, dt_x);
-        math::rotate(0.f, 0.f, &move.x, &move.z, -_camera_yaw);
+        math::rotate(0.f, 0.f, &move.x, &move.z, angle);
         move.x = 0.f;
         break;
       case gizmo_move_type::xy:
         move = math::vector_3d(0.f, dt_y, dt_x);
-        math::rotate(0.f, 0.f, &move.x, &move.z, -_camera_yaw);
+        math::rotate(0.f, 0.f, &move.x, &move.z, angle);
         break;
       case gizmo_move_type::yz:
         move = math::vector_3d(0.f, dt_y, dt_x);
-        math::rotate(0.f, 0.f, &move.x, &move.z, -_camera_yaw);
+        math::rotate(0.f, 0.f, &move.x, &move.z, angle);
         break;
       case gizmo_move_type::zx:
         move = math::vector_3d(dt_y, 0.f, dt_x);
-        math::rotate(0.f, 0.f, &move.x, &move.z, -_camera_yaw);
+        math::rotate(0.f, 0.f, &move.x, &move.z, angle);
         break;
       case gizmo_move_type::xyz:
         move = math::vector_3d(0.f, dt_y, dt_x);
-        math::rotate(0.f, 0.f, &move.x, &move.z, -_camera_yaw);
+        math::rotate(0.f, 0.f, &move.x, &move.z, angle);
         break;
       case gizmo_move_type::yaw:
         rotate = true;
-        rot.y = math::degrees(rx * 5.f);
+        rot.y = math::degrees(-rx * 5.f);
         break;
+      // x and z are flipped because that's how wow store the rotation
       case gizmo_move_type::pitch:
-        rot.x = math::degrees(ry * 5.f);
+        // the rotation is flipped depending on the camera position relative to the gizmo
+        // to match what the user actually want to do
+        rot.z = math::degrees( ry * 5.f * group.zone_z);
         rotate = true;
         break;
       case gizmo_move_type::roll:
-        rot.z = math::degrees(-ry * 5.f);
+        rot.x = math::degrees( -ry * 5.f * group.zone_x);
         rotate = true;
         break;
       }
 
       if (rotate)
       {
-        _linked_object.value()->rotate(rot, world, false);
+        _linked_object.value()->rotate(rot, world, _local_space);
       }
       else
       {
+        if (_local_space)
+        {
+          move = forward() * move.x + up() * move.y + right() * move.z;
+        }
+
         _linked_object.value()->move(move, world);
       }
     }
@@ -234,7 +273,7 @@ namespace noggit
       _linked_object.reset();
     }
 
-    _need_uniform_update = true;
+    update_model_matrix();
   }
 
   void gizmo::unlink()
@@ -259,6 +298,13 @@ namespace noggit
     }
   }
 
+  void gizmo::toggle_local_space()
+  {
+    _local_space = !_local_space;
+    // update vertex pos
+    update_model_matrix();
+  }
+
   void gizmo::draw(opengl::scoped::use_program& shader)
   {
     if (!_linked_object)
@@ -273,8 +319,8 @@ namespace noggit
 
     if (_need_uniform_update)
     {
-      shader.uniform("offset", position().value());
-      shader.uniform("scale", _scale);
+      shader.uniform("model", _model_matrix.transposed());
+      _need_uniform_update = false;
     }
 
     if (_need_indices_update)
@@ -315,8 +361,7 @@ namespace noggit
       return;
     }
 
-    math::vector_3d pos = position().value();
-    math::vector_3d diff = _camera_position - pos;
+    math::vector_3d diff = _model_matrix_inv * _camera_position;
 
     int sx = misc::sign(diff.x);
     int sy = misc::sign(diff.y);
@@ -589,5 +634,66 @@ namespace noggit
     _indices_group_data.push_back(data);
 
     add_quad(3, 2, 1, 0);
+  }
+
+  void gizmo::update_model_matrix()
+  {
+    _need_uniform_update = true;
+
+    // only use the rotated vertices in local space
+    if (!_linked_object)
+    {
+      _rotation_matrix = math::matrix_4x4(math::matrix_4x4::unit);
+      _model_matrix = math::matrix_4x4(math::matrix_4x4::unit);
+      _model_matrix_inv = math::matrix_4x4(math::matrix_4x4::unit);
+    }
+    else if (!_local_space)
+    {
+      _rotation_matrix = math::matrix_4x4(math::matrix_4x4::unit);
+      _model_matrix = math::matrix_4x4 (math::matrix_4x4::translation, _linked_object.value()->position())
+                    * math::matrix_4x4 (math::matrix_4x4::scale, _scale);
+
+      _model_matrix_inv = _model_matrix.inverted();
+      _rotated_hitbox_vertices.clear();
+    }
+    else
+    {
+      auto rot = _linked_object.value()->rotation();
+      rot = { -rot.x
+            , rot.y
+            , -rot.z
+            };
+
+      _rotation_matrix = math::matrix_4x4(math::matrix_4x4::rotation_yzx, rot);
+
+      _model_matrix = math::matrix_4x4 (math::matrix_4x4::translation, _linked_object.value()->position())
+                    * _rotation_matrix
+                    * math::matrix_4x4 (math::matrix_4x4::scale, _scale);
+
+      _model_matrix_inv = _model_matrix.inverted();
+
+      _rotated_hitbox_vertices.clear();
+      _rotated_hitbox_vertices.reserve(_hitbox_vertices.size());
+
+      for (gizmo_vertex const& gv : _hitbox_vertices)
+      {
+        gizmo_vertex rgv = gv;
+        rgv.position = _model_matrix * rgv.position;
+        _rotated_hitbox_vertices.push_back(rgv);
+      }
+    }
+  }
+
+  math::vector_3d gizmo::up() const
+  {
+    return (_rotation_matrix * math::vector_3d(0.f, 1.f, 0.f)).normalized();
+  }
+  math::vector_3d gizmo::forward() const
+  {
+    return (_rotation_matrix * math::vector_3d(1.f, 0.f, 0.f)).normalized();
+  }
+  math::vector_3d gizmo::right() const
+  {
+    return -(up() % forward()).normalized();
   }
 }

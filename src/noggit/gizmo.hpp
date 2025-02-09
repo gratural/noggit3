@@ -3,6 +3,7 @@
 #pragma once
 
 #include <noggit/Selection.h>
+#include <math/matrix_4x4.hpp>
 #include <math/vector_3d.hpp>
 #include <math/ray.hpp>
 #include <math/trig.hpp>
@@ -85,7 +86,8 @@ namespace noggit
     void unlink();
 
     std::optional<math::vector_3d> position() const;
-
+    bool local_space() const { return _local_space; }
+    void toggle_local_space();
 
     void draw(opengl::scoped::use_program& shader);
 
@@ -112,6 +114,7 @@ namespace noggit
 
     std::vector<gizmo_vertex> _vertices;
     std::vector<gizmo_vertex> _hitbox_vertices;
+    std::vector<gizmo_vertex> _rotated_hitbox_vertices;
     std::vector<std::uint16_t> _indices;
 
     std::optional<int> _selected_group_index;
@@ -119,11 +122,20 @@ namespace noggit
     std::vector<void*> _indices_offsets;
     std::vector<int> _indices_count;
 
+    void update_model_matrix();
+    math::vector_3d up() const;
+    math::vector_3d forward() const;
+    math::vector_3d right() const;
+
+    math::matrix_4x4 _rotation_matrix;
+    math::matrix_4x4 _model_matrix;
+    math::matrix_4x4 _model_matrix_inv;
     math::vector_3d _camera_position;
     math::degrees _camera_yaw = math::degrees(0.f);
     math::degrees _camera_pitch = math::degrees(0.f);
     float _scale = 1.f;
 
     bool _is_moving = false;
+    bool _local_space = false;
   };
 }

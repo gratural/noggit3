@@ -218,6 +218,13 @@ namespace noggit
       importBox->layout()->addWidget(last_wmo_from_wmv);
       importBox->layout()->addWidget(helper_models_btn);
 
+      QGroupBox* gizmo_gb = new QGroupBox("Gizmo", this);
+      QFormLayout* gizmo_layout(new QFormLayout(gizmo_gb));
+
+      QPushButton* toggle_gizmo_local_mode = new QPushButton("Toggle local/world coord mode", gizmo_gb);
+      gizmo_layout->addWidget(toggle_gizmo_local_mode);
+
+
       layout->addRow(copy_widget);
       layout->addRow(pasteBox);
       layout->addRow(object_movement_box);
@@ -227,6 +234,7 @@ namespace noggit
       layout->addRow(visToggleButton);
       layout->addRow(clearListButton);
       layout->addRow(importBox);
+      layout->addRow(gizmo_gb);
       layout->addRow (_filename);
 
       connect (rotation_group, &QGroupBox::toggled, [&] (int s)
@@ -351,6 +359,11 @@ namespace noggit
       connect( helper_models_btn
              , &QPushButton::clicked
              , [=]() { helper_models_widget->show(); }
+             );
+
+      connect( toggle_gizmo_local_mode
+             , &QPushButton::clicked
+             , [=]() { world->gizmo.toggle_local_space(); }
              );
 
       setMinimumWidth(sizeHint().width());

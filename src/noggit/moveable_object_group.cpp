@@ -24,6 +24,7 @@ namespace noggit
     if (_objects.size() == 1)
     {
       _objects.front()->rotate(rotation, world, local);
+      set_rotation(_objects.front()->quaternion());
     }
     else
     {
@@ -95,6 +96,12 @@ namespace noggit
 
   void moveable_object_group::update_center()
   {
+    if (_objects.size() == 0)
+    {
+      reset();
+      return;
+    }
+
     math::vector_3d center(0.f, 0.f, 0.f);
 
     for (moveable_object* object : _objects)
@@ -106,13 +113,17 @@ namespace noggit
     center /= std::max(std::size_t(1), _objects.size());
 
     set_position(center);
+
+    if (_objects.size() == 1)
+    {
+      set_rotation(_objects.front()->rotation());
+    }
   }
 
   void moveable_object_group::reset()
   {
     unlink_from_gizmo();
     _objects.clear();
-    update_center();
     set_rotation(math::quaternion());
   }
 

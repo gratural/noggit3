@@ -28,20 +28,25 @@ namespace noggit
   moveable_object::moveable_object(ENTRY_MDDF const* m2_entry)
   {
     _position = math::vector_3d(m2_entry->pos[0], m2_entry->pos[1], m2_entry->pos[2]);
-    _rotation = math::degrees::vec3( math::degrees(m2_entry->rot[0])
-                                   , math::degrees(m2_entry->rot[1])
-                                   , math::degrees(m2_entry->rot[2])
-                                   );
+
+    auto r = math::degrees::vec3( math::degrees(m2_entry->rot[0])
+                                , math::degrees(m2_entry->rot[1])
+                                , math::degrees(m2_entry->rot[2])
+                                );
+    _rotation = math::quaternion(r);
     _scale = m2_entry->scale / 1024.0f;
     _can_scale = true;
   }
   moveable_object::moveable_object(ENTRY_MODF const* wmo_entry)
   {
     _position = math::vector_3d(wmo_entry->pos[0], wmo_entry->pos[1], wmo_entry->pos[2]);
-    _rotation = math::degrees::vec3( math::degrees(wmo_entry->rot[0])
-                                   , math::degrees(wmo_entry->rot[1])
-                                   , math::degrees(wmo_entry->rot[2])
-                                   );
+
+    auto r = math::degrees::vec3( math::degrees(wmo_entry->rot[0])
+                                , math::degrees(wmo_entry->rot[1])
+                                , math::degrees(wmo_entry->rot[2])
+                                );
+
+    _rotation = math::quaternion(r);
     _scale = 1.f;
     _can_scale = false;
   }
@@ -73,10 +78,15 @@ namespace noggit
   void moveable_object::set_rotation(math::degrees::vec3 const& rotation)
   {
     _rotation = math::quaternion(rotation);
+
+    set_rotation(_rotation);
   }
   void moveable_object::set_rotation(math::quaternion const& rotation)
   {
     _rotation = rotation;
+    _rotation.normalize();
+
+    update_gizmo_if_linked();
   }
   void moveable_object::set_scale(float scale)
   {
