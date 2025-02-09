@@ -889,14 +889,17 @@ void MapTile::save(World* world, bool save_using_mclq_liquids)
       return;
     }
 
+    math::vector_3d const& pos = model.position();
+    math::degrees::vec3 rotation = model.rotation();
+
     lMDDF_Data[lID].nameID = filename_to_offset_and_name->second.nameID;
     lMDDF_Data[lID].uniqueID = model.uid;
-    lMDDF_Data[lID].pos[0] = model.position().x;
-    lMDDF_Data[lID].pos[1] = model.position().y;
-    lMDDF_Data[lID].pos[2] = model.position().z;
-    lMDDF_Data[lID].rot[0] = model.rotation().x._;
-    lMDDF_Data[lID].rot[1] = model.rotation().y._;
-    lMDDF_Data[lID].rot[2] = model.rotation().z._;
+    lMDDF_Data[lID].pos[0] = pos.x;
+    lMDDF_Data[lID].pos[1] = pos.y;
+    lMDDF_Data[lID].pos[2] = pos.z;
+    lMDDF_Data[lID].rot[0] = rotation.x._;
+    lMDDF_Data[lID].rot[1] = rotation.y._;
+    lMDDF_Data[lID].rot[2] = rotation.z._;
     lMDDF_Data[lID].scale = (uint16_t)(model.scale() * 1024);
     lMDDF_Data[lID].flags = 0;
     lID++;

@@ -57,6 +57,8 @@ namespace math
     explicit operator float() const { return _; }
 
     using vec3 = vector_3d_base<degrees>;
+
+    static vec3 from_model_rotation(vec3 const& v);
   };
 
   struct radians
@@ -106,4 +108,12 @@ inline math::degrees operator""_deg (long double v)
 inline math::degrees operator""_deg (unsigned long long int v)
 {
   return math::degrees {static_cast<float> (v)};
+}
+
+namespace math
+{
+  inline degrees::vec3 degrees::from_model_rotation(degrees::vec3 const& v)
+  {
+    return degrees::vec3(-v.z, v.y - 90.0_deg, v.x);
+  }
 }
