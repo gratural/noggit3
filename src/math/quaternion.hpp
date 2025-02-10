@@ -34,6 +34,19 @@ namespace math
       : vector_4d(v, w_)
     { }
 
+
+    quaternion(const vector_3d& axis, radians angle)
+    {
+      radians omega = radians(angle._ * 0.5f);
+      float so = sin(omega);
+
+      x = axis.x * so;
+      y = axis.y * so;
+      z = axis.z * so;
+      w = cos(omega);
+
+    }
+
     // heading = rotation around y
     // attitude = rotation around z
     // bank = rotation around x
