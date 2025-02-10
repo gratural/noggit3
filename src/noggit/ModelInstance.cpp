@@ -101,7 +101,7 @@ void ModelInstance::draw_box ( math::matrix_4x4 const& model_view
 void ModelInstance::update_transform_matrix()
 {
   math::matrix_4x4 mat (math::matrix_4x4 (math::matrix_4x4::translation, position())
-          * math::matrix_4x4 (math::matrix_4x4::rotation_yzx, math::degrees::from_model_rotation(rotation()))
+          * math::matrix_4x4 (math::matrix_4x4::rotation_yzx, rotation())
           * math::matrix_4x4 (math::matrix_4x4::scale, scale())
           );
 

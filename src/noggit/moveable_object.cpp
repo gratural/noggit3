@@ -33,7 +33,8 @@ namespace noggit
                                 , math::degrees(m2_entry->rot[1])
                                 , math::degrees(m2_entry->rot[2])
                                 );
-    _rotation = math::quaternion(r);
+
+    _rotation = math::quaternion(math::degrees::from_model_rotation(r));
     _scale = m2_entry->scale / 1024.0f;
     _can_scale = true;
   }
@@ -46,7 +47,7 @@ namespace noggit
                                 , math::degrees(wmo_entry->rot[2])
                                 );
 
-    _rotation = math::quaternion(r);
+    _rotation = math::quaternion(math::degrees::from_model_rotation(r));
     _scale = 1.f;
     _can_scale = false;
   }
@@ -143,6 +144,12 @@ namespace noggit
     before_move(world);
     set_scale(scale);
     after_move(world);
+  }
+
+  math::degrees::vec3 moveable_object::adt_rotation() const
+  {
+    math::degrees::vec3 r = rotation();
+    return { r.z, r.y + 90.0_deg, -r.x };
   }
 
   void moveable_object::link_to_gizmo(noggit::gizmo* gizmo)

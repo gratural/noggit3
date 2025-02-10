@@ -890,7 +890,7 @@ void MapTile::save(World* world, bool save_using_mclq_liquids)
     }
 
     math::vector_3d const& pos = model.position();
-    math::degrees::vec3 rotation = model.rotation();
+    math::degrees::vec3 rotation = model.adt_rotation();
 
     lMDDF_Data[lID].nameID = filename_to_offset_and_name->second.nameID;
     lMDDF_Data[lID].uniqueID = model.uid;
@@ -929,7 +929,7 @@ void MapTile::save(World* world, bool save_using_mclq_liquids)
     }
 
     math::vector_3d const& pos = object.position();
-    math::degrees::vec3 const& dir = object.rotation();
+    math::degrees::vec3 const& dir = object.adt_rotation();
 
     lMODF_Data[lID].nameID = filename_to_offset_and_name->second.nameID;
     lMODF_Data[lID].uniqueID = object.mUniqueID;

@@ -58,7 +58,7 @@ bool WMOInstance::is_a_duplicate_of(WMOInstance const& other)
 void WMOInstance::update_transform_matrix()
 {
   math::matrix_4x4 mat( math::matrix_4x4(math::matrix_4x4::translation, position())
-                      * math::matrix_4x4 (math::matrix_4x4::rotation_yzx, math::degrees::from_model_rotation(rotation()))
+                      * math::matrix_4x4 (math::matrix_4x4::rotation_yzx, rotation())
                       );
 
   _transform_mat = mat;

@@ -48,6 +48,7 @@ namespace noggit
 
     math::vector_3d const& position() const { return _position; }
     math::degrees::vec3 rotation() const { return _rotation.ToEulerAngles(); }
+    math::degrees::vec3 adt_rotation() const;
     math::quaternion const& quaternion() const { return _rotation; }
     float scale() const { return _scale; }
 
