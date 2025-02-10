@@ -42,6 +42,7 @@ namespace noggit
     void move(float dx, float dy, float dz, World* world);
     virtual void move(math::vector_3d const& pos_dt, World* world);
     virtual void rotate(math::degrees::vec3 const& rotation, World* world, bool local);
+    virtual void rotate(math::quaternion const& quat, World* world, bool local);
     virtual void update_position(math::vector_3d const& pos, World* world);
     virtual void update_rotation(math::degrees::vec3 const& rotation, World* world);
     virtual void update_scale(float scale, World* world);

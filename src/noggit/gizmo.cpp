@@ -226,15 +226,14 @@ namespace noggit
         rotate = true;
         rot.y = math::degrees(-rx * 5.f);
         break;
-      // x and z are flipped because that's how wow store the rotation
       case gizmo_move_type::pitch:
         // the rotation is flipped depending on the camera position relative to the gizmo
         // to match what the user actually want to do
-        rot.z = math::degrees( ry * 5.f * group.zone_z);
+        rot.x = math::degrees(-ry * 5.f * group.zone_z);
         rotate = true;
         break;
       case gizmo_move_type::roll:
-        rot.x = math::degrees( -ry * 5.f * group.zone_x);
+        rot.z = math::degrees(ry * 5.f * group.zone_x);
         rotate = true;
         break;
       }
@@ -659,11 +658,6 @@ namespace noggit
     else
     {
       auto rot = _linked_object.value()->rotation();
-      rot = { -rot.x
-            , rot.y
-            , -rot.z
-            };
-
       _rotation_matrix = math::matrix_4x4(math::matrix_4x4::rotation_yzx, rot);
 
       _model_matrix = math::matrix_4x4 (math::matrix_4x4::translation, _linked_object.value()->position())

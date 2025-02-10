@@ -82,6 +82,11 @@ namespace math
       return quaternion(newx, newy, newz, neww);
     }
 
+    quaternion conjugate() const
+    {
+      return quaternion(-x, -y, -z, w);
+    }
+
     degrees::vec3 ToEulerAngles() const
     {
       math::degrees::vec3 retVal;

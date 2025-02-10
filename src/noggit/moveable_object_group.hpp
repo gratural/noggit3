@@ -29,6 +29,10 @@ namespace noggit
     void update_center();
     void reset();
 
+    math::vector_3d local_forward() const;
+    math::vector_3d local_up() const;
+    math::vector_3d local_right() const;
+
     int object_count() const { return _objects.size(); }
     std::optional<math::vector_3d> pivot() const;
 

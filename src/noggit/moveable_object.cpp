@@ -124,6 +124,21 @@ namespace noggit
 
     after_move(world);
   }
+  void moveable_object::rotate(math::quaternion const& quat, World* world, bool local)
+  {
+    before_move(world);
+
+    if (local)
+    {
+      set_rotation(_rotation % quat);
+    }
+    else
+    {
+      set_rotation(quat % _rotation);
+    }
+
+    after_move(world);
+  }
 
   void moveable_object::update_position(math::vector_3d const& pos, World* world)
   {
