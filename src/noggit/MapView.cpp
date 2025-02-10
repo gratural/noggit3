@@ -2882,7 +2882,7 @@ void MapView::mousePressEvent(QMouseEvent* event)
     bool gizmo_hit = false;
     bool gizmo_linked = _world->gizmo.is_linked();
 
-    if (!_world->gizmo.is_moving() && gizmo_linked)
+    if (!_world->gizmo.is_moving() && gizmo_linked && !_mod_shift_down)
     {
       _world->gizmo.deselect_group();
       std::vector<noggit::gizmo_intersect_data> gizmo_intersects;
