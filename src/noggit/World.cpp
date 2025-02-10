@@ -766,6 +766,8 @@ void World::draw ( math::matrix_4x4 const& model_view
 
     LogDebug << "Max fragment shader sampler: " << fragment_shader_max_texture_unit << std::endl;
     LogDebug << "Max texture array size: " << max_layers << std::endl;
+
+    _only_one_model_box = NoggitSettings.value("only_one_model_box", true).toBool();
   }
 
   math::matrix_4x4 const mvp(model_view * projection);
@@ -1184,22 +1186,22 @@ void World::draw ( math::matrix_4x4 const& model_view
         if (draw_hidden_models || !it.second[0]->model->is_hidden())
         {
           it.second[0]->model->draw( model_view
-                                    , it.second
-                                    , m2_shader
-                                    , frustum
-                                    , culldistance
-                                    , camera_pos
-                                    , false
-                                    , animtime
-                                    , draw_model_animations
-                                    , draw_models_with_box
-                                    , model_with_particles
-                                    , model_boxes_to_draw
-                                    , display
-                                    , update_transform_buffers
-                                    , _model_texture_handler
-                                    , ogl_state
-                                    );
+                                   , it.second
+                                   , m2_shader
+                                   , frustum
+                                   , culldistance
+                                   , camera_pos
+                                   , false
+                                   , animtime
+                                   , draw_model_animations
+                                   , draw_models_with_box
+                                   , model_with_particles
+                                   , model_boxes_to_draw
+                                   , display
+                                   , update_transform_buffers
+                                   , _model_texture_handler
+                                   , ogl_state
+                                   );
         }
       }
     }
@@ -1236,7 +1238,7 @@ void World::draw ( math::matrix_4x4 const& model_view
         auto model = std::get<selected_model_type>(selection);
         if (model->is_visible(frustum, culldistance, camera_pos, display))
         {
-          model->draw_box(model_view, projection, true);
+          model->draw_box(model_view, projection, true, _only_one_model_box);
         }
       }
     }
@@ -1354,7 +1356,7 @@ void World::draw ( math::matrix_4x4 const& model_view
         auto wmo = std::get<selected_wmo_type>(selection);
 
         {
-          wmo->draw_box_selected(model_view, projection);
+          wmo->draw_box_selected(model_view, projection, _only_one_model_box);
         }
       }
     }

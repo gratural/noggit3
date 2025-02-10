@@ -177,6 +177,7 @@ namespace noggit
 
       layout->addRow("Additional file loading log", _additional_file_loading_log = new QCheckBox(this));
       layout->addRow("Use MCLQ Liquids (vanilla/BC) export", _use_mclq_liquids_export = new QCheckBox(this));
+      layout->addRow("Only display one bounding box for models", _only_one_model_box = new QCheckBox(this));
 
 #ifdef NOGGIT_HAS_SCRIPTING
       layout->addRow("Allow scripts to write to any file",_allow_scripts_write_any_file = new QCheckBox(this));
@@ -241,6 +242,7 @@ namespace noggit
       _uid_cb->setChecked(NoggitSettings.value("uid_startup_check", true).toBool());
       _additional_file_loading_log->setChecked(NoggitSettings.value("additional_file_loading_log", false).toBool());
       _use_mclq_liquids_export->setChecked(NoggitSettings.value("use_mclq_liquids_export", false).toBool());
+      _only_one_model_box->setChecked(NoggitSettings.value("only_one_model_box", true).toBool());
 
 #ifdef NOGGIT_HAS_SCRIPTING
       _allow_scripts_write_any_file->setChecked(NoggitSettings.value("allow_scripts_write_any_file",false).toBool());
@@ -281,6 +283,7 @@ namespace noggit
       NoggitSettings.set_value ("uid_startup_check", _uid_cb->isChecked());
       NoggitSettings.set_value ("additional_file_loading_log", _additional_file_loading_log->isChecked());
       NoggitSettings.set_value ("use_mclq_liquids_export", _use_mclq_liquids_export->isChecked());
+      NoggitSettings.set_value ("only_one_model_box", _only_one_model_box->isChecked());
 
 #ifdef NOGGIT_HAS_SCRIPTING
       NoggitSettings.set_value ("allow_scripts_write_any_file", _allow_scripts_write_any_file->isChecked());

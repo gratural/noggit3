@@ -290,30 +290,44 @@ std::vector<wmo_doodad_instance*> WMOInstance::get_visible_doodads
 //       or store the selected wmos' bbox data in a buffer
 void WMOInstance::draw_box_selected ( math::matrix_4x4 const& model_view
                                     , math::matrix_4x4 const& projection
+                                    , bool only_one_box
                                     )
 {
-  opengl::primitives::wire_box(extents[0], extents[1])
-    .draw ( model_view
-          , projection
-          , math::matrix_4x4(math::matrix_4x4::unit)
-          , math::vector_4d(0.0f, 1.0f, 0.0f, 1.0f)
-          );
-
-  for (auto& group : wmo->groups)
+  if(!only_one_box)
   {
-    opengl::primitives::wire_box(group.BoundingBoxMin, group.BoundingBoxMax)
+    opengl::primitives::wire_box(extents[0], extents[1])
       .draw ( model_view
             , projection
-            , _transform_mat_transposed
-            , {1.0f, 1.0f, 1.0f, 1.0f}
+            , math::matrix_4x4(math::matrix_4x4::unit)
+            , math::vector_4d(0.0f, 1.0f, 0.0f, 1.0f)
             );
-  }
 
-  opengl::primitives::wire_box ( math::vector_3d(wmo->extents[0].x, wmo->extents[0].z, -wmo->extents[0].y)
-                               , math::vector_3d(wmo->extents[1].x, wmo->extents[1].z, -wmo->extents[1].y)
-                               ).draw ( model_view
-                                      , projection
-                                      , _transform_mat_transposed
-                                      , {1.0f, 0.0f, 0.0f, 1.0f}
-                                      );
+    for (auto& group : wmo->groups)
+    {
+      opengl::primitives::wire_box(group.BoundingBoxMin, group.BoundingBoxMax)
+        .draw ( model_view
+              , projection
+              , _transform_mat_transposed
+              , {1.0f, 1.0f, 1.0f, 1.0f}
+              );
+    }
+
+    opengl::primitives::wire_box ( math::vector_3d(wmo->extents[0].x, wmo->extents[0].z, -wmo->extents[0].y)
+                                 , math::vector_3d(wmo->extents[1].x, wmo->extents[1].z, -wmo->extents[1].y)
+                                 ).draw ( model_view
+                                        , projection
+                                        , _transform_mat_transposed
+                                        , {1.0f, 0.0f, 0.0f, 1.0f}
+                                        );
+  }
+  else
+  {
+    opengl::primitives::wire_box ( math::vector_3d(wmo->extents[0].x, wmo->extents[0].z, -wmo->extents[0].y)
+                                 , math::vector_3d(wmo->extents[1].x, wmo->extents[1].z, -wmo->extents[1].y)
+                                 ).draw ( model_view
+                                        , projection
+                                        , _transform_mat_transposed
+                                        , {1.0f, 1.0f, 1.0f, 1.0f}
+                                        );
+  }
 }

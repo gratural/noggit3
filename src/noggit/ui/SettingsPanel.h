@@ -57,6 +57,7 @@ namespace noggit
       QCheckBox* _additional_file_loading_log;
 
       QCheckBox* _use_mclq_liquids_export;
+      QCheckBox* _only_one_model_box;
 
 #ifdef NOGGIT_HAS_SCRIPTING
       QCheckBox* _allow_scripts_write_any_file;

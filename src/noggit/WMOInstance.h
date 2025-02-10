@@ -126,7 +126,8 @@ public:
                                                        , display_mode display
                                                        );
 
-    void draw_box_selected ( math::matrix_4x4 const& model_view
-                           , math::matrix_4x4 const& projection
-                           );
+  void draw_box_selected ( math::matrix_4x4 const& model_view
+                         , math::matrix_4x4 const& projection
+                         , bool only_one_box
+                         );
 };

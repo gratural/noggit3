@@ -55,6 +55,7 @@ bool ModelInstance::is_a_duplicate_of(ModelInstance const& other)
 void ModelInstance::draw_box ( math::matrix_4x4 const& model_view
                              , math::matrix_4x4 const& projection
                              , bool is_current_selection
+                             , bool only_one_box
                              )
 {
   gl.enable(GL_BLEND);
@@ -62,13 +63,23 @@ void ModelInstance::draw_box ( math::matrix_4x4 const& model_view
 
   if (is_current_selection)
   {
-    opengl::primitives::wire_box ( misc::transform_model_box_coords(model->header.collision_box_min)
-                                 , misc::transform_model_box_coords(model->header.collision_box_max)
-                                 ).draw ( model_view
-                                        , projection
-                                        , transform_matrix_transposed()
-                                        , { 1.0f, 1.0f, 0.0f, 1.0f }
-                                        );
+    if(!only_one_box)
+    {
+      opengl::primitives::wire_box ( misc::transform_model_box_coords(model->header.collision_box_min)
+                                   , misc::transform_model_box_coords(model->header.collision_box_max)
+                                   ).draw ( model_view
+                                          , projection
+                                          , transform_matrix_transposed()
+                                          , { 1.0f, 1.0f, 0.0f, 1.0f }
+                                          );
+      opengl::primitives::wire_box ( _extents[0]
+                                   , _extents[1]
+                                   ).draw ( model_view
+                                          , projection
+                                          , math::matrix_4x4(math::matrix_4x4::unit)
+                                          , {0.0f, 1.0f, 0.0f, 1.0f}
+                                          );
+    }
 
     opengl::primitives::wire_box ( misc::transform_model_box_coords(model->header.bounding_box_min)
                                  , misc::transform_model_box_coords(model->header.bounding_box_max)
@@ -76,14 +87,6 @@ void ModelInstance::draw_box ( math::matrix_4x4 const& model_view
                                         , projection
                                         , transform_matrix_transposed()
                                         , {1.0f, 1.0f, 1.0f, 1.0f}
-                                        );
-
-    opengl::primitives::wire_box ( _extents[0]
-                                 , _extents[1]
-                                 ).draw ( model_view
-                                        , projection
-                                        , math::matrix_4x4(math::matrix_4x4::unit)
-                                        , {0.0f, 1.0f, 0.0f, 1.0f}
                                         );
   }
   else

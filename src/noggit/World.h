@@ -181,6 +181,7 @@ private:
   std::vector<selection_type> _current_selection;
   noggit::moveable_object_group _grouped_models;
   int _selected_model_count = 0;
+  bool _only_one_model_box;
 public:
 
   noggit::gizmo gizmo;
