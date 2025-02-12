@@ -31,8 +31,8 @@ namespace noggit
     moveable_object(moveable_object&& other);
     moveable_object& operator= (moveable_object&& other);
 
-    virtual void before_move(World* world) {}
-    virtual void after_move(World* world) {}
+    virtual void before_move(World*) {}
+    virtual void after_move(World*) {}
 
     void set_position(math::vector_3d const& pos);
     void set_rotation(math::degrees::vec3 const& rotation);
