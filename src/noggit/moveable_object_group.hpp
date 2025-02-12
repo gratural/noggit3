@@ -26,6 +26,8 @@ namespace noggit
     bool remove_object(moveable_object* object);
     bool object_is_grouped(moveable_object* object);
 
+    void reset_xz_rotation(World* world);
+
     void update_center();
     void reset();
 

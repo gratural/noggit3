@@ -124,6 +124,26 @@ namespace noggit
     return false;
   }
 
+  void moveable_object_group::reset_xz_rotation(World* world)
+  {
+    for (moveable_object* object : _objects)
+    {
+      auto r = object->rotation();
+      r.x = 0.0_deg;
+      r.z = 0.0_deg;
+
+      object->update_rotation(r, world);
+    }
+
+    auto group_r = rotation();
+    group_r.x = 0.0_deg;
+    group_r.z = 0.0_deg;
+
+    // no need to call update_rotation as the group does't
+    // override before/after move
+    set_rotation(group_r);
+  }
+
   void moveable_object_group::update_center()
   {
     if (_objects.size() == 0)

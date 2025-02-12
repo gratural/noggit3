@@ -164,30 +164,6 @@ void MapView::setToolPropertyWidgetVisibility(editing_mode mode)
   _world->gizmo.unlink();
 }
 
-void MapView::ResetSelectedObjectRotation()
-{
-  for (auto& selection : _world->current_selection())
-  {
-    if (selection.index() == eEntry_WMO)
-    {
-      WMOInstance* wmo = std::get<selected_wmo_type>(selection);
-      _world->updateTilesWMO(wmo, model_update::remove);
-      wmo->resetDirection();
-      _world->updateTilesWMO(wmo, model_update::add);
-    }
-    else if (selection.index() == eEntry_Model)
-    {
-      ModelInstance* m2 = std::get<selected_model_type>(selection);
-      _world->updateTilesModel(m2, model_update::remove);
-      m2->resetDirection();
-      m2->recalcExtents();
-      _world->updateTilesModel(m2, model_update::add);
-    }
-  }
-
-  _rotation_editor_need_update = true;
-}
-
 void MapView::snap_selected_models_to_the_ground()
 {
   _world->snap_selected_models_to_the_ground();
@@ -576,7 +552,7 @@ void MapView::createGUI()
   edit_menu->addAction(createTextSeparator("Selected object"));
   edit_menu->addSeparator();
   ADD_ACTION (edit_menu, "Delete", Qt::Key_Delete, [this] { DeleteSelectedObject(); });
-  ADD_ACTION (edit_menu, "Reset rotation", "Ctrl+R", [this] { ResetSelectedObjectRotation(); });
+  ADD_ACTION (edit_menu, "Reset rotation", "Ctrl+R", [this] { _world->reset_selection_xz_rotation(); });
   ADD_ACTION_NS (edit_menu, "Set to ground", [this] { snap_selected_models_to_the_ground(); });
   addHotkey ( Qt::Key_PageDown
             , MOD_none

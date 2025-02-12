@@ -146,7 +146,6 @@ private:
 
   float mTimespeed;
 
-  void ResetSelectedObjectRotation();
   void snap_selected_models_to_the_ground();
   void DeleteSelectedObject();
 

@@ -200,6 +200,7 @@ public:
   void remove_from_selection(std::uint32_t uid);
   void reset_selection();
   void delete_selected_models();
+  void reset_selection_xz_rotation() { _grouped_models.reset_xz_rotation(this); }
 
   void raise_models_terrain_brush(math::vector_3d const& pos, float change, float radius, int BrushType, float inner_radius, bool follow_normals);
 
