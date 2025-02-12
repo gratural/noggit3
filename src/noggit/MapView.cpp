@@ -2876,7 +2876,7 @@ void MapView::mousePressEvent(QMouseEvent* event)
 
         noggit::gizmo_intersect_data const& hit = gizmo_intersects.front();
 
-        hit.gizmo->select_group(hit.group);
+        hit.gizmo_ptr->select_group(hit.group);
         _world->gizmo.begin_move();
 
         _cursor_pos = hit.position;

@@ -54,12 +54,12 @@ namespace noggit
 
   struct gizmo_intersect_data
   {
-    gizmo_intersect_data(float dist, math::vector_3d const& position, gizmo* gizmo, gizmo_indice_group_data group)
-      : distance(dist), position(position), gizmo(gizmo), group(group) {}
+    gizmo_intersect_data(float dist, math::vector_3d const& position, noggit::gizmo* g, gizmo_indice_group_data group)
+      : distance(dist), position(position), gizmo_ptr(g), group(group) {}
 
     float distance;
     math::vector_3d position;
-    gizmo* gizmo;
+    noggit::gizmo* gizmo_ptr;
     gizmo_indice_group_data group;
   };
 
