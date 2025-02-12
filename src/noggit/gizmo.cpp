@@ -426,19 +426,19 @@ namespace noggit
     }
 
     // todo: move to shared function
-    auto& add_indice([&](int i)
+    auto add_indice([&](int i)
     {
       _indices.push_back(indices_ofs + i);
     });
 
-    auto& add_triangle([&](int a, int b, int c)
+    auto add_triangle([&](int a, int b, int c)
     {
       add_indice(a);
       add_indice(b);
       add_indice(c);
     });
 
-    auto& add_quad([&](int a, int b, int c, int d)
+    auto add_quad([&](int a, int b, int c, int d)
     {
       add_triangle(a, b, c);
       add_triangle(c, d, a);
@@ -468,19 +468,19 @@ namespace noggit
     int indices_ofs = _vertices.size();
     int indices_start = _indices.size();
 
-    auto& add_indice([&](int i)
+    auto add_indice([&](int i)
     {
       _indices.push_back(indices_ofs + i);
     });
 
-    auto& add_triangle([&](int a, int b, int c)
+    auto add_triangle([&](int a, int b, int c)
     {
       add_indice(a);
       add_indice(b);
       add_indice(c);
     });
 
-    auto& add_quad([&](int a, int b, int c, int d)
+    auto add_quad([&](int a, int b, int c, int d)
     {
       add_triangle(a, b, c);
       add_triangle(c, d, a);
@@ -545,19 +545,19 @@ namespace noggit
     int indices_ofs = _vertices.size();
     int indices_start = _indices.size();
 
-    auto& add_indice([&](int i)
+    auto add_indice([&](int i)
     {
       _indices.push_back(indices_ofs + i);
     });
 
-    auto& add_triangle([&](int a, int b, int c)
+    auto add_triangle([&](int a, int b, int c)
     {
       add_indice(a);
       add_indice(b);
       add_indice(c);
     });
 
-    auto& add_quad([&](int a, int b, int c, int d)
+    auto add_quad([&](int a, int b, int c, int d)
     {
       add_triangle(a, b, c);
       add_triangle(c, d, a);
