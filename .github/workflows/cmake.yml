@@ -46,6 +46,9 @@ jobs:
         arch: win64_msvc2019_64
       if: ${{ matrix.platform == 'windows-2019' }}
 
+    - name: "dependency: bzip2 (linux, stormlib)"
+      run: sudo apt update && sudo apt install libbz2-dev
+      if: ${{ matrix.platform == 'ubuntu-24.04' }}
     - name: "dependency: stormlib"
       run: |
         git clone "https://github.com/ladislav-zezula/StormLib" "${{ runner.workspace }}/stormlib"
