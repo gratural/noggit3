@@ -56,6 +56,10 @@ jobs:
         cmake --build "${{ runner.workspace }}/stormlib/build" --config RelWithDebInfo
         cmake --install "${{ runner.workspace }}/stormlib/build" --config RelWithDebInfo
 
+    - name: "dependency: fuse (linux, appimage)"
+      run: sudo apt update && sudo apt install libfuse2
+      if: ${{ matrix.platform == 'ubuntu-24.04' }}
+
     - name: "configure"
       run: cmake -Wdev -Wdeprecated --warn-uninitialized -B "${{ github.workspace }}/build" -S "${{ github.workspace }}" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_COMPILER=${{ matrix.compiler }} -DCMAKE_PREFIX_PATH="${{ runner.workspace }}/stormlib/install" ${{ matrix.extra_cmake_args }}
     - name: "build"
