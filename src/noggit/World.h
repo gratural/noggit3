@@ -185,7 +185,7 @@ private:
 public:
 
   noggit::gizmo gizmo;
-  std::optional<math::vector_3d> const& multi_select_pivot() const { return _grouped_models.pivot(); }
+  std::optional<math::vector_3d> multi_select_pivot() const { return _grouped_models.pivot(); }
 
   // Selection related methods.
   bool is_selected(selection_type selection) const;
