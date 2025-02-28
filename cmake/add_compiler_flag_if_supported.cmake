@@ -9,7 +9,15 @@ include(CheckCXXSourceCompiles)
 include(CMakeCheckCompilerFlagCommonPatterns)
 
 macro (CHECK_CXX_COMPILER_FLAG _FLAG _RESULT)
-  set(SAFE_CMAKE_REQUIRED_DEFINITIONS "${CMAKE_REQUIRED_DEFINITIONS}")
+## end copy ]]
+  set(cccf_do_save_crd false)
+  if(DEFINED CMAKE_REQUIRED_DEFINITIONS)
+    set(cccf_do_save_crd true)
+## begin copy [[
+    set(SAFE_CMAKE_REQUIRED_DEFINITIONS "${CMAKE_REQUIRED_DEFINITIONS}")
+## end copy ]]
+  endif()
+## begin copy [[
   set(CMAKE_REQUIRED_DEFINITIONS "${_FLAG}")
 ## end copy ]]
 
@@ -40,7 +48,13 @@ macro (CHECK_CXX_COMPILER_FLAG _FLAG _RESULT)
     )
   foreach(v ${_CheckCXXCompilerFlag_LOCALE_VARS})
     if (DEFINED _CheckCXXCompilerFlag_SAVED_${v})
-      set(ENV{${v}} ${${_CheckCXXCompilerFlag_SAVED_${v}}})
+## end copy ]]
+      if(DEFINED ${_CheckCXXCompilerFlag_SAVED_${v}})
+## begin copy [[
+        set(ENV{${v}} ${${_CheckCXXCompilerFlag_SAVED_${v}}})
+## end copy ]]
+      endif()
+## begin copy [[
       unset(_CheckCXXCompilerFlag_SAVED_${v})
     else()
       unset (ENV{${v}})
@@ -49,7 +63,15 @@ macro (CHECK_CXX_COMPILER_FLAG _FLAG _RESULT)
   unset(_CheckCXXCompilerFlag_LOCALE_VARS)
   unset(_CheckCXXCompilerFlag_COMMON_PATTERNS)
 
-  set (CMAKE_REQUIRED_DEFINITIONS "${SAFE_CMAKE_REQUIRED_DEFINITIONS}")
+## end copy ]]
+  if(cccf_do_save_crd)
+## begin copy [[
+    set (CMAKE_REQUIRED_DEFINITIONS "${SAFE_CMAKE_REQUIRED_DEFINITIONS}")
+## end copy ]]
+  else()
+    unset(CMAKE_REQUIRED_DEFINITIONS)
+  endif()
+## begin copy [[
 endmacro ()
 ## end copy ]]
 
