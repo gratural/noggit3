@@ -7,16 +7,17 @@
 #include <math/vector_3d.hpp>
 #include <math/vector_4d.hpp>
 #include <noggit/Log.h>
+#include <noggit/Selection.h>
 #include <util/sExtendableArray.hpp>
 
 #include <algorithm>
 #include <cassert>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <string>
 #include <vector>
-#include <noggit/Selection.h>
 
 // namespace for static helper functions.
 
