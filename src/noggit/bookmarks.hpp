@@ -5,6 +5,7 @@
 #include <math/vector_3d.hpp>
 #include <math/trig.hpp>
 
+#include <cstdint>
 #include <string>
 #include <vector>
 

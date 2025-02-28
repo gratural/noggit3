@@ -4,6 +4,7 @@
 
 #include <noggit/DBCFile.h>
 
+#include <cstdint>
 #include <string>
 
 class AreaDB : public DBCFile
