@@ -6,13 +6,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: ubuntu-20.04
-            compiler: g++-9
-            compiler_c: gcc-9
+          - platform: ubuntu-24.04
+            compiler: g++-14
+            compiler_c: gcc-14
             extra_cmake_args: -GNinja
-          - platform: ubuntu-20.04
-            compiler: clang++-10
-            compiler_c: clang-10
+          - platform: ubuntu-24.04
+            compiler: clang++-18
+            compiler_c: clang-18
             extra_cmake_args: -GNinja
           - platform: windows-2019
             compiler: msvc2019 ## == vs 16
@@ -27,18 +27,15 @@ jobs:
       run: |
         wget "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage" -O "${{ runner.workspace }}/linuxdeployqt"
         chmod +x "${{ runner.workspace }}/linuxdeployqt"
-      if: ${{ matrix.platform == 'ubuntu-20.04' }}
+      if: ${{ matrix.platform == 'ubuntu-24.04' }}
 
-    - name: "dependency: clang (linux)"
-      run: sudo apt update && sudo apt install clang-10
-      if: ${{ matrix.platform == 'ubuntu-20.04' && matrix.compiler == 'clang++-10' }}
     - name: "dependency: ninja (linux)"
       run: sudo apt update && sudo apt install ninja-build
-      if: ${{ matrix.platform == 'ubuntu-20.04' }}
+      if: ${{ matrix.platform == 'ubuntu-24.04' }}
 
     - name: "dependency: qt5 (linux)"
-      run: sudo apt update && sudo apt install -y qtbase5-dev qt5-default
-      if: ${{ matrix.platform == 'ubuntu-20.04' }}
+      run: sudo apt update && sudo apt install -y qtbase5-dev
+      if: ${{ matrix.platform == 'ubuntu-24.04' }}
     - name: "dependency: qt5 (windows)"
       uses: jurplel/install-qt-action@v4
       with:
@@ -75,12 +72,12 @@ jobs:
         echo 'Icon=default' >> "${{ github.workspace }}/install/default.desktop"
         echo 'Categories=Game;' >> "${{ github.workspace }}/install/default.desktop"
         "${{ runner.workspace }}/linuxdeployqt" "${{ github.workspace }}/install/noggit" -appimage -bundle-non-qt-libs -no-strip -verbose=2
-      if: ${{ matrix.platform == 'ubuntu-20.04' }}
+      if: ${{ matrix.platform == 'ubuntu-24.04' }}
     - uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.platform }}-${{ matrix.compiler }}-appimage
         path: Noggit*.AppImage
-      if: ${{ matrix.platform == 'ubuntu-20.04' }}
+      if: ${{ matrix.platform == 'ubuntu-24.04' }}
 
     - run: |
         mkdir dependencies/
