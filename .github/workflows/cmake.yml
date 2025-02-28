@@ -53,9 +53,9 @@ jobs:
         cmake --build "${{ runner.workspace }}/stormlib/build" --config RelWithDebInfo
         cmake --install "${{ runner.workspace }}/stormlib/build" --config RelWithDebInfo
 
-    - name: "dependency: fuse (linux, appimage)"
-      run: sudo apt update && sudo apt install libfuse2
-      if: ${{ matrix.platform == 'ubuntu-24.04' }}
+    #- name: "dependency: fuse (linux, appimage)"
+    #  run: sudo apt update && sudo apt install libfuse2
+    #  if: ${{ matrix.platform == 'ubuntu-24.04' }}
 
     - name: "configure"
       run: cmake -Wdev -Wdeprecated --warn-uninitialized -B "${{ github.workspace }}/build" -S "${{ github.workspace }}" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_COMPILER=${{ matrix.compiler }} -DCMAKE_PREFIX_PATH="${{ runner.workspace }}/stormlib/install" ${{ matrix.extra_cmake_args }}
@@ -64,20 +64,22 @@ jobs:
     - name: "install"
       run: cmake --install "${{ github.workspace }}/build" --prefix "${{ github.workspace }}/install" --config RelWithDebInfo
 
-    - name: "release: appimage (linux)"
-      run: |
-        echo '[Desktop Entry]' > "${{ github.workspace }}/install/default.desktop"
-        echo 'Type=Application' >> "${{ github.workspace }}/install/default.desktop"
-        echo 'Name=Noggit 3' >> "${{ github.workspace }}/install/default.desktop"
-        echo 'Icon=default' >> "${{ github.workspace }}/install/default.desktop"
-        echo 'Categories=Game;' >> "${{ github.workspace }}/install/default.desktop"
-        "${{ runner.workspace }}/linuxdeployqt" "${{ github.workspace }}/install/noggit" -appimage -bundle-non-qt-libs -no-strip -verbose=2
-      if: ${{ matrix.platform == 'ubuntu-24.04' }}
-    - uses: actions/upload-artifact@v4
-      with:
-        name: ${{ matrix.platform }}-${{ matrix.compiler }}-appimage
-        path: Noggit*.AppImage
-      if: ${{ matrix.platform == 'ubuntu-24.04' }}
+    # \todo linuxdeployqt requires Ubuntu 20.04 for glibc version stability. Check whether they bumped the
+    # requirement at some point since 20.04 will be dropped from GitHub CI.
+    #- name: "release: appimage (linux)"
+    #  run: |
+    #    echo '[Desktop Entry]' > "${{ github.workspace }}/install/default.desktop"
+    #    echo 'Type=Application' >> "${{ github.workspace }}/install/default.desktop"
+    #    echo 'Name=Noggit 3' >> "${{ github.workspace }}/install/default.desktop"
+    #    echo 'Icon=default' >> "${{ github.workspace }}/install/default.desktop"
+    #    echo 'Categories=Game;' >> "${{ github.workspace }}/install/default.desktop"
+    #    "${{ runner.workspace }}/linuxdeployqt" "${{ github.workspace }}/install/noggit" -appimage -bundle-non-qt-libs -no-strip -verbose=2
+    #  if: ${{ matrix.platform == 'ubuntu-24.04' }}
+    #- uses: actions/upload-artifact@v4
+    #  with:
+    #    name: ${{ matrix.platform }}-${{ matrix.compiler }}-appimage
+    #    path: Noggit*.AppImage
+    #  if: ${{ matrix.platform == 'ubuntu-24.04' }}
 
     - run: |
         mkdir dependencies/
