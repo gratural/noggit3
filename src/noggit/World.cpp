@@ -58,7 +58,7 @@ bool World::IsEditableWorld(int pMapId)
   }
 
   std::stringstream ssfilename;
-  ssfilename << "World\\Maps\\" << lMapName << "\\" << lMapName << ".wdt";
+  ssfilename << "world/maps/" << lMapName << "/" << lMapName << ".wdt";
 
   if (!MPQFile::exists(ssfilename.str()))
   {
