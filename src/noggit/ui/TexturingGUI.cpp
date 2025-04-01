@@ -112,7 +112,7 @@ namespace noggit
       auto search_filter (new QSortFilterProxyModel);
       search_filter->setSourceModel (specular_filter);
       search_filter->sort (0, Qt::AscendingOrder);
-
+      search_filter->setFilterCaseSensitivity(Qt::CaseInsensitive);
 
       auto filter (new QComboBox);
       filter->setEditable (true);

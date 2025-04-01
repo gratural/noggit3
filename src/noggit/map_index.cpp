@@ -87,7 +87,7 @@ MapIndex::MapIndex (const std::string &pBasename, int map_id, World* world)
       theFile.seekRelative(4);
 
       std::stringstream adt_filename;
-      adt_filename << "World\\Maps\\" << basename << "\\" << basename << "_" << i << "_" << j << ".adt";
+      adt_filename << "world/maps/" << basename << "/" << basename << "_" << i << "_" << j << ".adt";
 
       mTiles[j][i].tile = nullptr;
       mTiles[j][i].onDisc = MPQFile::existsOnDisk(adt_filename.str());
@@ -317,7 +317,7 @@ MapTile* MapIndex::loadTile(const tile_index& tile, bool reloading)
   }
 
   std::stringstream filename;
-  filename << "World\\Maps\\" << basename << "\\" << basename << "_" << tile.x << "_" << tile.z << ".adt";
+  filename << "world/maps/" << basename << "/" << basename << "_" << tile.x << "_" << tile.z << ".adt";
 
   if (!MPQFile::exists(filename.str()))
   {

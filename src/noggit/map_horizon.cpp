@@ -92,12 +92,12 @@ namespace noggit
 map_horizon::map_horizon(const std::string& basename, const MapIndex * const index)
 {
   std::stringstream filename;
-  filename << "World\\Maps\\" << basename << "\\" << basename << ".wdl";
+  filename << "world/maps/" << basename << "/" << basename << ".wdl";
   _filename = filename.str();
 
   if (!MPQFile::exists(_filename))
   {
-    LogError << "file \"World\\Maps\\" << basename << "\\" << basename << ".wdl\" does not exist." << std::endl;
+    LogError << "file " << filename.str() << " does not exist." << std::endl;
     return;
   }
 

@@ -96,37 +96,41 @@ namespace noggit::ui
 
   void asset_browser::create_tree(std::string filter)
   {
-    static const std::regex models_and_wmo("[^\\.]+\\.(m2|wmo)"), wmo_group(".*_[0-9]{3}\\.wmo");
+    static const QRegularExpression models_and_wmo("([^\\.]+\\.(m2|wmo))");
+    static const QRegularExpression wmo_group("(.*_[0-9]{3}\\.wmo)");
 
     _asset_tree->clear();
     asset_tree_node root("root");
 
     bool use_filter = filter != "";
 
-    filter = noggit::mpq::normalized_filename(filter);
+    QStringList sorted_listfile;
+    for (const auto& file : gListfile) {
+      sorted_listfile.append(QString::fromStdString(file));
+    }
+    
+    sorted_listfile.sort();
 
-    for (std::string const& file : gListfile)
+    for (const QString& file : sorted_listfile)
     {
-      if (!std::regex_match(file, models_and_wmo) || std::regex_match(file, wmo_group))
+      if (!models_and_wmo.match(file).hasMatch() || wmo_group.match(file).hasMatch())
+
       {
         continue;
       }
 
-      if (use_filter && file.find(filter) != std::string::npos)
+      if (use_filter && !file.contains(QString::fromStdString(filter), Qt::CaseInsensitive))
+
       {
         continue;
       }
 
-      std::regex delimiter("/");
-      std::sregex_token_iterator it(file.begin(), file.end(), delimiter, -1);
-      std::sregex_token_iterator end;
-
+      QStringList parts = file.split('/');
       asset_tree_node* node = &root;
-
-      while(it != end)
+  
+      for (const QString& part : parts)
       {
-        node = &node->add_child(*it);
-        ++it;
+          node = &node->add_child(part.toStdString());
       }
     }
 
