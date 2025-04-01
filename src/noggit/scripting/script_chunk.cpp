@@ -105,6 +105,7 @@ namespace noggit
     void chunk::apply_vertex_color()
     {
       _chunk->require_vertices_buffer_update();
+      _chunk->texture_set_changed();
     }
 
     void chunk::apply_all()
