@@ -24,13 +24,23 @@ namespace noggit {
     float tex::get_alpha(int index)
     {
       auto& ts = _chunk->texture_set;
+      if(!ts||index<1||index>=ts->nTextures)
+      {
+        throw script_exception(
+            "tex_get_alpha",
+            std::string("invalid texture layer: ")
+          + std::to_string(index)
+          + std::string(" (in call to tex_get_alpha)")
+          );
+      }
       ts->create_temporary_alphamaps_if_needed();
       return ts->tmp_edit_values.get()->operator[](index)[_index];
     }
 
     void tex::set_alpha(int index, float value)
     {
-      if(index<0||index>3)
+      auto& ts = _chunk->texture_set;
+      if(!ts||index<1||index>=ts->nTextures) 
       {
         throw script_exception(
             "tex_set_alpha",
@@ -39,10 +49,9 @@ namespace noggit {
           + std::string(" (in call to tex_set_alpha)")
           );
       }
-      auto& ts = _chunk->texture_set;
-      ts->create_temporary_alphamaps_if_needed();
-      ts->tmp_edit_values.get()->operator[](index)[_index] = value;
-    }
+        ts->create_temporary_alphamaps_if_needed();
+        ts->tmp_edit_values.get()->operator[](index)[_index] = value;
+      }
 
     namespace {
       math::vector_3d tex_location(MapChunk* chnk, int index)
