@@ -180,7 +180,7 @@ MPQFile::MPQFile(std::string const& filename)
   : eof(true)
   , pointer(0)
   , External(false)
-  , _filename(noggit::mpq::normalized_filename(filename))
+  , _filename(filename)
   , _disk_path (getDiskPath (_filename))
 {
   if (filename.empty())
@@ -357,6 +357,27 @@ namespace noggit
                        }
                      );
       return filename;
+    }
+    std::string uni_path (std::string filename)
+    {
+    try
+    {
+      // Check without normalization
+      std::filesystem::path local_path(getDiskPath(filename));
+
+      if (std::filesystem::exists(local_path) || existsInMPQ (filename))
+      {
+        return filename;
+      }
+      else
+      {
+        return normalized_filename(filename);
+      }
+    }
+    catch (const std::exception& e)
+    {
+      throw std::runtime_error ("Error! File " + filename + " does not exists");
+    }
     }
   }
 }
