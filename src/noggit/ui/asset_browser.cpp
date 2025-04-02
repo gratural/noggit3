@@ -4,12 +4,13 @@
 #include <noggit/ui/ObjectEditor.h>
 #include <noggit/MPQ.h>
 
-
+#include <QtCore/QRegularExpression>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QVBoxLayout>
 
-#include <regex>
+#include <map>
+#include <string>
 
 namespace noggit::ui
 {
@@ -72,7 +73,7 @@ namespace noggit::ui
     connect( search_btn, &QPushButton::clicked
            , [=]()
              {
-               create_tree(_search_bar->text().toStdString());
+               create_tree(_search_bar->text());
              }
            );
     connect( toggle_btn, &QPushButton::clicked
@@ -94,47 +95,58 @@ namespace noggit::ui
            );
   }
 
-  void asset_browser::create_tree(std::string filter)
+  struct asset_browser::asset_tree_node
   {
-    static const std::regex models_and_wmo("[^\\.]+\\.(m2|wmo)"), wmo_group(".*_[0-9]{3}\\.wmo");
+    asset_tree_node(QString name) : name(name) {}
+
+    asset_tree_node& add_child(QString const& child_name)
+    {
+      return children.emplace(child_name, child_name).first->second;
+    }
+
+    QString name;
+    std::map<QString, asset_tree_node> children;
+  };
+
+  void asset_browser::create_tree(QString filter)
+  {
+    static const QRegularExpression models_and_wmo("([^\\.]+\\.(m2|wmo))");
+    static const QRegularExpression wmo_group("(.*_[0-9]{3}\\.wmo)");
 
     _asset_tree->clear();
-    asset_tree_node root("root");
+    asset_tree_node root({});
 
-    bool use_filter = filter != "";
+    bool use_filter = !filter.isNull();
 
-    filter = noggit::mpq::normalized_filename(filter);
+    filter = QString::fromStdString(noggit::mpq::normalized_filename(filter.toStdString()));
 
-    for (std::string const& file : gListfile)
+    for (auto const& fileStd : gListfile)
     {
-      if (!std::regex_match(file, models_and_wmo) || std::regex_match(file, wmo_group))
+      auto const file = QString::fromStdString(fileStd);
+
+      if (!models_and_wmo.match(file).hasMatch() || wmo_group.match(file).hasMatch())
       {
         continue;
       }
 
-      if (use_filter && file.find(filter) != std::string::npos)
+      if (use_filter && !file.contains(filter, Qt::CaseSensitive))
       {
         continue;
       }
-
-      std::regex delimiter("/");
-      std::sregex_token_iterator it(file.begin(), file.end(), delimiter, -1);
-      std::sregex_token_iterator end;
 
       asset_tree_node* node = &root;
 
-      while(it != end)
+      for (QString&& part : file.split('/'))
       {
-        node = &node->add_child(*it);
-        ++it;
+        node = &node->add_child(std::move(part));
       }
     }
 
     auto tree_root = _asset_tree->invisibleRootItem();
 
-    for (asset_tree_node const& child : root.children)
+    for (auto const& child : root.children)
     {
-      add_children(child, tree_root);
+      add_children(child.second, tree_root);
     }
 
     _asset_tree->resizeColumnToContents(0);
@@ -149,13 +161,13 @@ namespace noggit::ui
   {
     QTreeWidgetItem* node_item = new QTreeWidgetItem(parent);
 
-    node_item->setText(0, QString::fromStdString(data_node.name));
+    node_item->setText(0, data_node.name);
 
     parent->addChild(node_item);
 
-    for (asset_tree_node const& child : data_node.children)
+    for (auto const& child : data_node.children)
     {
-      add_children(child, node_item);
+      add_children(child.second, node_item);
     }
   }
 }

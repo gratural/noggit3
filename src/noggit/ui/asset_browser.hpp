@@ -2,53 +2,10 @@
 
 #pragma once
 
-#include <QtWidgets/QWidget>
+#include <QtCore/QString>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QTreeWidget>
-
-#include <functional>
-#include <optional>
-#include <string>
-#include <vector>
-
-struct asset_tree_node
-{
-  asset_tree_node(std::string name) : name(name) {}
-  asset_tree_node(asset_tree_node const& other) : name(other.name), children(other.children) {}
-
-  asset_tree_node& add_child(std::string const& child_name)
-  {
-    for (asset_tree_node& child : children)
-    {
-      if (child_name == child.name)
-      {
-        return child;
-      }
-    }
-    children.emplace_back(child_name);
-
-    return children.back();
-  }
-
-  bool operator==(asset_tree_node const& other) { return name == other.name; }
-  asset_tree_node const& operator=(asset_tree_node const& other)
-  {
-    name = other.name;
-    children = other.children;
-
-    return *this;
-  }
-  asset_tree_node const& operator=(asset_tree_node&& other)
-  {
-    std::swap(name, other.name);
-    std::swap(children, other.children);
-
-    return *this;
-  }
-
-  std::string name;
-  std::vector<asset_tree_node> children;
-};
+#include <QtWidgets/QWidget>
 
 namespace noggit::ui
 {
@@ -61,8 +18,9 @@ namespace noggit::ui
     asset_browser(QWidget* parent = nullptr, noggit::ui::object_editor* object_editor = nullptr);
 
   private:
-    void create_tree(std::string filter = "");
+    void create_tree(QString filter = QString{});
 
+    struct asset_tree_node;
     void add_children(asset_tree_node const& data_node, QTreeWidgetItem* parent);
 
     bool _expanded = false;
