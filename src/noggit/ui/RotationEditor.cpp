@@ -195,7 +195,7 @@ namespace noggit
 
       if (world->has_multiple_model_selected())
       {
-        math::vector_3d const& p = world->multi_select_pivot().value();
+        math::vector_3d p = world->multi_select_pivot().value();
 
         _position_x->setValue(p.x);
         _position_y->setValue(p.y);
