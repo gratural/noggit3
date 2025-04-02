@@ -716,7 +716,7 @@ include (FetchContent)
 
 FetchContent_Declare (storm
   GIT_REPOSITORY https://github.com/ladislav-zezula/StormLib.git
-  GIT_TAG 60c2dd0fa16d3506722e25fee9b6fa4082b0c1e5
+  GIT_TAG v9.30
 )
 FetchContent_GetProperties (storm)
 if (NOT storm_POPULATED)
@@ -736,7 +736,7 @@ if (NOGGIT_WITH_SCRIPTING)
   # Dependency: json.hpp
   FetchContent_Declare (json
     GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
-    GIT_TAG v3.9.1
+    GIT_TAG v3.11.2
   )
   FetchContent_GetProperties (json)
   if (NOT json_POPULATED)
@@ -748,7 +748,7 @@ if (NOGGIT_WITH_SCRIPTING)
   # Dependency: lodepng
   FetchContent_Declare (lodepng
     GIT_REPOSITORY https://github.com/lvandeve/lodepng.git
-    GIT_TAG 7fdcc96a5e5864eee72911c3ca79b1d9f0d12292
+    GIT_TAG c45ed7951fb9df607351013d288d71faef6eea87
   )
   FetchContent_GetProperties (lodepng)
   if (NOT lodepng_POPULATED)
