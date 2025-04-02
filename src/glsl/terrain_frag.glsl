@@ -144,63 +144,63 @@ vec3 texture_color(int array_index, int index_in_array, vec2 anim_uv)
   }
   else if(array_index == 14)
   {
-    return texture(texture_arrays[1], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
+    return texture(texture_arrays[14], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
   }
   else if(array_index == 15)
   {
-    return texture(texture_arrays[1], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
+    return texture(texture_arrays[15], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
   }
   else if(array_index == 16)
   {
-    return texture(texture_arrays[1], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
+    return texture(texture_arrays[16], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
   }
   else if(array_index == 17)
   {
-    return texture(texture_arrays[1], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
+    return texture(texture_arrays[17], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
   }
   else if(array_index == 18)
   {
-    return texture(texture_arrays[1], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
+    return texture(texture_arrays[18], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
   }
   else if(array_index == 19)
   {
-    return texture(texture_arrays[1], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
+    return texture(texture_arrays[19], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
   }
   else if(array_index == 20)
   {
-    return texture(texture_arrays[2], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
+    return texture(texture_arrays[20], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
   }
   else if(array_index == 21)
   {
-    return texture(texture_arrays[2], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
+    return texture(texture_arrays[21], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
   }
   else if(array_index == 22)
   {
-    return texture(texture_arrays[2], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
+    return texture(texture_arrays[22], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
   }
   else if(array_index == 23)
   {
-    return texture(texture_arrays[2], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
+    return texture(texture_arrays[23], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
   }
   else if(array_index == 24)
   {
-    return texture(texture_arrays[2], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
+    return texture(texture_arrays[24], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
   }
   else if(array_index == 25)
   {
-    return texture(texture_arrays[2], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
+    return texture(texture_arrays[25], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
   }
   else if(array_index == 26)
   {
-    return texture(texture_arrays[2], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
+    return texture(texture_arrays[26], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
   }
   else if(array_index == 27)
   {
-    return texture(texture_arrays[2], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
+    return texture(texture_arrays[27], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
   }
   else if(array_index == 28)
   {
-    return texture(texture_arrays[2], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
+    return texture(texture_arrays[28], vec3(vary_texcoord + anim_uv, index_in_array)).rgb;
   }
   else if(array_index == 29)
   {
