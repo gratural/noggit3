@@ -21,7 +21,7 @@ namespace noggit::ui
     resize(300, 600);
 
     QVBoxLayout* layout = new QVBoxLayout(this);
-    QGridLayout* search_layout = new QGridLayout(this);
+    QGridLayout* search_layout = new QGridLayout();
 
     _search_bar = new QLineEdit(this);
 
