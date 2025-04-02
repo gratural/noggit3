@@ -734,10 +734,7 @@ target_link_libraries (noggit
 
 if (NOGGIT_WITH_SCRIPTING)
   # Dependency: json.hpp
-  FetchContent_Declare (json
-    GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
-    GIT_TAG v3.11.2
-  )
+  FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz)
   FetchContent_GetProperties (json)
   if (NOT json_POPULATED)
     message (STATUS "Installing json.hpp...")
