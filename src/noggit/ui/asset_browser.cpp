@@ -136,7 +136,7 @@ namespace noggit::ui
 
       asset_tree_node* node = &root;
 
-      for (QString&& part : file.split('/'))
+      for (QString part : file.split('/'))
       {
         node = &node->add_child(std::move(part));
       }
