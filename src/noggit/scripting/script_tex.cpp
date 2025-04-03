@@ -40,7 +40,7 @@ namespace noggit {
     void tex::set_alpha(int index, float value)
     {
       auto& ts = _chunk->texture_set;
-      if(!ts||index<1||index>=ts->nTextures) 
+      if(!ts||index<1||index>=ts->nTextures)
       {
         throw script_exception(
             "tex_set_alpha",
@@ -51,7 +51,7 @@ namespace noggit {
       }
         ts->create_temporary_alphamaps_if_needed();
         ts->tmp_edit_values.get()->operator[](index)[_index] = value;
-      }
+    }
 
     namespace {
       math::vector_3d tex_location(MapChunk* chnk, int index)

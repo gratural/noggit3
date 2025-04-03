@@ -63,7 +63,6 @@ namespace noggit {
             + "\""
           );
         }
-
         global->get_view()->_world.get()->addWMO(
             filename
           , pos
