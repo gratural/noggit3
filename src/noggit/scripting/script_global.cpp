@@ -27,6 +27,16 @@ namespace noggit {
       { 
         // note: we set both min/max random scale and the normal scale parameter,
         // because noggit picks one based on random scale settings in the object tool
+        if (!MPQFile::exists(filename))
+        {
+          throw script_exception(
+            "add_m2",
+            std::string("M2 not exist:\n")
+            + "\""
+            + filename
+            + "\""
+          );
+        }
         object_paste_params p;
         p.minScale = scale;
         p.maxScale = scale;
@@ -43,6 +53,17 @@ namespace noggit {
         , math::vector_3d const& pos
         , math::vector_3d const& rotation)
       {
+        if (!MPQFile::exists(filename))
+        {
+          throw script_exception(
+            "add_wmo",
+            std::string("WMO not exist:\n")
+            + "\""
+            + filename
+            + "\""
+          );
+        }
+
         global->get_view()->_world.get()->addWMO(
             filename
           , pos
