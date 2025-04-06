@@ -46,7 +46,6 @@ namespace noggit {
             "tex_set_alpha",
             std::string("invalid texture layer: ")
           + std::to_string(index)
-          + std::string(" (in call to tex_set_alpha)")
           );
       }
       ts->create_temporary_alphamaps_if_needed();
