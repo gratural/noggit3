@@ -49,8 +49,8 @@ namespace noggit {
           + std::string(" (in call to tex_set_alpha)")
           );
       }
-        ts->create_temporary_alphamaps_if_needed();
-        ts->tmp_edit_values.get()->operator[](index)[_index] = value;
+      ts->create_temporary_alphamaps_if_needed();
+      ts->tmp_edit_values.get()->operator[](index)[_index] = value;
     }
 
     namespace {
