@@ -336,26 +336,63 @@ namespace noggit
 {
   namespace mpq
   {
+    namespace
+    {
+      // \todo(c++20): std::iota
+      template<typename T, typename It>
+      constexpr void constexprIota(It begin, It end, T value)
+      {
+          for (; begin != end; ++begin, ++value)
+          {
+              *begin = value;
+          }
+      }
+
+      constexpr auto build_to_lower_backslash_lookup_table()
+      {
+          std::array<unsigned char, std::numeric_limits<unsigned char>::max() + 1> r = {};
+          constexprIota(r.begin(), r.end(), static_cast<unsigned char>(0));
+          for (unsigned char upper = 'A', lower = 'a'; upper <= 'Z'; ++upper, ++lower)
+          {
+              r[upper] = lower;
+          }
+          r['\\'] = '/';
+          return r;
+      }
+      constexpr auto build_to_upper_slash_lookup_table()
+      {
+          std::array<unsigned char, std::numeric_limits<unsigned char>::max() + 1> r = {};
+          constexprIota(r.begin(), r.end(), static_cast<unsigned char>(0));
+          for (unsigned char upper = 'A', lower = 'a'; upper <= 'Z'; ++upper, ++lower)
+          {
+              r[lower] = upper;
+          }
+          r['/'] = '\\';
+          return r;
+      }
+
+      constexpr auto const to_lower_backslash_lookup_table = build_to_lower_backslash_lookup_table();
+      constexpr auto const to_upper_slash_lookup_table = build_to_upper_slash_lookup_table();
+
+      constexpr char to_lower_backslash(char c)
+      {
+        return to_lower_backslash_lookup_table[static_cast<unsigned char>(c)];
+      }
+      constexpr char to_upper_slash(char c)
+      {
+        return to_upper_slash_lookup_table[static_cast<unsigned char>(c)];
+      }
+    }
+
+
     std::string normalized_filename (std::string filename)
     {
-      std::transform (filename.begin(), filename.end(), filename.begin(), [](unsigned char c) { return std::tolower(c); });
-      std::transform ( filename.begin(), filename.end(), filename.begin()
-                     , [] (char c)
-                       {
-                         return c == '\\' ? '/' : c;
-                       }
-                     );
+      std::transform (filename.begin(), filename.end(), filename.begin(), to_lower_backslash);
       return filename;
     }
     std::string normalized_filename_insane (std::string filename)
     {
-      std::transform (filename.begin(), filename.end(), filename.begin(), [](unsigned char c) { return std::toupper(c); });
-      std::transform ( filename.begin(), filename.end(), filename.begin()
-                     , [] (char c)
-                       {
-                         return c == '/' ? '\\' : c;
-                       }
-                     );
+      std::transform (filename.begin(), filename.end(), filename.begin(), to_upper_slash);
       return filename;
     }
   }
